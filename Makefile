@@ -1,4 +1,4 @@
-export GO111MODULES:=on
+export GO111MODULE:=on
 
 build: generate
 	go build -o ./_output/bin/ocadm cmd/main.go

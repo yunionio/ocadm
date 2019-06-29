@@ -135,7 +135,7 @@ func (info DBInfo) ToSQLConnection() string {
 
 type Keystone struct {
 	ServiceBaseOptions
-	ServiceDBOptions
+	ServiceDBOptions ServiceDBOptions
 
 	// listening port for admin API(deprecated), default: 35357
 	AdminPort int
@@ -164,7 +164,7 @@ type Keystone struct {
 
 type RegionServer struct {
 	ServiceCommonOptions
-	ServiceDBOptions
+	ServiceDBOptions ServiceDBOptions
 
 	// Address of DNS server
 	DNSServer string

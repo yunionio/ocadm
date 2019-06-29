@@ -44,7 +44,7 @@ func SetupKeystone(
 	localAddress string,
 	certDir string,
 ) error {
-	dbInfo := config.DBInfo
+	dbInfo := config.ServiceDBOptions.DBInfo
 	err := configutil.InitDBUser(rootDBConn, dbInfo)
 	if err != nil {
 		return err

@@ -544,12 +544,10 @@ func (d *initData) OnecloudAdminConfigPath() string {
 }
 
 func (d *initData) OnecloudClientSession() (*mcclient.ClientSession, error) {
-	if d.ocClient == nil {
-		var err error
-		d.ocClient, err = occonfig.ClientSessionFromFile(d.OnecloudAdminConfigPath())
-		if err != nil {
-			return nil, err
-		}
+	var err error
+	d.ocClient, err = occonfig.ClientSessionFromFile(d.OnecloudAdminConfigPath())
+	if err != nil {
+		return nil, err
 	}
 	return d.ocClient, nil
 }

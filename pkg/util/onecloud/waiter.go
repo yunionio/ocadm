@@ -6,8 +6,11 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/wait"
 	clientset "k8s.io/client-go/kubernetes"
+	"k8s.io/klog"
 	"k8s.io/kubernetes/cmd/kubeadm/app/util/apiclient"
 
 	"yunion.io/x/onecloud/pkg/mcclient"
@@ -27,6 +30,7 @@ type Waiter interface {
 
 type OCWaiter struct {
 	apiclient.Waiter
+	kubeClient clientset.Interface
 
 	sessionFactory func() (*mcclient.ClientSession, error)
 	timeout        time.Duration
@@ -42,6 +46,7 @@ func NewOCWaiter(
 ) Waiter {
 	return &OCWaiter{
 		Waiter:         apiclient.NewKubeWaiter(kubeClient, timeout, writer),
+		kubeClient:     kubeClient,
 		sessionFactory: sessionFactory,
 		timeout:        timeout,
 		writer:         writer,
@@ -57,6 +62,38 @@ func (w *OCWaiter) WaitForServicePods(serviceName string) error {
 		return errors.Wrapf(err, "wait %s pod running", serviceName)
 	}
 	return nil
+}
+
+// WaitForPodsWithLabel will lookup pods with the given label and wait until they are all
+// reporting status as running.
+func (w *OCWaiter) WaitForPodsWithLabel(kvLabel string) error {
+
+	lastKnownPodNumber := -1
+	return wait.PollImmediate(constants.APICallRetryInterval, w.timeout, func() (bool, error) {
+		listOpts := metav1.ListOptions{LabelSelector: kvLabel}
+		pods, err := w.kubeClient.CoreV1().Pods(metav1.NamespaceSystem).List(listOpts)
+		if err != nil {
+			fmt.Fprintf(w.writer, "[apiclient] Error getting Pods with label selector %q [%v]\n", kvLabel, err)
+			return false, nil
+		}
+
+		if lastKnownPodNumber != len(pods.Items) {
+			fmt.Fprintf(w.writer, "[apiclient] Found %d Pods for label selector %s\n", len(pods.Items), kvLabel)
+			lastKnownPodNumber = len(pods.Items)
+		}
+
+		if len(pods.Items) == 0 {
+			return false, nil
+		}
+
+		for _, pod := range pods.Items {
+			if pod.Status.Phase != v1.PodRunning {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	})
 }
 
 func (w *OCWaiter) WaitForKeystone() error {
@@ -104,6 +141,7 @@ func (w *OCWaiter) WaitForRegion() error {
 		if err == nil {
 			return true, nil
 		}
+		klog.V(1).Infof("region list servers error %v", err)
 		return false, nil
 	})
 }

@@ -187,11 +187,11 @@ type ServiceDynamicDefault struct {
 func SetServicesDynamicDefaults(cfg *apiv1.ClusterConfiguration, authAddress string) error {
 	sqlConn := cfg.MysqlConnection
 	for toSet, info := range map[*apiv1.DBInfo]ServiceDynamicDefault{
-		&cfg.Keystone.DBInfo: {
+		&cfg.Keystone.ServiceDBOptions.DBInfo: {
 			DefaultDB:     constants.KeystoneDB,
 			DefaultDBUser: constants.KeystoneDBUser,
 		},
-		&cfg.RegionServer.DBInfo: {
+		&cfg.RegionServer.ServiceDBOptions.DBInfo: {
 			DefaultDB:     constants.RegionDB,
 			DefaultDBUser: constants.RegionDBUser,
 		},

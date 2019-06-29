@@ -1,15 +1,15 @@
 package init
 
 import (
-	"yunion.io/x/ocadm/pkg/util/mysql"
-	"yunion.io/x/onecloud/pkg/mcclient"
-
 	"k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/workflow"
+
+	"yunion.io/x/onecloud/pkg/mcclient"
 
 	"yunion.io/x/ocadm/pkg/apis/constants"
 	v1 "yunion.io/x/ocadm/pkg/apis/v1"
 	"yunion.io/x/ocadm/pkg/options"
 	"yunion.io/x/ocadm/pkg/phases/keystone"
+	"yunion.io/x/ocadm/pkg/util/mysql"
 	"yunion.io/x/ocadm/pkg/util/onecloud"
 )
 

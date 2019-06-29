@@ -111,7 +111,7 @@ func (p *ServiceBasePhase) runStart(c workflow.RunData) error {
 	}
 	data := c.(InitData)
 	timeout := data.Cfg().ClusterConfiguration.APIServer.TimeoutForControlPlane.Duration
-	fmt.Printf("[wait-%s-start] Waiting for keystone static pod from direcotry %q. This can take up to %v\n", p.Name, data.ManifestDir(), timeout)
+	fmt.Printf("[wait-%s-start] Waiting for %s static pod from direcotry %q. This can take up to %v\n", p.Name, p.Name, data.ManifestDir(), timeout)
 	kubeCli, err := data.Client()
 	if err != nil {
 		return errors.Wrap(err, "get kubernetes client")

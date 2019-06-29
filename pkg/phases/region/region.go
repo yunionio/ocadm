@@ -35,7 +35,7 @@ func SetupRegionServer(
 	certDir string,
 	address string,
 ) error {
-	if err := configutil.InitDBUser(rootDBConn, config.DBInfo); err != nil {
+	if err := configutil.InitDBUser(rootDBConn, config.ServiceDBOptions.DBInfo); err != nil {
 		return err
 	}
 	opt, err := GetRegionOptions(config, certDir)

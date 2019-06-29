@@ -100,6 +100,7 @@ func SetDefaults_ServiceBaseOptions(obj *ServiceBaseOptions) {
 	if len(obj.NotifyAdminUsers) == 0 {
 		obj.NotifyAdminUsers = []string{constants.SysAdminUsername}
 	}
+	obj.EnableSSL = true
 	obj.EnableRBAC = true
 	obj.RBACDebug = false
 	obj.RBACPolicySyncPeriodSeconds = 300 // 5 mins
@@ -182,6 +183,7 @@ func SetDefaults_RegionServer(obj *RegionServer, region string) {
 	if obj.PortV2 == 0 {
 		obj.PortV2 = constants.RegionPort
 	}
+	obj.Port = obj.PortV2
 	if obj.SchedulerPort == 0 {
 		obj.SchedulerPort = constants.SchedulerPort
 	}
