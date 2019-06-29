@@ -24,6 +24,7 @@ const (
 	RegionAdminUser    = "regionadmin"
 	RegionAdminProject = SysAdminProject
 	RegionPort         = 8889
+	SchedulerPort      = 8897
 	RegionDB           = "yunioncloud"
 	RegionDBUser       = "yunioncloud"
 
@@ -44,13 +45,24 @@ const (
 	EndpointTypeConsole  = "console"
 
 	// define service constants
-	ServiceNameKeystone       = "keystone"
-	ServiceTypeIdentity       = "identity"
-	ServiceNameRegion         = "region"
-	ServiceTypeCompute        = "compute"
-	ServiceURLCloudmeta       = "https://meta.yunion.cn"
-	ServiceNameCloudmeta      = "cloudmeta"
-	ServiceTypeCloudmeta      = "cloudmeta"
+	ServiceNameKeystone = "keystone"
+	ServiceTypeIdentity = "identity"
+
+	ServiceNameRegion    = "region"
+	ServiceNameRegionV2  = "region2"
+	ServiceTypeCompute   = "compute"
+	ServiceTypeComputeV2 = "compute_v2"
+
+	ServiceNameScheduler = "scheduler"
+	ServiceTypeScheduler = "scheduler"
+
+	ServiceNameInfluxdb = "influxdb"
+	ServiceTypeInfluxdb = "influxdb"
+
+	ServiceURLCloudmeta  = "https://meta.yunion.cn"
+	ServiceNameCloudmeta = "cloudmeta"
+	ServiceTypeCloudmeta = "cloudmeta"
+
 	ServiceURLTorrentTracker  = "https://tracker.yunion.cn"
 	ServiceNameTorrentTracker = "torrent-tracker"
 	ServiceTypeTorrentTracker = "torrent-tracker"
@@ -111,6 +123,39 @@ const (
 	RegionCertAndKeyBaseName = "region"
 	RegionCertName           = "region.crt"
 	RegionKeyName            = "region.key"
+)
+
+const (
+	RoleAdmin        = "admin"
+	RoleFA           = "fa"
+	RoleSA           = "sa"
+	RoleProjectOwner = "project_owner"
+	RoleMember       = "member"
+	RoleDomainAdmin  = "domainadmin"
+
+	PolicyTypeDomainAdmin  = "domainadmin"
+	PolicyTypeMember       = "member"
+	PolicyTypeProjectFA    = "projectfa"
+	PolicyTypeProjectOwner = "projectowner"
+	PolicyTypeProjectSA    = "projectsa"
+	PolicyTypeSysAdmin     = "sysadmin"
+	PolicyTypeSysFA        = "sysfa"
+	PolicyTypeSysSA        = "syssa"
+)
+
+var (
+	PublicRoles = []string{
+		RoleFA,
+		RoleSA,
+		RoleProjectOwner,
+		RoleMember,
+		RoleDomainAdmin,
+	}
+	PublicPolicies = []string{
+		PolicyTypeDomainAdmin, PolicyTypeProjectOwner,
+		PolicyTypeProjectSA, PolicyTypeProjectFA,
+		PolicyTypeMember,
+	}
 )
 
 const (

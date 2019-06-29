@@ -38,7 +38,6 @@ func SetObjectDefaults_ClusterConfiguration(in *ClusterConfiguration) {
 	SetDefaults_MysqlConnection(&in.MysqlConnection)
 	SetDefaults_Keystone(&in.Keystone)
 	SetDefaults_ServiceBaseOptions(&in.Keystone.ServiceBaseOptions)
-	SetDefaults_ServiceCommonOptions(&in.RegionServer.ServiceCommonOptions)
 	SetDefaults_ServiceBaseOptions(&in.RegionServer.ServiceCommonOptions.ServiceBaseOptions)
 }
 

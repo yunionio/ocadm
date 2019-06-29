@@ -124,7 +124,7 @@ func (r *Reset) resetDB(connInfo *apis.MysqlConnection) error {
 	if err != nil {
 		return err
 	}
-	for _, db := range []string{constants.KeystoneDB} {
+	for _, db := range []string{constants.KeystoneDB, constants.RegionDB} {
 		if err := conn.DropDatabase(db); err != nil {
 			return errors.Wrapf(err, "drop db %s", db)
 		}

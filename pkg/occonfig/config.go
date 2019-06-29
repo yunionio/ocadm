@@ -4,15 +4,18 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"golang.org/x/sync/errgroup"
 	"io/ioutil"
 	"os"
 	"path"
 	"text/template"
+	"yunion.io/x/ocadm/pkg/util/onecloud"
 	"yunion.io/x/onecloud/pkg/mcclient"
 
 	"github.com/pkg/errors"
 
 	"yunion.io/x/jsonutils"
+	regionoptions "yunion.io/x/onecloud/pkg/compute/options"
 	keystoneoptions "yunion.io/x/onecloud/pkg/keystone/options"
 
 	"yunion.io/x/ocadm/pkg/apis/constants"
@@ -102,6 +105,14 @@ func WriteKeystoneConfigFile(opt keystoneoptions.SKeystoneOptions) error {
 	)
 }
 
+func WriteRegionConfigFile(opt regionoptions.ComputeOptions) error {
+	return writeOnecloudConfigFile(
+		constants.OnecloudConfigDir,
+		constants.OnecloudRegionConfigFileName,
+		opt,
+	)
+}
+
 func AdminConfigFilePath() string {
 	return YAMLConfigFilePath(
 		constants.OnecloudConfigDir,
@@ -113,6 +124,13 @@ func KeystoneConfigFilePath() string {
 	return YAMLConfigFilePath(
 		constants.OnecloudKeystoneConfigDir,
 		constants.OnecloudKeystoneConfigFileName,
+	)
+}
+
+func RegionConfigFilePath() string {
+	return YAMLConfigFilePath(
+		constants.OnecloudConfigDir,
+		constants.OnecloudRegionConfigFileName,
 	)
 }
 
@@ -178,4 +196,61 @@ func ClientSessionFromFile(configFile string) (*mcclient.ClientSession, error) {
 		"",
 	)
 	return session, nil
+}
+
+func InitServiceAccount(s *mcclient.ClientSession, username string, password string) error {
+	_, exists, err := onecloud.IsUserExists(s, username)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return errors.Errorf("user %s already exists", username)
+	}
+	obj, err := onecloud.CreateUser(s, username, password)
+	if err != nil {
+		return errors.Wrapf(err, "create user %s", username)
+	}
+	userId, _ := obj.GetString("id")
+	return onecloud.ProjectAddUser(s, constants.SysAdminProject, userId, constants.RoleAdmin)
+}
+
+func RegisterServiceEndpointByInterfaces(
+	s *mcclient.ClientSession,
+	regionId string,
+	serviceName string,
+	serviceType string,
+	endpointUrl string,
+	interfaces []string,
+) error {
+	svc, err := onecloud.EnsureService(s, serviceName, serviceType)
+	if err != nil {
+		return err
+	}
+	svcId, err := svc.GetString("id")
+	if err != nil {
+		return err
+	}
+	errgrp := &errgroup.Group{}
+	for _, inf := range interfaces {
+		tmpInf := inf
+		errgrp.Go(func() error {
+			_, err = onecloud.EnsureEndpoint(s, svcId, regionId, tmpInf, endpointUrl)
+			if err != nil {
+				return err
+			}
+			return nil
+		})
+	}
+	return errgrp.Wait()
+}
+
+func RegisterServicePublicInternalEndpoint(
+	s *mcclient.ClientSession,
+	regionId string,
+	serviceName string,
+	serviceType string,
+	endpointUrl string,
+) error {
+	return RegisterServiceEndpointByInterfaces(s, regionId, serviceName, serviceType,
+		endpointUrl, []string{constants.EndpointTypeInternal, constants.EndpointTypePublic})
 }

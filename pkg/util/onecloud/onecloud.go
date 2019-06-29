@@ -122,3 +122,23 @@ func EnsureEndpoint(s *mcclient.ClientSession, svcId, regionId, interfaceType, u
 	updateParams.Add(jsonutils.JSONTrue, "enabled")
 	return modules.EndpointsV3.Update(s, epId, updateParams)
 }
+
+func IsUserExists(s *mcclient.ClientSession, username string) (jsonutils.JSONObject, bool, error) {
+	return IsResourceExists(s, &modules.UsersV3, username)
+}
+
+func CreateUser(s *mcclient.ClientSession, username string, password string) (jsonutils.JSONObject, error) {
+	params := jsonutils.NewDict()
+	params.Add(jsonutils.NewString(username), "name")
+	params.Add(jsonutils.NewString(password), "password")
+	return modules.UsersV3.Create(s, params)
+}
+
+func ProjectAddUser(s *mcclient.ClientSession, projectId string, userId string, roleId string) error {
+	_, err := modules.RolesV3.PutInContexts(s, roleId, nil,
+		[]modules.ManagerContext{
+			{InstanceManager: &modules.Projects, InstanceId: projectId},
+			{InstanceManager: &modules.UsersV3, InstanceId: userId},
+		})
+	return err
+}

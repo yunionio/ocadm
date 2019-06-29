@@ -17,7 +17,7 @@ func GetOnecloudImage(image string, cfg *v1.ClusterConfiguration) string {
 func GetAllImages(cfg *v1.ClusterConfiguration, kubeadmCfg *kubeadmapi.ClusterConfiguration) []string {
 	imgs := images.GetAllImages(kubeadmCfg)
 	imgs = append(imgs, GetOnecloudImage(constants.OnecloudKeystone, cfg))
-	//imgs = append(imgs, GetOnecloudImage(constants.OnecloudRegion, cfg))
+	imgs = append(imgs, GetOnecloudImage(constants.OnecloudRegion, cfg))
 	//imgs = append(imgs, GetOnecloudImage(constants.OnecloudScheduler, cfg))
 	return imgs
 }

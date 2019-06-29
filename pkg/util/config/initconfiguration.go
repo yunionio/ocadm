@@ -173,7 +173,7 @@ func documentMapToInitConfiguration(gvkmap map[schema.GroupVersionKind][]byte, k
 }
 
 func SetInitDynamicDefaults(cfg *apiv1.InitConfiguration) error {
-	if err := SetServicesDynamicDefaults(&cfg.ClusterConfiguration); err != nil {
+	if err := SetServicesDynamicDefaults(&cfg.ClusterConfiguration, cfg.LocalAPIEndpoint.AdvertiseAddress); err != nil {
 		return err
 	}
 	return nil
@@ -184,17 +184,26 @@ type ServiceDynamicDefault struct {
 	DefaultDBUser string
 }
 
-func SetServicesDynamicDefaults(cfg *apiv1.ClusterConfiguration) error {
+func SetServicesDynamicDefaults(cfg *apiv1.ClusterConfiguration, authAddress string) error {
 	sqlConn := cfg.MysqlConnection
 	for toSet, info := range map[*apiv1.DBInfo]ServiceDynamicDefault{
 		&cfg.Keystone.DBInfo: {
 			DefaultDB:     constants.KeystoneDB,
 			DefaultDBUser: constants.KeystoneDBUser,
 		},
+		&cfg.RegionServer.DBInfo: {
+			DefaultDB:     constants.RegionDB,
+			DefaultDBUser: constants.RegionDBUser,
+		},
 	} {
 		if err := SetServiceDBInfo(toSet, &sqlConn, &info); err != nil {
 			return errors.Wrapf(err, "Set default db %s info", info.DefaultDB)
 		}
+	}
+	for _, commonCfg := range map[string]*apiv1.ServiceCommonOptions{
+		constants.OnecloudRegion: &cfg.RegionServer.ServiceCommonOptions,
+	} {
+		SetServiceAuthInfo(commonCfg, cfg.Keystone, authAddress)
 	}
 	return nil
 }
@@ -216,4 +225,8 @@ func SetServiceDBInfo(cfg *apiv1.DBInfo, conn *apiv1.MysqlConnection, defaultCon
 		cfg.Password = passwd.GeneratePassword()
 	}
 	return nil
+}
+
+func SetServiceAuthInfo(cfg *apiv1.ServiceCommonOptions, keystone apiv1.Keystone, localAddress string) {
+	FillServiceCommonOptions(cfg, keystone, localAddress)
 }

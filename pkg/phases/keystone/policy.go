@@ -2,6 +2,7 @@ package keystone
 
 import (
 	"golang.org/x/sync/errgroup"
+	"yunion.io/x/ocadm/pkg/apis/constants"
 
 	"yunion.io/x/jsonutils"
 	"yunion.io/x/onecloud/pkg/mcclient"
@@ -105,39 +106,6 @@ policy:
 `
 )
 
-const (
-	RoleAdmin        = "admin"
-	RoleFA           = "fa"
-	RoleSA           = "sa"
-	RoleProjectOwner = "project_owner"
-	RoleMember       = "member"
-	RoleDomainAdmin  = "domainadmin"
-
-	PolicyTypeDomainAdmin  = "domainadmin"
-	PolicyTypeMember       = "member"
-	PolicyTypeProjectFA    = "projectfa"
-	PolicyTypeProjectOwner = "projectowner"
-	PolicyTypeProjectSA    = "projectsa"
-	PolicyTypeSysAdmin     = "sysadmin"
-	PolicyTypeSysFA        = "sysfa"
-	PolicyTypeSysSA        = "syssa"
-)
-
-var (
-	PublicRoles = []string{
-		RoleFA,
-		RoleSA,
-		RoleProjectOwner,
-		RoleMember,
-		RoleDomainAdmin,
-	}
-	PublicPolicies = []string{
-		PolicyTypeDomainAdmin, PolicyTypeProjectOwner,
-		PolicyTypeProjectSA, PolicyTypeProjectFA,
-		PolicyTypeMember,
-	}
-)
-
 type Policies map[string]string
 
 var DefaultPolicies Policies
@@ -145,23 +113,23 @@ var DefaultRoles map[string]string
 
 func init() {
 	DefaultPolicies = map[string]string{
-		PolicyTypeDomainAdmin:  PolicyDomainAdmin,
-		PolicyTypeMember:       PolicyMember,
-		PolicyTypeProjectFA:    PolicyProjectFA,
-		PolicyTypeProjectOwner: PolicyProjectOwner,
-		PolicyTypeProjectSA:    PolicyProjectSA,
-		PolicyTypeSysAdmin:     PolicySysAdmin,
-		PolicyTypeSysFA:        PolicySysFA,
-		PolicyTypeSysSA:        PolicySysSA,
+		constants.PolicyTypeDomainAdmin:  PolicyDomainAdmin,
+		constants.PolicyTypeMember:       PolicyMember,
+		constants.PolicyTypeProjectFA:    PolicyProjectFA,
+		constants.PolicyTypeProjectOwner: PolicyProjectOwner,
+		constants.PolicyTypeProjectSA:    PolicyProjectSA,
+		constants.PolicyTypeSysAdmin:     PolicySysAdmin,
+		constants.PolicyTypeSysFA:        PolicySysFA,
+		constants.PolicyTypeSysSA:        PolicySysSA,
 	}
 
 	DefaultRoles = map[string]string{
-		RoleAdmin:        "系统管理员",
-		RoleFA:           "财务管理员",
-		RoleSA:           "运维管理员",
-		RoleProjectOwner: "项目主管",
-		RoleMember:       "普通成员",
-		RoleDomainAdmin:  "域管理员",
+		constants.RoleAdmin:        "系统管理员",
+		constants.RoleFA:           "财务管理员",
+		constants.RoleSA:           "运维管理员",
+		constants.RoleProjectOwner: "项目主管",
+		constants.RoleMember:       "普通成员",
+		constants.RoleDomainAdmin:  "域管理员",
 	}
 }
 

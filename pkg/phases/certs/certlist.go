@@ -191,8 +191,8 @@ func GetDefaultCertList() Certificates {
 	return Certificates{
 		&OcadmCertRootCA,
 		&OcadmCertKeystoneServer,
-		&OcadmClimcCertClient,
 		&OcadmCertRegionServer,
+		&OcadmClimcCertClient,
 	}
 }
 
@@ -227,7 +227,7 @@ func newOcServiceCert(caName string, serviceName string, certName string) Oneclo
 	return OnecloudCert{
 		Name:     serviceName,
 		LongName: fmt.Sprintf("certificate for serving the %s service", serviceName),
-		BaseName: constants.KeystoneCertAndKeyBaseName,
+		BaseName: serviceName,
 		CAName:   caName,
 		config: certutil.Config{
 			CommonName: serviceName,

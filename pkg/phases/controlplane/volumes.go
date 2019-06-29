@@ -54,6 +54,26 @@ func getHostPathVolumesForTheControlPlane(cfg *apiv1.ClusterConfiguration) contr
 		&hostPathDirectoryOrCreate,
 	)
 
+	// Read-only mount for the keystone config file
+	regionConfigFile := occonfig.RegionConfigFilePath()
+	mounts.NewHostPathMount(
+		constants.OnecloudRegion,
+		constants.OnecloudConfigVolumeName,
+		regionConfigFile,
+		regionConfigFile,
+		true,
+		&hostPathFileOrCreate,
+	)
+	// Read-only mount for the region certs
+	mounts.NewHostPathMount(
+		constants.OnecloudRegion,
+		constants.OnecloudPKICertsVolumeName,
+		cfg.OnecloudCertificatesDir,
+		cfg.OnecloudCertificatesDir,
+		true,
+		&hostPathDirectoryOrCreate,
+	)
+
 	return mounts
 }
 

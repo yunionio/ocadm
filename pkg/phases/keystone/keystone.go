@@ -2,75 +2,50 @@ package keystone
 
 import (
 	"fmt"
-	"golang.org/x/sync/errgroup"
 	"path"
-	"yunion.io/x/jsonutils"
-	"yunion.io/x/ocadm/pkg/apis/constants"
-	"yunion.io/x/ocadm/pkg/util/onecloud"
 
 	"github.com/pkg/errors"
-
-	apis "yunion.io/x/ocadm/pkg/apis/v1"
-	"yunion.io/x/ocadm/pkg/occonfig"
-	"yunion.io/x/ocadm/pkg/util/mysql"
+	"yunion.io/x/jsonutils"
 	identityapi "yunion.io/x/onecloud/pkg/apis/identity"
 	"yunion.io/x/onecloud/pkg/keystone/options"
 	"yunion.io/x/onecloud/pkg/mcclient"
 	"yunion.io/x/onecloud/pkg/mcclient/modules"
-	"yunion.io/x/structarg"
+
+	"yunion.io/x/ocadm/pkg/apis/constants"
+	apis "yunion.io/x/ocadm/pkg/apis/v1"
+	"yunion.io/x/ocadm/pkg/occonfig"
+	configutil "yunion.io/x/ocadm/pkg/util/config"
+	"yunion.io/x/ocadm/pkg/util/mysql"
+	"yunion.io/x/ocadm/pkg/util/onecloud"
 )
 
-func InitDBUser(conn *mysql.Connection, info apis.DBInfo) error {
-	dbName := info.Database
-	dbExists, err := conn.IsDatabaseExists(dbName)
-	if err != nil {
-		return errors.Wrap(err, "check db exists")
-	}
-	if dbExists {
-		return errors.Errorf("database %q already exists", dbName)
-	}
-	if err := conn.CreateDatabase(dbName); err != nil {
-		return errors.Wrapf(err, "create database %q", dbName)
-	}
-	user := info.Username
-	password := info.Password
-	if err := conn.CreateUser(user, password, dbName); err != nil {
-		return errors.Wrapf(err, "create user %q for database %q", user, dbName)
-	}
-	return nil
-}
-
-func GetKeystoneOptions(config apis.Keystone, certDir string) (*options.SKeystoneOptions, error) {
+func GetKeystoneOptions(config *apis.Keystone, certDir string) (*options.SKeystoneOptions, error) {
 	opt := &options.Options
-	parser, err := structarg.NewArgumentParser(opt, identityapi.SERVICE_TYPE, "", "")
-	if err != nil {
+	if err := configutil.SetOptionsDefault(opt, identityapi.SERVICE_TYPE); err != nil {
 		return nil, err
 	}
-	parser.SetDefault()
-	opt.ApplicationID = identityapi.SERVICE_TYPE
+	configutil.SetDBOptions(&opt.DBOptions, config.ServiceDBOptions)
+
+	configutil.EnableConfigTLS(&config.ServiceBaseOptions, certDir, constants.CACertName, constants.KeystoneCertName, constants.KeystoneKeyName)
+
+	configutil.SetServiceBaseOptions(&opt.BaseOptions, config.ServiceBaseOptions)
 
 	bootstrapAdminUserPasswd := config.BootstrapAdminUserPassword
-	dbInfo := config.DBInfo
-	opt.SqlConnection = dbInfo.ToSQLConnection()
 	opt.BootstrapAdminUserPassword = bootstrapAdminUserPasswd
-	opt.Port = config.ServiceBaseOptions.Port
 	opt.AdminPort = config.AdminPort
-	opt.EnableSsl = config.EnableSSL
-	opt.SslCaCerts = path.Join(certDir, constants.CACertName)
-	opt.SslCertfile = path.Join(certDir, constants.KeystoneCertName)
-	opt.SslKeyfile = path.Join(certDir, constants.KeystoneKeyName)
+
 	return opt, nil
 }
 
 func SetupKeystone(
 	rootDBConn *mysql.Connection,
-	config apis.Keystone,
+	config *apis.Keystone,
 	region string,
 	localAddress string,
 	certDir string,
 ) error {
 	dbInfo := config.DBInfo
-	err := InitDBUser(rootDBConn, dbInfo)
+	err := configutil.InitDBUser(rootDBConn, dbInfo)
 	if err != nil {
 		return err
 	}
@@ -82,7 +57,7 @@ func SetupKeystone(
 		return errors.Wrap(err, "write keystone config file")
 	}
 	rcAdminConfig := occonfig.NewRCAdminConfig(
-		fmt.Sprintf("https://%s:%d/v3", localAddress, config.ServiceBaseOptions.Port),
+		configutil.GetAuthURL(*config, localAddress),
 		region,
 		config.BootstrapAdminUserPassword,
 		path.Join(certDir, constants.ClimcCertName),
@@ -146,10 +121,10 @@ func doPolicyRoleInit(s *mcclient.ClientSession) error {
 			return errors.Wrapf(err, "create role %s", role)
 		}
 	}
-	if err := RolesPublic(s, PublicRoles); err != nil {
+	if err := RolesPublic(s, constants.PublicRoles); err != nil {
 		return errors.Wrap(err, "public roles")
 	}
-	if err := PoliciesPublic(s, PublicPolicies); err != nil {
+	if err := PoliciesPublic(s, constants.PublicPolicies); err != nil {
 		return errors.Wrap(err, "public policies")
 	}
 	return nil
@@ -169,56 +144,15 @@ func doCreateRegion(s *mcclient.ClientSession, region string) (jsonutils.JSONObj
 	return modules.Regions.Create(s, params)
 }
 
-func doRegisterServiceEndpointByInterfaces(
-	s *mcclient.ClientSession,
-	regionId string,
-	serviceName string,
-	serviceType string,
-	endpointUrl string,
-	interfaces []string,
-) error {
-	svc, err := onecloud.EnsureService(s, serviceName, serviceType)
-	if err != nil {
-		return err
-	}
-	svcId, err := svc.GetString("id")
-	if err != nil {
-		return err
-	}
-	errgrp := &errgroup.Group{}
-	for _, inf := range interfaces {
-		tmpInf := inf
-		errgrp.Go(func() error {
-			_, err = onecloud.EnsureEndpoint(s, svcId, regionId, tmpInf, endpointUrl)
-			if err != nil {
-				return err
-			}
-			return nil
-		})
-	}
-	return errgrp.Wait()
-}
-
-func doRegisterServicePublicInternalEndpoint(
-	s *mcclient.ClientSession,
-	regionId string,
-	serviceName string,
-	serviceType string,
-	endpointUrl string,
-) error {
-	return doRegisterServiceEndpointByInterfaces(s, regionId, serviceName, serviceType,
-		endpointUrl, []string{constants.EndpointTypeInternal, constants.EndpointTypePublic})
-}
-
 func doRegisterCloudMeta(s *mcclient.ClientSession, regionId string) error {
-	return doRegisterServicePublicInternalEndpoint(s, regionId,
+	return occonfig.RegisterServicePublicInternalEndpoint(s, regionId,
 		constants.ServiceNameCloudmeta,
 		constants.ServiceTypeCloudmeta,
 		constants.ServiceURLCloudmeta)
 }
 
 func doRegisterTracker(s *mcclient.ClientSession, regionId string) error {
-	return doRegisterServicePublicInternalEndpoint(
+	return occonfig.RegisterServicePublicInternalEndpoint(
 		s, regionId,
 		constants.ServiceNameTorrentTracker,
 		constants.ServiceTypeTorrentTracker,
@@ -242,12 +176,12 @@ func doRegisterIdentity(
 	}
 	publicUrl := genUrl(publicPort)
 	adminUrl := genUrl(adminPort)
-	if err := doRegisterServicePublicInternalEndpoint(
+	if err := occonfig.RegisterServicePublicInternalEndpoint(
 		s, regionId, constants.ServiceNameKeystone,
 		constants.ServiceTypeIdentity, publicUrl); err != nil {
 		return errors.Wrapf(err, "register keystone public endpoint %s", publicUrl)
 	}
-	if err := doRegisterServiceEndpointByInterfaces(
+	if err := occonfig.RegisterServiceEndpointByInterfaces(
 		s, regionId, constants.ServiceNameKeystone, constants.ServiceTypeIdentity,
 		adminUrl, []string{constants.EndpointTypeAdmin}); err != nil {
 		return errors.Wrapf(err, "register keystone admin endpoint %s", adminUrl)
@@ -256,10 +190,10 @@ func doRegisterIdentity(
 }
 
 func makeDomainAdminPublic(s *mcclient.ClientSession) error {
-	if err := RolesPublic(s, []string{RoleDomainAdmin}); err != nil {
+	if err := RolesPublic(s, []string{constants.RoleDomainAdmin}); err != nil {
 		return err
 	}
-	if err := PoliciesPublic(s, []string{PolicyTypeDomainAdmin}); err != nil {
+	if err := PoliciesPublic(s, []string{constants.PolicyTypeDomainAdmin}); err != nil {
 		return err
 	}
 	return nil

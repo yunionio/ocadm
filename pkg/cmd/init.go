@@ -136,6 +136,7 @@ func NewCmdInit(out io.Writer, initOptions *initOptions) *cobra.Command {
 	initRunner.AppendPhase(kubeadminitphases.NewBootstrapTokenPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewAddonPhase())
 	initRunner.AppendPhase(initphases.NewKeystonePhase())
+	initRunner.AppendPhase(initphases.NewRegionPhase())
 	//initRunner.AppendPhase(initphases.NewOCControlPlanePhase())
 
 	// sets the data builder function, that will be used by the runner

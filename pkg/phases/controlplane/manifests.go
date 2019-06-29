@@ -21,6 +21,7 @@ func GetSaticPodSpecs(cfg *apiv1.ClusterConfiguration) map[string]v1.Pod {
 
 	// Prepare static pod specs
 	staticPodSpecs := map[string]v1.Pod{
+		// keystone pod
 		constants.OnecloudKeystone: staticpodutil.ComponentPodWithInit(
 			&v1.Container{
 				Name:            fmt.Sprintf("%s-init", constants.OnecloudKeystone),
@@ -41,6 +42,21 @@ func GetSaticPodSpecs(cfg *apiv1.ClusterConfiguration) map[string]v1.Pod {
 				Resources:       staticpodutil.ComponentResources("250m"),
 			},
 			mounts.GetVolumes(constants.OnecloudKeystone),
+		),
+
+		// region pod
+		constants.OnecloudRegion: staticpodutil.ComponentPodWithInit(
+			nil,
+			&v1.Container{
+				Name:            constants.OnecloudRegion,
+				Image:           images.GetOnecloudImage(constants.OnecloudRegion, cfg),
+				ImagePullPolicy: v1.PullIfNotPresent,
+				Command:         []string{"/opt/yunion/bin/region"},
+				Args:            getRegionArgs(cfg.RegionServer),
+				VolumeMounts:    staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(constants.OnecloudRegion)),
+				Resources:       staticpodutil.ComponentResources("250m"),
+			},
+			mounts.GetVolumes(constants.OnecloudRegion),
 		),
 	}
 
@@ -119,6 +135,14 @@ func getKeystoneInitArgs(cfg apiv1.Keystone) []string {
 	}
 	if cfg.BootstrapAdminUserPassword != "" {
 		defaultArgs["bootstrap-admin-user-password"] = cfg.BootstrapAdminUserPassword
+	}
+
+	return BuildArgumentListFromMap(defaultArgs, nil)
+}
+
+func getRegionArgs(cfg apiv1.RegionServer) []string {
+	defaultArgs := map[string]string{
+		"config": occonfig.RegionConfigFilePath(),
 	}
 
 	return BuildArgumentListFromMap(defaultArgs, nil)

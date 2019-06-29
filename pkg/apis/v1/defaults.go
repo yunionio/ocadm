@@ -70,6 +70,7 @@ func SetDefaults_ClusterConfiguration(obj *ClusterConfiguration) {
 		obj.OnecloudCertificatesDir = DefaultOnecloudCertificatesDir
 	}
 	SetDefaults_Keystone(&obj.Keystone)
+	SetDefaults_RegionServer(&obj.RegionServer, obj.Region)
 }
 
 func setDefaults_kubeadmInitConfiguration(obj *kubeadmapi.InitConfiguration) {
@@ -156,9 +157,32 @@ func SetDefaults_Keystone(obj *Keystone) {
 }
 
 // SetDefaults_ServiceBaseOptions
-func SetDefaults_ServiceCommonOptions(obj *ServiceCommonOptions) {
+func SetDefaults_ServiceCommonOptions(obj *ServiceCommonOptions, region, project, username string) {
 	SetDefaults_ServiceBaseOptions(&obj.ServiceBaseOptions)
 	if obj.AuthTokenCacheSize == 0 {
 		obj.AuthTokenCacheSize = 2048
+	}
+	if obj.Region == "" {
+		obj.Region = region
+	}
+	if obj.AdminProject == "" {
+		obj.AdminProject = project
+	}
+	if obj.AdminUser == "" {
+		obj.AdminUser = username
+	}
+	if obj.AdminPassword == "" {
+		obj.AdminPassword = passwd.GeneratePassword()
+	}
+}
+
+func SetDefaults_RegionServer(obj *RegionServer, region string) {
+	SetDefaults_ServiceDBOptions(&obj.ServiceDBOptions, constants.RegionDB, constants.RegionDBUser)
+	SetDefaults_ServiceCommonOptions(&obj.ServiceCommonOptions, region, constants.SysAdminProject, constants.RegionAdminUser)
+	if obj.PortV2 == 0 {
+		obj.PortV2 = constants.RegionPort
+	}
+	if obj.SchedulerPort == 0 {
+		obj.SchedulerPort = constants.SchedulerPort
 	}
 }
