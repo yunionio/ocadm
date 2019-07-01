@@ -3,14 +3,19 @@ package config
 import (
 	"bytes"
 	"fmt"
-	"github.com/pkg/errors"
 	"io/ioutil"
+	"net"
+	"strconv"
+	"strings"
+
+	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/klog"
 	kubeadmapi "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm"
 	kubeadmapiv1beta1 "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta1"
 	"k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/validation"
+
 	//"k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/validation"
 	kubeadmutil "k8s.io/kubernetes/cmd/kubeadm/app/util"
 	kubeadmconfig "k8s.io/kubernetes/cmd/kubeadm/app/util/config"
@@ -19,6 +24,7 @@ import (
 	ocadmscheme "yunion.io/x/ocadm/pkg/apis/scheme"
 	apiv1 "yunion.io/x/ocadm/pkg/apis/v1"
 	ocadmutil "yunion.io/x/ocadm/pkg/util"
+	netutil "yunion.io/x/ocadm/pkg/util/net"
 	"yunion.io/x/ocadm/pkg/util/passwd"
 )
 
@@ -173,9 +179,57 @@ func documentMapToInitConfiguration(gvkmap map[schema.GroupVersionKind][]byte, k
 }
 
 func SetInitDynamicDefaults(cfg *apiv1.InitConfiguration) error {
+	if err := SetHostLocalDynamicDefaults(&cfg.HostLocalInfo, cfg.LocalAPIEndpoint.AdvertiseAddress); err != nil {
+		return err
+	}
 	if err := SetServicesDynamicDefaults(&cfg.ClusterConfiguration, cfg.LocalAPIEndpoint.AdvertiseAddress); err != nil {
 		return err
 	}
+	return nil
+}
+
+func SetHostLocalDynamicDefaults(info *apiv1.HostLocalInfo, kubeadmAPILocalAddress string) error {
+	intf, ip, err := netutil.ChooseBindAddress(net.ParseIP(kubeadmAPILocalAddress))
+	if err != nil {
+		return errors.Wrapf(err, "Failed to choose address %s", kubeadmAPILocalAddress)
+	}
+	routes, err := netutil.GetAllDefaultRoutes()
+	if err != nil {
+		return errors.Wrap(err, "get default routes")
+	}
+	var gateway net.IP
+	for _, route := range routes {
+		if route.Interface == intf.Name {
+			gateway = route.Gateway
+			break
+		}
+	}
+	info.ManagementNetInterface.Interface = intf.Name
+	info.ManagementNetInterface.Address = ip
+	info.ManagementNetInterface.Gateway = gateway
+	addrs, err := intf.Addrs()
+	if err != nil {
+		return errors.Wrap(err, "get addrs")
+	}
+	var wantAddr net.Addr = nil
+	for _, addr := range addrs {
+		if strings.HasPrefix(addr.String(), ip.String()) {
+			wantAddr = addr
+			break
+		}
+	}
+	if wantAddr == nil {
+		return errors.Wrapf(err, "not found %s at %s", ip.String(), intf.Name)
+	}
+	parts := strings.Split(wantAddr.String(), "/")
+	if len(parts) != 2 {
+		return errors.Errorf("invalid addr %s", wantAddr)
+	}
+	maskLen, err := strconv.Atoi(parts[1])
+	if err != nil {
+		return errors.Wrapf(err, "invalid mask len %s", parts[1])
+	}
+	info.ManagementNetInterface.MaskLen = maskLen
 	return nil
 }
 

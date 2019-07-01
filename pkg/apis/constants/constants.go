@@ -66,6 +66,9 @@ const (
 	ServiceURLTorrentTracker  = "https://tracker.yunion.cn"
 	ServiceNameTorrentTracker = "torrent-tracker"
 	ServiceTypeTorrentTracker = "torrent-tracker"
+
+	NetworkTypeBaremetal = "baremetal"
+	NetworkTypeServer    = "server"
 )
 
 const (

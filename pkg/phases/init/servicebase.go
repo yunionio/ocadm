@@ -13,11 +13,11 @@ import (
 	"yunion.io/x/ocadm/pkg/util/onecloud"
 )
 
-type SetupFunc func(sqlConn *mysql.Connection, s *mcclient.ClientSession, clusterCfg *apis.ClusterConfiguration, localAddress string, certDir string) error
+type SetupFunc func(sqlConn *mysql.Connection, s *mcclient.ClientSession, clusterCfg *apis.ClusterConfiguration, hostLocalCfg *apis.HostLocalInfo, certDir string) error
 
 type WaitRunningFunc func(waiter onecloud.Waiter) error
 
-type SysInitFunc func(s *mcclient.ClientSession, clusterCfg *apis.ClusterConfiguration, localAddress string) error
+type SysInitFunc func(s *mcclient.ClientSession, clusterCfg *apis.ClusterConfiguration, hostLocalCfg *apis.HostLocalInfo) error
 
 type ServiceBasePhase struct {
 	// Name is service name
@@ -93,7 +93,6 @@ func (p *ServiceBasePhase) runSetup(c workflow.RunData) error {
 		return errors.Wrap(err, "init mysql connection")
 	}
 	cfg := data.OnecloudCfg()
-	localAddress := data.LocalAddress()
 	certDir := cfg.OnecloudCertificatesDir
 	var s *mcclient.ClientSession
 	if p.SetupUseSession {
@@ -102,7 +101,7 @@ func (p *ServiceBasePhase) runSetup(c workflow.RunData) error {
 			return errors.Wrapf(err, "%s get client session", p.Name)
 		}
 	}
-	return p.SetupFunc(dbConn, s, &cfg.ClusterConfiguration, localAddress, certDir)
+	return p.SetupFunc(dbConn, s, &cfg.ClusterConfiguration, &cfg.HostLocalInfo, certDir)
 }
 
 func (p *ServiceBasePhase) runStart(c workflow.RunData) error {
@@ -138,6 +137,6 @@ func (p *ServiceBasePhase) runSysInit(c workflow.RunData) error {
 		return err
 	}
 	clusterCfg := data.OnecloudCfg().ClusterConfiguration
-	address := data.LocalAddress()
-	return p.SysInitFunc(session, &clusterCfg, address)
+	hostLocalCfg := data.OnecloudCfg().HostLocalInfo
+	return p.SysInitFunc(session, &clusterCfg, &hostLocalCfg)
 }

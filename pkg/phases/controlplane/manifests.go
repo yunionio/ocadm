@@ -58,6 +58,21 @@ func GetSaticPodSpecs(cfg *apiv1.ClusterConfiguration) map[string]v1.Pod {
 			},
 			mounts.GetVolumes(constants.OnecloudRegion),
 		),
+
+		// scheduler pod
+		constants.OnecloudScheduler: staticpodutil.ComponentPodWithInit(
+			nil,
+			&v1.Container{
+				Name:            constants.OnecloudScheduler,
+				Image:           images.GetOnecloudImage(constants.OnecloudScheduler, cfg),
+				ImagePullPolicy: v1.PullIfNotPresent,
+				Command:         []string{"/opt/yunion/bin/scheduler"},
+				Args:            getRegionArgs(cfg.RegionServer),
+				VolumeMounts:    staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(constants.OnecloudRegion)),
+				Resources:       staticpodutil.ComponentResources("1024m"),
+			},
+			mounts.GetVolumes(constants.OnecloudScheduler),
+		),
 	}
 
 	return staticPodSpecs

@@ -105,7 +105,12 @@ func WriteKeystoneConfigFile(opt keystoneoptions.SKeystoneOptions) error {
 	)
 }
 
-func WriteRegionConfigFile(opt regionoptions.ComputeOptions) error {
+type RegionSchedulerOptions struct {
+	regionoptions.ComputeOptions
+	SchedulerPort int
+}
+
+func WriteRegionConfigFile(opt RegionSchedulerOptions) error {
 	return writeOnecloudConfigFile(
 		constants.OnecloudConfigDir,
 		constants.OnecloudRegionConfigFileName,

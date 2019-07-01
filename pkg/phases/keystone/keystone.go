@@ -41,7 +41,7 @@ func SetupKeystone(
 	rootDBConn *mysql.Connection,
 	config *apis.Keystone,
 	region string,
-	localAddress string,
+	localCfg *apis.HostLocalInfo,
 	certDir string,
 ) error {
 	dbInfo := config.ServiceDBOptions.DBInfo
@@ -57,7 +57,7 @@ func SetupKeystone(
 		return errors.Wrap(err, "write keystone config file")
 	}
 	rcAdminConfig := occonfig.NewRCAdminConfig(
-		configutil.GetAuthURL(*config, localAddress),
+		configutil.GetAuthURL(*config, localCfg.ManagementNetInterface.IPAddress()),
 		region,
 		config.BootstrapAdminUserPassword,
 		path.Join(certDir, constants.ClimcCertName),
@@ -69,7 +69,7 @@ func SetupKeystone(
 	return nil
 }
 
-func DoSysInit(s *mcclient.ClientSession, cfg *apis.ClusterConfiguration, addr string) error {
+func DoSysInit(s *mcclient.ClientSession, cfg *apis.ClusterConfiguration, localCfg *apis.HostLocalInfo) error {
 	if err := doPolicyRoleInit(s); err != nil {
 		return errors.Wrap(err, "policy role init")
 	}
@@ -85,7 +85,7 @@ func DoSysInit(s *mcclient.ClientSession, cfg *apis.ClusterConfiguration, addr s
 	}
 	adminPort := cfg.Keystone.AdminPort
 	publicPort := cfg.Keystone.ServiceBaseOptions.Port
-	if err := doRegisterIdentity(s, cfg.Region, addr, adminPort, publicPort, true); err != nil {
+	if err := doRegisterIdentity(s, cfg.Region, localCfg.ManagementNetInterface.Address.String(), adminPort, publicPort, true); err != nil {
 		return errors.Wrap(err, "register identity endpoint")
 	}
 	if err := makeDomainAdminPublic(s); err != nil {
@@ -131,17 +131,7 @@ func doPolicyRoleInit(s *mcclient.ClientSession) error {
 }
 
 func doCreateRegion(s *mcclient.ClientSession, region string) (jsonutils.JSONObject, error) {
-	obj, err := modules.Regions.Get(s, region, nil)
-	if err == nil {
-		// region already exists
-		return obj, nil
-	}
-	if !onecloud.IsNotFoundError(err) {
-		return nil, err
-	}
-	params := jsonutils.NewDict()
-	params.Add(jsonutils.NewString(region), "id")
-	return modules.Regions.Create(s, params)
+	return onecloud.CreateRegion(s, region, "")
 }
 
 func doRegisterCloudMeta(s *mcclient.ClientSession, regionId string) error {

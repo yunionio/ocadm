@@ -25,6 +25,7 @@ type Waiter interface {
 	WaitForServicePods(serviceName string) error
 	WaitForKeystone() error
 	WaitForRegion() error
+	WaitForScheduler() error
 	WaitForGlance() error
 }
 
@@ -142,6 +143,17 @@ func (w *OCWaiter) WaitForRegion() error {
 			return true, nil
 		}
 		klog.V(1).Infof("region list servers error %v", err)
+		return false, nil
+	})
+}
+
+func (w *OCWaiter) WaitForScheduler() error {
+	return w.waitForServiceHealthy(constants.ServiceNameScheduler, func(s *mcclient.ClientSession) (bool, error) {
+		_, err := modules.SchedManager.HistoryList(s, nil)
+		if err == nil {
+			return true, nil
+		}
+		klog.V(1).Infof("scheduler list history error %v", err)
 		return false, nil
 	})
 }

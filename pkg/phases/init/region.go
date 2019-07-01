@@ -22,15 +22,37 @@ func NewRegionPhase() workflow.Phase {
 			options.CfgPath,
 		},
 		SetupUseSession: true,
-		SetupFunc: func(sqlConn *mysql.Connection, s *mcclient.ClientSession, clusterCfg *v1.ClusterConfiguration, localAddress string, certDir string) error {
-			return region.SetupRegionServer(s, sqlConn, clusterCfg.RegionServer, certDir, localAddress)
+		SetupFunc: func(sqlConn *mysql.Connection, s *mcclient.ClientSession, clusterCfg *v1.ClusterConfiguration, localCfg *v1.HostLocalInfo, certDir string) error {
+			return region.SetupRegionServer(s, sqlConn, clusterCfg.RegionServer, certDir, localCfg)
 		},
 		WaitRunningFunc: func(waiter onecloud.Waiter) error {
 			return waiter.WaitForRegion()
 		},
-		SysInitFunc: func(s *mcclient.ClientSession, clusterCfg *v1.ClusterConfiguration, localAddress string) error {
-			return nil
+		SysInitFunc: func(s *mcclient.ClientSession, clusterCfg *v1.ClusterConfiguration, localCfg *v1.HostLocalInfo) error {
+			return region.DoSysInit(s, clusterCfg, localCfg)
 		},
 	}
 	return servicePhase.ToPhase()
+}
+
+func NewSchedulerPhase() workflow.Phase {
+	p := &ServiceBasePhase{
+		Name: constants.OnecloudScheduler,
+		Type: constants.ServiceTypeScheduler,
+		InheritFlags: []string{
+			options.CfgPath,
+		},
+		SetupUseSession: true,
+		SetupFunc: func(sqlConn *mysql.Connection, s *mcclient.ClientSession, clusterCfg *v1.ClusterConfiguration, hostLocalCfg *v1.HostLocalInfo, certDir string) error {
+			return nil
+		},
+		WaitRunningFunc: func(waiter onecloud.Waiter) error {
+			// ServiceBasePhase will create scheduler pods
+			return nil
+		},
+		SysInitFunc: func(s *mcclient.ClientSession, clusterCfg *v1.ClusterConfiguration, hostLocalCfg *v1.HostLocalInfo) error {
+			return nil
+		},
+	}
+	return p.ToPhase()
 }

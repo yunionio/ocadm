@@ -137,6 +137,7 @@ func NewCmdInit(out io.Writer, initOptions *initOptions) *cobra.Command {
 	initRunner.AppendPhase(kubeadminitphases.NewAddonPhase())
 	initRunner.AppendPhase(initphases.NewKeystonePhase())
 	initRunner.AppendPhase(initphases.NewRegionPhase())
+	initRunner.AppendPhase(initphases.NewSchedulerPhase())
 	//initRunner.AppendPhase(initphases.NewOCControlPlanePhase())
 
 	// sets the data builder function, that will be used by the runner
@@ -536,7 +537,7 @@ func (d *initData) RootDBConnection() (*mysql.Connection, error) {
 }
 
 func (d *initData) LocalAddress() string {
-	return d.OnecloudCfg().LocalAPIEndpoint.AdvertiseAddress
+	return d.OnecloudCfg().HostLocalInfo.ManagementNetInterface.IPAddress()
 }
 
 func (d *initData) OnecloudAdminConfigPath() string {

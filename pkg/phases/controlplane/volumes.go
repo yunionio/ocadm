@@ -74,6 +74,25 @@ func getHostPathVolumesForTheControlPlane(cfg *apiv1.ClusterConfiguration) contr
 		&hostPathDirectoryOrCreate,
 	)
 
+	// Read-only mount for the scheduler config file
+	mounts.NewHostPathMount(
+		constants.OnecloudScheduler,
+		constants.OnecloudConfigVolumeName,
+		regionConfigFile,
+		regionConfigFile,
+		true,
+		&hostPathFileOrCreate,
+	)
+	// Read-only mount for the region certs
+	mounts.NewHostPathMount(
+		constants.OnecloudScheduler,
+		constants.OnecloudPKICertsVolumeName,
+		cfg.OnecloudCertificatesDir,
+		cfg.OnecloudCertificatesDir,
+		true,
+		&hostPathDirectoryOrCreate,
+	)
+
 	return mounts
 }
 

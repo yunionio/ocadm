@@ -44,4 +44,5 @@ func SetObjectDefaults_ClusterConfiguration(in *ClusterConfiguration) {
 func SetObjectDefaults_InitConfiguration(in *InitConfiguration) {
 	SetDefaults_InitConfiguration(in)
 	SetObjectDefaults_ClusterConfiguration(&in.ClusterConfiguration)
+	SetDefaults_HostLocalInfo(&in.HostLocalInfo)
 }

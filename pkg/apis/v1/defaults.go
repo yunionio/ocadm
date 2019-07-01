@@ -13,8 +13,14 @@ import (
 const (
 	DefaultKubernetesVersion           = "v1.14.3"
 	DefaultOnecloudVersion             = "latest"
-	DefaultOnecloudRegion              = "region1"
-	DefaultOnecloudZone                = "zone1"
+	DefaultOnecloudRegion              = "region0"
+	DefaultOnecloudZone                = "zone0"
+	DefaultOnecloudAdminWire           = "badm"
+	DefaultOnecloudMasterWire          = "bcast0"
+	DefaultOnecloudAdminNetwork        = "adm0"
+	DefaultOnecloudHostNetwork         = "inf0"
+	DefaultOnecloudInterface           = "eth0"
+	DefaultVPCId                       = "default"
 	DefaultMysqlUser                   = "root"
 	DefaultMysqlAddress                = "127.0.0.1"
 	DefaultMysqlPort                   = 3306
@@ -37,6 +43,7 @@ func SetDefaults_InitConfiguration(obj *InitConfiguration) {
 	SetDefaults_ClusterConfiguration(&obj.ClusterConfiguration)
 	setDefaults_kubeadmInitConfiguration(&obj.InitConfiguration)
 	obj.InitConfiguration.ImageRepository = obj.ClusterConfiguration.ImageRepository
+	SetDefaults_HostLocalInfo(&obj.HostLocalInfo)
 }
 
 func SetDefaults_MysqlConnection(obj *MysqlConnection) {
@@ -57,17 +64,14 @@ func SetDefaults_ClusterConfiguration(obj *ClusterConfiguration) {
 	if obj.OnecloudVersion == "" {
 		obj.OnecloudVersion = DefaultOnecloudVersion
 	}
-	if obj.Region == "" {
-		obj.Region = DefaultOnecloudRegion
-	}
-	if obj.Zone == "" {
-		obj.Zone = DefaultOnecloudZone
-	}
 	if obj.ImageRepository == "" {
 		obj.ImageRepository = DefaultImageRepository
 	}
 	if obj.OnecloudCertificatesDir == "" {
 		obj.OnecloudCertificatesDir = DefaultOnecloudCertificatesDir
+	}
+	if obj.Region == "" {
+		obj.Region = DefaultOnecloudRegion
 	}
 	SetDefaults_Keystone(&obj.Keystone)
 	SetDefaults_RegionServer(&obj.RegionServer, obj.Region)
@@ -186,5 +190,14 @@ func SetDefaults_RegionServer(obj *RegionServer, region string) {
 	obj.Port = obj.PortV2
 	if obj.SchedulerPort == 0 {
 		obj.SchedulerPort = constants.SchedulerPort
+	}
+}
+
+func SetDefaults_HostLocalInfo(obj *HostLocalInfo) {
+	if obj.Zone == "" {
+		obj.Zone = DefaultOnecloudZone
+	}
+	if obj.ManagementNetInterface.Wire == "" {
+		obj.ManagementNetInterface.Wire = DefaultOnecloudAdminWire
 	}
 }

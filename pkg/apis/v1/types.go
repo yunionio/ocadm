@@ -2,11 +2,9 @@ package v1
 
 import (
 	"fmt"
+	"net"
 
-	//v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	//kubeletconfig "k8s.io/kubernetes/pkg/kubelet/apis/config"
-	//kubeproxyconfig "k8s.io/kubernetes/pkg/proxy/apis/config"
 	kubeadmapi "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm"
 )
 
@@ -20,6 +18,9 @@ type InitConfiguration struct {
 
 	// ClusterConfiguration holds the cluster-wide information, and embeds that struct (which can be (un)marshalled separately as well)
 	ClusterConfiguration `json:"-"`
+
+	// HostLocalInfo holds the local node info
+	HostLocalInfo `json:"-"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -34,17 +35,14 @@ type ClusterConfiguration struct {
 	// OnecloudVersion is the target version of the control plane.
 	OnecloudVersion string
 
-	// Region specify keystone auth region
-	Region string
-
-	// Zone is the first default zone
-	Zone string
-
 	// Keystone holds configuration for keystone.
 	Keystone Keystone
 
 	// RegionServer holds configuration for controller region service.
 	RegionServer RegionServer
+
+	// Region specify keystone auth region
+	Region string
 
 	// ImageRepository sets the container registry to pull images from.
 	// If empty, `k8s.gcr.io` will be used by default; in case of kubernetes version is a CI build (kubernetes version starts with `ci/` or `ci-cross/`)
@@ -54,6 +52,35 @@ type ClusterConfiguration struct {
 
 	// OnecloudCertificatesDir specifies where to store or look for all required certificates.
 	OnecloudCertificatesDir string
+}
+
+type HostLocalInfo struct {
+	// Zone is the first default zone
+	Zone string
+
+	// ManagementNetInterface is teh management services network interface
+	ManagementNetInterface NetInterface
+}
+
+type NetInterface struct {
+	// Wire is the first default management wire
+	Wire string
+
+	// Address is the services endpoint address
+	Address net.IP
+
+	// MaskLen is the address mask length
+	MaskLen int
+
+	// Interface is the listen network interface
+	Interface string
+
+	// Gateway is the interface default gateway
+	Gateway net.IP
+}
+
+func (iface NetInterface) IPAddress() string {
+	return iface.Address.String()
 }
 
 type MysqlConnection struct {

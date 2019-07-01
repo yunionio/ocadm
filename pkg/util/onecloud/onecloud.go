@@ -37,6 +37,22 @@ func IsResourceExists(s *mcclient.ClientSession, manager modules.Manager, name s
 	return nil, false, err
 }
 
+func EnsureResource(
+	s *mcclient.ClientSession,
+	man modules.Manager,
+	name string,
+	createFunc func() (jsonutils.JSONObject, error),
+) (jsonutils.JSONObject, error) {
+	obj, exists, err := IsResourceExists(s, man, name)
+	if err != nil {
+		return nil, err
+	}
+	if exists {
+		return obj, nil
+	}
+	return createFunc()
+}
+
 func IsRoleExists(s *mcclient.ClientSession, roleName string) (jsonutils.JSONObject, bool, error) {
 	return IsResourceExists(s, &modules.RolesV3, roleName)
 }
@@ -51,14 +67,9 @@ func CreateRole(s *mcclient.ClientSession, roleName, description string) (jsonut
 }
 
 func EnsureRole(s *mcclient.ClientSession, roleName, description string) (jsonutils.JSONObject, error) {
-	obj, exists, err := IsRoleExists(s, roleName)
-	if err != nil {
-		return nil, err
-	}
-	if exists {
-		return obj, nil
-	}
-	return CreateRole(s, roleName, description)
+	return EnsureResource(s, &modules.RolesV3, roleName, func() (jsonutils.JSONObject, error) {
+		return CreateRole(s, roleName, description)
+	})
 }
 
 func IsServiceExists(s *mcclient.ClientSession, svcName string) (jsonutils.JSONObject, bool, error) {
@@ -66,14 +77,9 @@ func IsServiceExists(s *mcclient.ClientSession, svcName string) (jsonutils.JSONO
 }
 
 func EnsureService(s *mcclient.ClientSession, svcName, svcType string) (jsonutils.JSONObject, error) {
-	obj, exists, err := IsServiceExists(s, svcName)
-	if err != nil {
-		return nil, err
-	}
-	if exists {
-		return obj, nil
-	}
-	return CreateService(s, svcName, svcType)
+	return EnsureResource(s, &modules.ServicesV3, svcName, func() (jsonutils.JSONObject, error) {
+		return CreateService(s, svcName, svcType)
+	})
 }
 
 func CreateService(s *mcclient.ClientSession, svcName, svcType string) (jsonutils.JSONObject, error) {
@@ -141,4 +147,112 @@ func ProjectAddUser(s *mcclient.ClientSession, projectId string, userId string, 
 			{InstanceManager: &modules.UsersV3, InstanceId: userId},
 		})
 	return err
+}
+
+func IsZoneExists(s *mcclient.ClientSession, zone string) (jsonutils.JSONObject, bool, error) {
+	return IsResourceExists(s, &modules.Zones, zone)
+}
+
+func CreateZone(s *mcclient.ClientSession, zone string) (jsonutils.JSONObject, error) {
+	params := jsonutils.NewDict()
+	params.Add(jsonutils.NewString(zone), "name")
+	return modules.Zones.Create(s, params)
+}
+
+func IsWireExists(s *mcclient.ClientSession, wire string) (jsonutils.JSONObject, bool, error) {
+	return IsResourceExists(s, &modules.Wires, wire)
+}
+
+func CreateWire(s *mcclient.ClientSession, zone string, wire string, bw int, vpc string) (jsonutils.JSONObject, error) {
+	params := jsonutils.NewDict()
+	params.Add(jsonutils.NewString(wire), "name")
+	params.Add(jsonutils.NewInt(int64(bw)), "bandwidth")
+	params.Add(jsonutils.NewString(vpc), "vpc")
+	return modules.Wires.CreateInContext(s, params, &modules.Zones, zone)
+}
+
+func IsNetworkExists(s *mcclient.ClientSession, net string) (jsonutils.JSONObject, bool, error) {
+	return IsResourceExists(s, &modules.Networks, net)
+}
+
+func CreateNetwork(
+	s *mcclient.ClientSession,
+	name string,
+	gateway string,
+	serverType string,
+	wireId string,
+	maskLen int,
+	startIp string,
+	endIp string,
+) (jsonutils.JSONObject, error) {
+	params := jsonutils.NewDict()
+	params.Add(jsonutils.NewString(name), "name")
+	params.Add(jsonutils.NewString(startIp), "guest_ip_start")
+	params.Add(jsonutils.NewString(endIp), "guest_ip_end")
+	params.Add(jsonutils.NewInt(int64(maskLen)), "guest_ip_mask")
+	if gateway != "" {
+		params.Add(jsonutils.NewString(gateway), "guest_gateway")
+	}
+	if serverType != "" {
+		params.Add(jsonutils.NewString(serverType), "server_type")
+	}
+	return modules.Networks.CreateInContext(s, params, &modules.Wires, wireId)
+}
+
+func NetworkPrivate(s *mcclient.ClientSession, name string) (jsonutils.JSONObject, error) {
+	return modules.Networks.PerformAction(s, "private", name, nil)
+}
+
+func CreateRegion(s *mcclient.ClientSession, region, zone string) (jsonutils.JSONObject, error) {
+	if zone != "" {
+		region = mcclient.RegionID(region, zone)
+	}
+	obj, err := modules.Regions.Get(s, region, nil)
+	if err == nil {
+		// region already exists
+		return obj, nil
+	}
+	if !IsNotFoundError(err) {
+		return nil, err
+	}
+	params := jsonutils.NewDict()
+	params.Add(jsonutils.NewString(region), "id")
+	return modules.Regions.Create(s, params)
+}
+
+func IsSchedtagExists(s *mcclient.ClientSession, name string) (jsonutils.JSONObject, bool, error) {
+	return IsResourceExists(s, &modules.Schedtags, name)
+}
+
+func CreateSchedtag(s *mcclient.ClientSession, name string, strategy string, description string) (jsonutils.JSONObject, error) {
+	params := jsonutils.NewDict()
+	params.Add(jsonutils.NewString(name), "name")
+	params.Add(jsonutils.NewString(strategy), "default_strategy")
+	params.Add(jsonutils.NewString(description), "description")
+	return modules.Schedtags.Create(s, params)
+}
+
+func EnsureSchedtag(s *mcclient.ClientSession, name string, strategy string, description string) (jsonutils.JSONObject, error) {
+	return EnsureResource(s, &modules.Schedtags, name, func() (jsonutils.JSONObject, error) {
+		return CreateSchedtag(s, name, strategy, description)
+	})
+}
+
+func IsDynamicSchedtagExists(s *mcclient.ClientSession, name string) (jsonutils.JSONObject, bool, error) {
+	return IsResourceExists(s, &modules.Dynamicschedtags, name)
+}
+
+func CreateDynamicSchedtag(s *mcclient.ClientSession, name, schedtag, condition string) (jsonutils.JSONObject, error) {
+	params := jsonutils.NewDict()
+	params.Add(jsonutils.NewString(name), "name")
+	params.Add(jsonutils.NewString(schedtag), "schedtag")
+	params.Add(jsonutils.NewString(condition), "condition")
+	params.Add(jsonutils.JSONTrue, "enabled")
+	return modules.Dynamicschedtags.Create(s, params)
+}
+
+func EnsureDynamicSchedtag(s *mcclient.ClientSession, name, schedtag, condition string) (jsonutils.JSONObject, error) {
+	return EnsureResource(s, &modules.Dynamicschedtags, name, func() (jsonutils.JSONObject, error) {
+		return CreateDynamicSchedtag(s, name, schedtag, condition)
+	})
 }

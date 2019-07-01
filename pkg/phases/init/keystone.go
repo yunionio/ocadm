@@ -26,14 +26,14 @@ func NewKeystonePhase() workflow.Phase {
 			options.MysqlPassword,
 			options.Region,
 		},
-		SetupFunc: func(sqlConn *mysql.Connection, _ *mcclient.ClientSession, clusterCfg *v1.ClusterConfiguration, localAddress string, certDir string) error {
-			return keystone.SetupKeystone(sqlConn, &clusterCfg.Keystone, clusterCfg.Region, localAddress, certDir)
+		SetupFunc: func(sqlConn *mysql.Connection, _ *mcclient.ClientSession, clusterCfg *v1.ClusterConfiguration, localCfg *v1.HostLocalInfo, certDir string) error {
+			return keystone.SetupKeystone(sqlConn, &clusterCfg.Keystone, clusterCfg.Region, localCfg, certDir)
 		},
 		WaitRunningFunc: func(waiter onecloud.Waiter) error {
 			return waiter.WaitForKeystone()
 		},
-		SysInitFunc: func(s *mcclient.ClientSession, clusterCfg *v1.ClusterConfiguration, localAddress string) error {
-			return keystone.DoSysInit(s, clusterCfg, localAddress)
+		SysInitFunc: func(s *mcclient.ClientSession, clusterCfg *v1.ClusterConfiguration, localCfg *v1.HostLocalInfo) error {
+			return keystone.DoSysInit(s, clusterCfg, localCfg)
 		},
 	}
 
