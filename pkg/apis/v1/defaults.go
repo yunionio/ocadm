@@ -78,6 +78,18 @@ func SetDefaults_ClusterConfiguration(obj *ClusterConfiguration) {
 	SetDefaults_Glance(&obj.Glance, obj.Region)
 }
 
+// SetDefaults_JoinConfiguration assigns default values to a regular node
+func SetDefaults_JoinConfiguration(obj *JoinConfiguration) {
+	setDefaults_kubeadmJoinConfiguration(&obj.JoinConfiguration)
+}
+
+func setDefaults_kubeadmJoinConfiguration(obj *kubeadmapi.JoinConfiguration) {
+	defaultversionedcfg := &kubeadmapiv1beta1.JoinConfiguration{}
+	kubeadmscheme.Scheme.Convert(obj, defaultversionedcfg, nil)
+	kubeadmscheme.Scheme.Default(defaultversionedcfg)
+	kubeadmscheme.Scheme.Convert(defaultversionedcfg, obj, nil)
+}
+
 func setDefaults_kubeadmInitConfiguration(obj *kubeadmapi.InitConfiguration) {
 	defaultversionedcfg := &kubeadmapiv1beta1.InitConfiguration{}
 	kubeadmscheme.Scheme.Convert(obj, defaultversionedcfg, nil)

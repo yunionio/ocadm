@@ -19,7 +19,7 @@ require (
 	github.com/googleapis/gnostic v0.3.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.1 // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
-	github.com/lithammer/dedent v1.1.0 // indirect
+	github.com/lithammer/dedent v1.1.0
 	github.com/mholt/caddy v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/pborman/uuid v1.2.0 // indirect

@@ -13,7 +13,7 @@ import (
 type InitConfiguration struct {
 	metav1.TypeMeta
 
-	// KubeadmInitConfiguration holds the kubeadm init configuration
+	// InitConfiguration holds the kubeadm init configuration
 	kubeadmapi.InitConfiguration `json:"-"`
 
 	// ClusterConfiguration holds the cluster-wide information, and embeds that struct (which can be (un)marshalled separately as well)
@@ -21,6 +21,15 @@ type InitConfiguration struct {
 
 	// HostLocalInfo holds the local node info
 	HostLocalInfo `json:"-"`
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// JoinConfiguration contains elements describing a particular node.
+type JoinConfiguration struct {
+	metav1.TypeMeta
+
+	kubeadmapi.JoinConfiguration `json:"-"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

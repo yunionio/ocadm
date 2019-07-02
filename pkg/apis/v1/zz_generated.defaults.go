@@ -30,6 +30,7 @@ import (
 func RegisterDefaults(scheme *runtime.Scheme) error {
 	scheme.AddTypeDefaultingFunc(&ClusterConfiguration{}, func(obj interface{}) { SetObjectDefaults_ClusterConfiguration(obj.(*ClusterConfiguration)) })
 	scheme.AddTypeDefaultingFunc(&InitConfiguration{}, func(obj interface{}) { SetObjectDefaults_InitConfiguration(obj.(*InitConfiguration)) })
+	scheme.AddTypeDefaultingFunc(&JoinConfiguration{}, func(obj interface{}) { SetObjectDefaults_JoinConfiguration(obj.(*JoinConfiguration)) })
 	return nil
 }
 
@@ -43,4 +44,8 @@ func SetObjectDefaults_InitConfiguration(in *InitConfiguration) {
 	SetDefaults_InitConfiguration(in)
 	SetObjectDefaults_ClusterConfiguration(&in.ClusterConfiguration)
 	SetDefaults_HostLocalInfo(&in.HostLocalInfo)
+}
+
+func SetObjectDefaults_JoinConfiguration(in *JoinConfiguration) {
+	SetDefaults_JoinConfiguration(in)
 }
