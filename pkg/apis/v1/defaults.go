@@ -75,6 +75,7 @@ func SetDefaults_ClusterConfiguration(obj *ClusterConfiguration) {
 	}
 	SetDefaults_Keystone(&obj.Keystone)
 	SetDefaults_RegionServer(&obj.RegionServer, obj.Region)
+	SetDefaults_Glance(&obj.Glance, obj.Region)
 }
 
 func setDefaults_kubeadmInitConfiguration(obj *kubeadmapi.InitConfiguration) {
@@ -87,7 +88,10 @@ func setDefaults_kubeadmInitConfiguration(obj *kubeadmapi.InitConfiguration) {
 	kubeadmscheme.Scheme.Convert(defaultversionedcfg, obj, nil)
 }
 
-func SetDefaults_ServiceBaseOptions(obj *ServiceBaseOptions) {
+func SetDefaults_ServiceBaseOptions(obj *ServiceBaseOptions, listenPort int) {
+	if obj.Port == 0 {
+		obj.Port = listenPort
+	}
 	if obj.Address == "" {
 		obj.Address = "0.0.0.0"
 	}
@@ -135,11 +139,8 @@ func SetDefaults_ServiceDBOptions(obj *ServiceDBOptions, defaultDB, defaultUser 
 func SetDefaults_Keystone(obj *Keystone) {
 	SetDefaults_ServiceDBOptions(&obj.ServiceDBOptions, constants.KeystoneDB, constants.KeystoneDBUser)
 
-	SetDefaults_ServiceBaseOptions(&obj.ServiceBaseOptions)
+	SetDefaults_ServiceBaseOptions(&obj.ServiceBaseOptions, constants.KeystonePublicPort)
 
-	if obj.ServiceBaseOptions.Port == 0 {
-		obj.ServiceBaseOptions.Port = constants.KeystonePublicPort
-	}
 	if obj.AdminPort == 0 {
 		obj.AdminPort = constants.KeystoneAdminPort
 	}
@@ -162,8 +163,8 @@ func SetDefaults_Keystone(obj *Keystone) {
 }
 
 // SetDefaults_ServiceBaseOptions
-func SetDefaults_ServiceCommonOptions(obj *ServiceCommonOptions, region, project, username string) {
-	SetDefaults_ServiceBaseOptions(&obj.ServiceBaseOptions)
+func SetDefaults_ServiceCommonOptions(obj *ServiceCommonOptions, region, project, username string, listenPort int) {
+	SetDefaults_ServiceBaseOptions(&obj.ServiceBaseOptions, listenPort)
 	if obj.AuthTokenCacheSize == 0 {
 		obj.AuthTokenCacheSize = 2048
 	}
@@ -183,11 +184,10 @@ func SetDefaults_ServiceCommonOptions(obj *ServiceCommonOptions, region, project
 
 func SetDefaults_RegionServer(obj *RegionServer, region string) {
 	SetDefaults_ServiceDBOptions(&obj.ServiceDBOptions, constants.RegionDB, constants.RegionDBUser)
-	SetDefaults_ServiceCommonOptions(&obj.ServiceCommonOptions, region, constants.SysAdminProject, constants.RegionAdminUser)
+	SetDefaults_ServiceCommonOptions(&obj.ServiceCommonOptions, region, constants.SysAdminProject, constants.RegionAdminUser, constants.RegionPort)
 	if obj.PortV2 == 0 {
-		obj.PortV2 = constants.RegionPort
+		obj.PortV2 = obj.Port
 	}
-	obj.Port = obj.PortV2
 	if obj.SchedulerPort == 0 {
 		obj.SchedulerPort = constants.SchedulerPort
 	}
@@ -199,5 +199,16 @@ func SetDefaults_HostLocalInfo(obj *HostLocalInfo) {
 	}
 	if obj.ManagementNetInterface.Wire == "" {
 		obj.ManagementNetInterface.Wire = DefaultOnecloudAdminWire
+	}
+}
+
+func SetDefaults_Glance(obj *Glance, region string) {
+	SetDefaults_ServiceDBOptions(&obj.ServiceDBOptions, constants.GlanceDB, constants.GlanceDBUser)
+	SetDefaults_ServiceCommonOptions(&obj.ServiceCommonOptions, region, constants.GlanceAdminProject, constants.GlanceAdminUser, constants.GlanceAPIPort)
+	if obj.FilesystemStoreDatadir == "" {
+		obj.FilesystemStoreDatadir = constants.OnecloudGlanceFileStoreDir
+	}
+	if obj.TorrentStoreDir == "" {
+		obj.TorrentStoreDir = constants.OnecloudGlanceTorrentStoreDir
 	}
 }

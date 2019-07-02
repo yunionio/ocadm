@@ -2,9 +2,10 @@ package controlplane
 
 import (
 	"fmt"
+	"sort"
+
 	"github.com/pkg/errors"
 	"k8s.io/klog"
-	"sort"
 
 	v1 "k8s.io/api/core/v1"
 
@@ -72,6 +73,20 @@ func GetSaticPodSpecs(cfg *apiv1.ClusterConfiguration) map[string]v1.Pod {
 				Resources:       staticpodutil.ComponentResources("1024m"),
 			},
 			mounts.GetVolumes(constants.OnecloudScheduler),
+		),
+		// glance pod
+		constants.OnecloudGlance: staticpodutil.ComponentPodWithInit(
+			nil,
+			&v1.Container{
+				Name:            constants.OnecloudGlance,
+				Image:           images.GetOnecloudImage(constants.OnecloudGlance, cfg),
+				ImagePullPolicy: v1.PullIfNotPresent,
+				Command:         []string{"/opt/yunion/bin/glance"},
+				Args:            getGlanceArgs(cfg.Glance),
+				VolumeMounts:    staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(constants.OnecloudGlance)),
+				Resources:       staticpodutil.ComponentResources("250m"),
+			},
+			mounts.GetVolumes(constants.OnecloudGlance),
 		),
 	}
 
@@ -160,5 +175,12 @@ func getRegionArgs(cfg apiv1.RegionServer) []string {
 		"config": occonfig.RegionConfigFilePath(),
 	}
 
+	return BuildArgumentListFromMap(defaultArgs, nil)
+}
+
+func getGlanceArgs(cfg apiv1.Glance) []string {
+	defaultArgs := map[string]string{
+		"config": occonfig.GlanceConfigFilePath(),
+	}
 	return BuildArgumentListFromMap(defaultArgs, nil)
 }

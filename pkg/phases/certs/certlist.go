@@ -186,6 +186,7 @@ func (c Certificates) AsMap() CertificateMap {
 	return certMap
 }
 
+// TODO: init glance cretificates
 // GetDefaultCertList returns all of the certificates ocadm requires to function.
 func GetDefaultCertList() Certificates {
 	return Certificates{
@@ -193,6 +194,7 @@ func GetDefaultCertList() Certificates {
 		&OcadmCertKeystoneServer,
 		&OcadmCertRegionServer,
 		&OcadmClimcCertClient,
+		&OcadmCertGlanceServer,
 	}
 }
 
@@ -210,6 +212,7 @@ var (
 	OcadmCertKeystoneServer = newOcServiceCert("ca", constants.ServiceNameKeystone, constants.KeystoneCertName)
 	// OcadmCertRegionServer is the definition of the cert used to serve compute controller service.
 	OcadmCertRegionServer = newOcServiceCert("ca", constants.ServiceNameRegion, constants.RegionCertName)
+	OcadmCertGlanceServer = newOcServiceCert("ca", constants.ServiceNameGlance, constants.GlanceCertName)
 	// OcadmCertClient is the definition of the cert used by the cli to access the api server
 	OcadmClimcCertClient = OnecloudCert{
 		Name:     "climc",

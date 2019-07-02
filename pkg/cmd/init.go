@@ -27,7 +27,7 @@ import (
 	kubeconfigutil "k8s.io/kubernetes/cmd/kubeadm/app/util/kubeconfig"
 
 	ocadmscheme "yunion.io/x/ocadm/pkg/apis/scheme"
-	"yunion.io/x/ocadm/pkg/apis/v1"
+	v1 "yunion.io/x/ocadm/pkg/apis/v1"
 	"yunion.io/x/ocadm/pkg/occonfig"
 	"yunion.io/x/ocadm/pkg/options"
 	initphases "yunion.io/x/ocadm/pkg/phases/init"
@@ -138,6 +138,7 @@ func NewCmdInit(out io.Writer, initOptions *initOptions) *cobra.Command {
 	initRunner.AppendPhase(initphases.NewKeystonePhase())
 	initRunner.AppendPhase(initphases.NewRegionPhase())
 	initRunner.AppendPhase(initphases.NewSchedulerPhase())
+	initRunner.AppendPhase(initphases.NewGlancePhase())
 	//initRunner.AppendPhase(initphases.NewOCControlPlanePhase())
 
 	// sets the data builder function, that will be used by the runner
