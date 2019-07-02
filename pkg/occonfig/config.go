@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"golang.org/x/sync/errgroup"
 	"io/ioutil"
 	"os"
 	"path"
 	"text/template"
+
+	"golang.org/x/sync/errgroup"
 	"yunion.io/x/ocadm/pkg/util/onecloud"
 	"yunion.io/x/onecloud/pkg/mcclient"
 
@@ -16,6 +17,7 @@ import (
 
 	"yunion.io/x/jsonutils"
 	regionoptions "yunion.io/x/onecloud/pkg/compute/options"
+	imageoptions "yunion.io/x/onecloud/pkg/image/options"
 	keystoneoptions "yunion.io/x/onecloud/pkg/keystone/options"
 
 	"yunion.io/x/ocadm/pkg/apis/constants"
@@ -118,6 +120,14 @@ func WriteRegionConfigFile(opt RegionSchedulerOptions) error {
 	)
 }
 
+func WriteGlanceConfigFile(opt imageoptions.SImageOptions) error {
+	return writeOnecloudConfigFile(
+		constants.OnecloudGlanceConfigDir,
+		constants.OnecloudGlanceConfigFileName,
+		opt,
+	)
+}
+
 func AdminConfigFilePath() string {
 	return YAMLConfigFilePath(
 		constants.OnecloudConfigDir,
@@ -136,6 +146,13 @@ func RegionConfigFilePath() string {
 	return YAMLConfigFilePath(
 		constants.OnecloudConfigDir,
 		constants.OnecloudRegionConfigFileName,
+	)
+}
+
+func GlanceConfigFilePath() string {
+	return YAMLConfigFilePath(
+		constants.OnecloudGlanceConfigDir,
+		constants.OnecloudGlanceConfigFileName,
 	)
 }
 

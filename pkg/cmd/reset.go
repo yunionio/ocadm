@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+
 	"yunion.io/x/ocadm/pkg/util/mysql"
 
 	"github.com/pkg/errors"
@@ -124,7 +125,7 @@ func (r *Reset) resetDB(connInfo *apis.MysqlConnection) error {
 	if err != nil {
 		return err
 	}
-	for _, db := range []string{constants.KeystoneDB, constants.RegionDB} {
+	for _, db := range []string{constants.KeystoneDB, constants.RegionDB, constants.GlanceDB} {
 		if err := conn.DropDatabase(db); err != nil {
 			return errors.Wrapf(err, "drop db %s", db)
 		}

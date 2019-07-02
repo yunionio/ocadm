@@ -90,6 +90,13 @@ $ systemctl enable --now docker
 $ systemctl enable kubelet
 ```
 
+3. qemu
+
+4. kernel
+
+5. restart
+重启使内核生效
+
 # init
 
 ```bash

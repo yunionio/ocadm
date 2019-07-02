@@ -20,6 +20,8 @@ const (
 	GlanceAdminProject = SysAdminProject
 	GlanceRegistryPort = 9191
 	GlanceAPIPort      = 9292
+	ServiceNameGlance  = "glance"
+	ServiceTypeGlance  = "image"
 
 	RegionAdminUser    = "regionadmin"
 	RegionAdminProject = SysAdminProject
@@ -77,6 +79,9 @@ const (
 	OnecloudOptVolumeName         = "opt-yunion"
 	OnecloudOptTmpVolumeName      = "opt-yunion-tmp"
 	OnecloudPKICertsVolumeName    = "pki-certs"
+	OnecloudGlanceImageVolumeName = "glance-images"
+	OnecloudQemuBinaryVolumeName  = "qemu"
+	OnecloudKernelVolumeName      = "kernel"
 
 	OnecloudConfigDir              = "/etc/yunion"
 	OnecloudKeystoneConfigDir      = "/etc/yunion/keystone"
@@ -87,6 +92,14 @@ const (
 
 	OnecloudRegionConfigFileName = "region.conf"
 	OnecloudAdminConfigFileName  = "rc_admin"
+
+	OnecloudGlanceConfigDir       = "/etc/yunion/glance"
+	OnecloudGlanceConfigFileName  = "glance-api.conf"
+	OnecloudGlanceFileStoreDir    = "/opt/cloud/workspace/data/glance/images"
+	OnecloudGlanceTorrentStoreDir = "/opt/cloud/workspace/data/glance/torrents"
+
+	OnecloudQemuPath   = "/usr/local/qemu-2.12.1"
+	OnecloudKernelPath = "/lib/modules"
 
 	// OnecloudAdminConfigConfigMap specifies in what ConfigMap in the kube-system namespace the `ocadm init` configuration should be stored
 	OnecloudAdminConfigConfigMap = "ocadm-config"
@@ -126,6 +139,10 @@ const (
 	RegionCertAndKeyBaseName = "region"
 	RegionCertName           = "region.crt"
 	RegionKeyName            = "region.key"
+
+	GlanceCertAndKeyBaseName = "glance"
+	GlanceCertName           = "glance.crt"
+	GlanceKeyName            = "glance.key"
 )
 
 const (

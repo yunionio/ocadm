@@ -2,9 +2,10 @@ package controlplane
 
 import (
 	"fmt"
+
 	"yunion.io/x/ocadm/pkg/apis/constants"
 
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	kubeadmapi "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm"
 	staticpodutil "k8s.io/kubernetes/cmd/kubeadm/app/util/staticpod"
 
@@ -89,6 +90,57 @@ func getHostPathVolumesForTheControlPlane(cfg *apiv1.ClusterConfiguration) contr
 		constants.OnecloudPKICertsVolumeName,
 		cfg.OnecloudCertificatesDir,
 		cfg.OnecloudCertificatesDir,
+		true,
+		&hostPathDirectoryOrCreate,
+	)
+
+	// Read-only mount for the glance config file
+	glanceConfigFile := occonfig.GlanceConfigFilePath()
+	mounts.NewHostPathMount(
+		constants.OnecloudGlance,
+		constants.OnecloudConfigVolumeName,
+		glanceConfigFile,
+		glanceConfigFile,
+		true,
+		&hostPathFileOrCreate,
+	)
+
+	// Read-only mount for the glance certs
+	mounts.NewHostPathMount(
+		constants.OnecloudGlance,
+		constants.OnecloudPKICertsVolumeName,
+		cfg.OnecloudCertificatesDir,
+		cfg.OnecloudCertificatesDir,
+		true,
+		&hostPathDirectoryOrCreate,
+	)
+
+	// Read-Write mount for glance images
+	mounts.NewHostPathMount(
+		constants.OnecloudGlance,
+		constants.OnecloudGlanceImageVolumeName,
+		cfg.Glance.FilesystemStoreDatadir,
+		cfg.Glance.FilesystemStoreDatadir,
+		false,
+		&hostPathDirectoryOrCreate,
+	)
+
+	// Read-only mount for the glance probe image
+	mounts.NewHostPathMount(
+		constants.OnecloudGlance,
+		constants.OnecloudQemuBinaryVolumeName,
+		constants.OnecloudQemuPath,
+		constants.OnecloudQemuPath,
+		true,
+		&hostPathDirectoryOrCreate,
+	)
+
+	// Read-only mount for the glance probe iamge
+	mounts.NewHostPathMount(
+		constants.OnecloudGlance,
+		constants.OnecloudKernelVolumeName,
+		constants.OnecloudKernelPath,
+		constants.OnecloudKernelPath,
 		true,
 		&hostPathDirectoryOrCreate,
 	)

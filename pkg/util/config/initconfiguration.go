@@ -249,6 +249,10 @@ func SetServicesDynamicDefaults(cfg *apiv1.ClusterConfiguration, authAddress str
 			DefaultDB:     constants.RegionDB,
 			DefaultDBUser: constants.RegionDBUser,
 		},
+		&cfg.Glance.ServiceDBOptions.DBInfo: {
+			DefaultDB:     constants.GlanceDB,
+			DefaultDBUser: constants.GlanceDBUser,
+		},
 	} {
 		if err := SetServiceDBInfo(toSet, &sqlConn, &info); err != nil {
 			return errors.Wrapf(err, "Set default db %s info", info.DefaultDB)
@@ -256,6 +260,7 @@ func SetServicesDynamicDefaults(cfg *apiv1.ClusterConfiguration, authAddress str
 	}
 	for _, commonCfg := range map[string]*apiv1.ServiceCommonOptions{
 		constants.OnecloudRegion: &cfg.RegionServer.ServiceCommonOptions,
+		constants.OnecloudGlance: &cfg.Glance.ServiceCommonOptions,
 	} {
 		SetServiceAuthInfo(commonCfg, cfg.Keystone, authAddress)
 	}

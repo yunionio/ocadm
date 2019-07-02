@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/wait"
 	clientset "k8s.io/client-go/kubernetes"
@@ -159,5 +159,12 @@ func (w *OCWaiter) WaitForScheduler() error {
 }
 
 func (w *OCWaiter) WaitForGlance() error {
-	return fmt.Errorf("not impl")
+	return w.waitForServiceHealthy(constants.ServiceNameGlance, func(s *mcclient.ClientSession) (bool, error) {
+		_, err := modules.Images.List(s, nil)
+		if err == nil {
+			return true, nil
+		}
+		klog.V(1).Infof("image list servers error %v", err)
+		return false, nil
+	})
 }

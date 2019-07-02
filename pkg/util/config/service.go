@@ -2,8 +2,9 @@ package config
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"path"
+
+	"github.com/pkg/errors"
 
 	"yunion.io/x/ocadm/pkg/apis/constants"
 	"yunion.io/x/onecloud/pkg/cloudcommon/options"
@@ -59,6 +60,7 @@ func EnableConfigTLS(config *apis.ServiceBaseOptions, certDir string, ca string,
 }
 
 func SetServiceBaseOptions(opt *options.BaseOptions, input apis.ServiceBaseOptions) {
+	opt.Region = input.Region
 	opt.Port = input.Port
 	opt.EnableSsl = input.EnableSSL
 	opt.EnableRbac = input.EnableRBAC
