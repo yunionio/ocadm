@@ -107,6 +107,9 @@ const (
 	// ClusterConfigurationConfigMapKey specifies in what ConfigMap key the cluster configuration should be stored
 	ClusterConfigurationConfigMapKey = "ClusterConfiguration"
 
+	// ClusterAdminAuthConfigMapKey specifies keystone admin auth info
+	ClusterAdminAuthConfigMapKey = "AdminAuthConfiguration"
+
 	// ClusterConfigurationKind is the string kind value for the ClusterConfiguration struct
 	ClusterConfigurationKind = "ClusterConfiguration"
 
@@ -143,6 +146,8 @@ const (
 	GlanceCertAndKeyBaseName = "glance"
 	GlanceCertName           = "glance.crt"
 	GlanceKeyName            = "glance.key"
+
+	OcadmCertsSecret = "ocadm-certs"
 )
 
 const (
@@ -179,9 +184,10 @@ var (
 )
 
 const (
-	YAMLDocumentSeparator  = kubeadmconstants.YAMLDocumentSeparator
-	APICallRetryInterval   = kubeadmconstants.APICallRetryInterval
-	DiscoveryRetryInterval = kubeadmconstants.DiscoveryRetryInterval
+	YAMLDocumentSeparator    = kubeadmconstants.YAMLDocumentSeparator
+	APICallRetryInterval     = kubeadmconstants.APICallRetryInterval
+	DiscoveryRetryInterval   = kubeadmconstants.DiscoveryRetryInterval
+	DefaultCertTokenDuration = kubeadmconstants.DefaultCertTokenDuration
 )
 
 var (

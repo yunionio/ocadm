@@ -1,13 +1,9 @@
 package init
 
 import (
-	"io"
+	initphases "k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/init"
 
-	"k8s.io/apimachinery/pkg/util/sets"
-	clientset "k8s.io/client-go/kubernetes"
-	kubeadmapi "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm"
-
-	"yunion.io/x/ocadm/pkg/apis/v1"
+	apiv1 "yunion.io/x/ocadm/pkg/apis/v1"
 	"yunion.io/x/ocadm/pkg/util/mysql"
 	"yunion.io/x/onecloud/pkg/mcclient"
 )
@@ -15,16 +11,13 @@ import (
 // InitData is the interface to use for init phases.
 // The "initData" type from "cmd/init.go" must satisfy this interface.
 type InitData interface {
+	initphases.InitData
+
 	RootDBConnection() (*mysql.Connection, error)
-	OnecloudCfg() *v1.InitConfiguration
 	LocalAddress() string
-	Cfg() *kubeadmapi.InitConfiguration
-	DryRun() bool
-	IgnorePreflightErrors() sets.String
-	ManifestDir() string
+	OnecloudAdminConfigPath() string
+	OnecloudCfg() *apiv1.InitConfiguration
 	OnecloudClientSession() (*mcclient.ClientSession, error)
 	OnecloudCertificateWriteDir() string
 	OnecloudCertificateDir() string
-	Client() (clientset.Interface, error)
-	OutputWriter() io.Writer
 }

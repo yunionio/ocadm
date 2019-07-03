@@ -2,14 +2,16 @@ package uploadconfig
 
 import (
 	"fmt"
-	v1 "k8s.io/api/core/v1"
-	"k8s.io/kubernetes/cmd/kubeadm/app/util/apiclient"
+	"io/ioutil"
 
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
+	"k8s.io/kubernetes/cmd/kubeadm/app/util/apiclient"
 
 	"yunion.io/x/ocadm/pkg/apis/constants"
 	apis "yunion.io/x/ocadm/pkg/apis/v1"
+	"yunion.io/x/ocadm/pkg/occonfig"
 	configutil "yunion.io/x/ocadm/pkg/util/config"
 )
 
@@ -27,6 +29,11 @@ func UploadConfiguration(cfg *apis.InitConfiguration, client clientset.Interface
 		return err
 	}
 
+	authInfo, err := ioutil.ReadFile(occonfig.AdminConfigFilePath())
+	if err != nil {
+		return err
+	}
+
 	err = apiclient.CreateOrUpdateConfigMap(client, &v1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      constants.OnecloudAdminConfigConfigMap,
@@ -34,6 +41,7 @@ func UploadConfiguration(cfg *apis.InitConfiguration, client clientset.Interface
 		},
 		Data: map[string]string{
 			constants.ClusterConfigurationConfigMapKey: string(clusterConfigurationYaml),
+			constants.ClusterAdminAuthConfigMapKey:     string(authInfo),
 		},
 	})
 	if err != nil {

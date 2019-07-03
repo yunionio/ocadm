@@ -41,7 +41,7 @@ require (
 	k8s.io/apiserver v0.0.0-20190606205144-71ebb8303503 // indirect
 	k8s.io/client-go v11.0.1-0.20190606204521-b8faab9c5193+incompatible
 	k8s.io/cloud-provider v0.0.0-20190606212257-347f17c60af0 // indirect
-	k8s.io/cluster-bootstrap v0.0.0-20190606212113-a4a4ceb6dbd9 // indirect
+	k8s.io/cluster-bootstrap v0.0.0-20190606212113-a4a4ceb6dbd9
 	k8s.io/code-generator v0.0.0-20190620073620-d55040311883
 	k8s.io/component-base v0.0.0-20190606204607-bb6a29a90c31
 	k8s.io/klog v0.3.3

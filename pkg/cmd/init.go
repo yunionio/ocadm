@@ -171,12 +171,13 @@ func NewCmdInit(out io.Writer, initOptions *initOptions) *cobra.Command {
 	initRunner.AppendPhase(kubeadminitphases.NewEtcdPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewWaitControlPlanePhase())
 	initRunner.AppendPhase(kubeadminitphases.NewUploadConfigPhase())
-	initRunner.AppendPhase(initphases.NewUploadConfigPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewUploadCertsPhase())
+	initRunner.AppendPhase(initphases.NewOCUploadCertsPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewMarkControlPlanePhase())
 	initRunner.AppendPhase(kubeadminitphases.NewBootstrapTokenPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewAddonPhase())
 	initRunner.AppendPhase(initphases.NewKeystonePhase())
+	initRunner.AppendPhase(initphases.NewUploadConfigPhase())
 	initRunner.AppendPhase(initphases.NewRegionPhase())
 	initRunner.AppendPhase(initphases.NewSchedulerPhase())
 	initRunner.AppendPhase(initphases.NewGlancePhase())
@@ -315,7 +316,7 @@ func newInitOptions() *initOptions {
 		bto:            bto,
 		kubeconfigDir:  kubeadmconstants.KubernetesDir,
 		kubeconfigPath: kubeadmconstants.GetAdminKubeConfigPath(),
-		uploadCerts:    true,
+		uploadCerts:    true, // always upload certs
 	}
 }
 
