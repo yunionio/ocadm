@@ -114,7 +114,7 @@ const (
 	TokenDiscoveryCAHash = kubeadmoptions.TokenDiscoveryCAHash
 
 	// TokenDiscoverySkipCAHash flag instruct kubeadm to skip CA hash verification (for token-based discovery)
-	TokenDiscoverySkipCAHash = kubeadmoptions.TokenDiscoveryCAHash
+	TokenDiscoverySkipCAHash = kubeadmoptions.TokenDiscoverySkipCAHash
 
 	// FileDiscovery flag sets the file or URL from which to load cluster information (for file-based discovery)
 	FileDiscovery = kubeadmoptions.FileDiscovery

@@ -12,13 +12,12 @@ import (
 	flag "github.com/spf13/pflag"
 	"k8s.io/apimachinery/pkg/util/sets"
 	clientset "k8s.io/client-go/kubernetes"
-	clientcmd "k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 	"k8s.io/klog"
 	kubeadmapi "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm"
 	"k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/validation"
 	kubeadmjoinphases "k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/join"
-	//kubeadmapiv1beta1 "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta1"
 	"k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/workflow"
 	cmdutil "k8s.io/kubernetes/cmd/kubeadm/app/cmd/util"
 	"k8s.io/kubernetes/cmd/kubeadm/app/discovery"
@@ -160,6 +159,10 @@ func NewCmdJoin(out io.Writer, joinOptions *joinOptions) *cobra.Command {
 
 // addJoinConfigFlags adds join flags bound to the config to the specified flagset
 func addJoinConfigFlags(flagSet *flag.FlagSet, cfg *apiv1.JoinConfiguration) {
+	flagSet.StringVar(
+		&cfg.NodeRegistration.Name, options.NodeName, cfg.NodeRegistration.Name,
+		`Specify the node name.`,
+	)
 	// add control plane endpoint flags to the specified flagset
 	flagSet.StringVar(
 		&cfg.ControlPlane.LocalAPIEndpoint.AdvertiseAddress, options.APIServerAdvertiseAddress, cfg.ControlPlane.LocalAPIEndpoint.AdvertiseAddress,
@@ -169,14 +172,27 @@ func addJoinConfigFlags(flagSet *flag.FlagSet, cfg *apiv1.JoinConfiguration) {
 		&cfg.ControlPlane.LocalAPIEndpoint.BindPort, options.APIServerBindPort, cfg.ControlPlane.LocalAPIEndpoint.BindPort,
 		"If the node should host a new control plane instance, the port for the API Server to bind to.",
 	)
+	// adds bootstrap token specific discovery flags to the specified flagset
+	flagSet.StringVar(
+		&cfg.Discovery.BootstrapToken.Token, options.TokenDiscovery, "",
+		"For token-based discovery, the token used to validate cluster information fetched from the API server.",
+	)
 	flagSet.StringSliceVar(
 		&cfg.Discovery.BootstrapToken.CACertHashes, options.TokenDiscoveryCAHash, []string{},
 		"For token-based discovery, validate that the root CA public key matches this hash (format: \"<type>:<value>\").",
+	)
+	flagSet.BoolVar(
+		&cfg.Discovery.BootstrapToken.UnsafeSkipCAVerification, options.TokenDiscoverySkipCAHash, false,
+		"For token-based discovery, allow joining without --discovery-token-ca-cert-hash pinning.",
 	)
 	//	discovery via kube config file flag
 	flagSet.StringVar(
 		&cfg.Discovery.File.KubeConfigPath, options.FileDiscovery, "",
 		"For file-based discovery, a file or URL from which to load cluster information.",
+	)
+	flagSet.StringVar(
+		&cfg.Discovery.TLSBootstrapToken, options.TLSBootstrapToken, cfg.Discovery.TLSBootstrapToken,
+		`Specify the token used to temporarily authenticate with the Kubernetes Control Plane while joining the node.`,
 	)
 	cmdutil.AddCRISocketFlag(flagSet, &cfg.NodeRegistration.CRISocket)
 }
@@ -365,6 +381,9 @@ func (j *joinData) InitCfg() (*kubeadmapi.InitConfiguration, error) {
 	}
 	klog.V(1).Infoln("[preflight] Fetching init configuration")
 	initCfg, err := fetchInitConfigurationFromJoinConfiguration(j.cfg, j.tlsBootstrapCfg)
+	if err != nil {
+		return nil, err
+	}
 	j.initCfg = initCfg
 	return &initCfg.InitConfiguration, err
 }
@@ -429,7 +448,7 @@ func fetchInitConfiguration(tlsBootstrapCfg *clientcmdapi.Config) (*apiv1.InitCo
 	// Fetches the init configuration
 	initConfiguration, err := configutil.FetchInitConfigurationFromCluster(tlsClient, os.Stdout, "preflight", true)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch the kubeadm-config ConfigMap")
+		return nil, errors.Wrap(err, "unable to fetch the ocadm-config ConfigMap")
 	}
 
 	return initConfiguration, nil

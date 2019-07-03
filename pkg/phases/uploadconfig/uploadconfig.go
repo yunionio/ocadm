@@ -5,9 +5,13 @@ import (
 	"io/ioutil"
 
 	v1 "k8s.io/api/core/v1"
+	rbac "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
+	kubeadmconstants "k8s.io/kubernetes/cmd/kubeadm/app/constants"
+	"k8s.io/kubernetes/cmd/kubeadm/app/phases/uploadconfig"
 	"k8s.io/kubernetes/cmd/kubeadm/app/util/apiclient"
+	rbachelper "k8s.io/kubernetes/pkg/apis/rbac/v1"
 
 	"yunion.io/x/ocadm/pkg/apis/constants"
 	apis "yunion.io/x/ocadm/pkg/apis/v1"
@@ -47,5 +51,44 @@ func UploadConfiguration(cfg *apis.InitConfiguration, client clientset.Interface
 	if err != nil {
 		return err
 	}
-	return nil
+
+	// Ensure that the NodesKubeadmConfigClusterRoleName exists
+	err = apiclient.CreateOrUpdateRole(client, &rbac.Role{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      uploadconfig.NodesKubeadmConfigClusterRoleName,
+			Namespace: metav1.NamespaceSystem,
+		},
+		Rules: []rbac.PolicyRule{
+			rbachelper.NewRule("get").Groups("").Resources("configmaps").Names(kubeadmconstants.KubeadmConfigConfigMap).RuleOrDie(),
+			rbachelper.NewRule("get").Groups("").Resources("configmaps").Names(constants.OnecloudAdminConfigConfigMap).RuleOrDie(),
+		},
+	})
+	if err != nil {
+		return err
+	}
+
+	// Binds the NodesKubeadmConfigClusterRoleName to all the bootstrap tokens
+	// that are members of the system:bootstrappers:kubeadm:default-node-token group
+	// and to all nodes
+	return apiclient.CreateOrUpdateRoleBinding(client, &rbac.RoleBinding{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      uploadconfig.NodesKubeadmConfigClusterRoleName,
+			Namespace: metav1.NamespaceSystem,
+		},
+		RoleRef: rbac.RoleRef{
+			APIGroup: rbac.GroupName,
+			Kind:     "Role",
+			Name:     uploadconfig.NodesKubeadmConfigClusterRoleName,
+		},
+		Subjects: []rbac.Subject{
+			{
+				Kind: rbac.GroupKind,
+				Name: kubeadmconstants.NodeBootstrapTokenAuthGroup,
+			},
+			{
+				Kind: rbac.GroupKind,
+				Name: kubeadmconstants.NodesGroup,
+			},
+		},
+	})
 }
