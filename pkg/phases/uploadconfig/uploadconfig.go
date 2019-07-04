@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/pkg/errors"
 	v1 "k8s.io/api/core/v1"
 	rbac "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -61,6 +62,7 @@ func UploadConfiguration(cfg *apis.InitConfiguration, client clientset.Interface
 		Rules: []rbac.PolicyRule{
 			rbachelper.NewRule("get").Groups("").Resources("configmaps").Names(kubeadmconstants.KubeadmConfigConfigMap).RuleOrDie(),
 			rbachelper.NewRule("get").Groups("").Resources("configmaps").Names(constants.OnecloudAdminConfigConfigMap).RuleOrDie(),
+			rbachelper.NewRule("get").Groups("").Resources("secrets").Names(constants.OcadmCertsSecret).RuleOrDie(),
 		},
 	})
 	if err != nil {
@@ -91,4 +93,29 @@ func UploadConfiguration(cfg *apis.InitConfiguration, client clientset.Interface
 			},
 		},
 	})
+}
+
+func DownloadConfiguration(client clientset.Interface) error {
+	fmt.Printf("[download-config] Downloading the rc_admin config")
+	rcAdmin, err := getRCAdmin(client)
+	if err != nil {
+		return err
+	}
+	admin, err := occonfig.NewRCAdminConfigByBytes([]byte(rcAdmin))
+	if err != nil {
+		return err
+	}
+	return occonfig.WriteRCAdminConfigFile(admin)
+}
+
+func getRCAdmin(client clientset.Interface) (string, error) {
+	cm, err := client.CoreV1().ConfigMaps(metav1.NamespaceSystem).Get(constants.OnecloudAdminConfigConfigMap, metav1.GetOptions{})
+	if err != nil {
+		return "", err
+	}
+	content, ok := cm.Data[constants.ClusterAdminAuthConfigMapKey]
+	if !ok {
+		return "", errors.Errorf("not found %s in %s configmap", constants.ClusterAdminAuthConfigMapKey, constants.OnecloudAdminConfigConfigMap)
+	}
+	return content, nil
 }

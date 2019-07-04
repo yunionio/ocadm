@@ -1,19 +1,22 @@
-package controlplane
+package components
 
 import (
 	"fmt"
 	"sort"
 
 	"github.com/pkg/errors"
-	"k8s.io/klog"
-
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/klog"
 
 	"yunion.io/x/ocadm/pkg/apis/constants"
 	apiv1 "yunion.io/x/ocadm/pkg/apis/v1"
 	"yunion.io/x/ocadm/pkg/images"
 	"yunion.io/x/ocadm/pkg/occonfig"
 	staticpodutil "yunion.io/x/ocadm/pkg/util/staticpod"
+)
+
+var (
+	True = true
 )
 
 func GetSaticPodSpecs(cfg *apiv1.ClusterConfiguration) map[string]v1.Pod {
@@ -29,7 +32,7 @@ func GetSaticPodSpecs(cfg *apiv1.ClusterConfiguration) map[string]v1.Pod {
 				Image:           images.GetOnecloudImage(constants.OnecloudKeystone, cfg),
 				ImagePullPolicy: v1.PullIfNotPresent,
 				Command:         []string{"/opt/yunion/bin/keystone"},
-				Args:            getKeystoneInitArgs(cfg.Keystone),
+				Args:            getKeystoneInitArgs(cfg.BootstrapPassword),
 				VolumeMounts:    staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(constants.OnecloudKeystone)),
 				Resources:       staticpodutil.ComponentResources("250m"),
 			},
@@ -38,7 +41,7 @@ func GetSaticPodSpecs(cfg *apiv1.ClusterConfiguration) map[string]v1.Pod {
 				Image:           images.GetOnecloudImage(constants.OnecloudKeystone, cfg),
 				ImagePullPolicy: v1.PullIfNotPresent,
 				Command:         []string{"/opt/yunion/bin/keystone"},
-				Args:            getKeystoneArgs(cfg.Keystone),
+				Args:            getKeystoneArgs(),
 				VolumeMounts:    staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(constants.OnecloudKeystone)),
 				Resources:       staticpodutil.ComponentResources("250m"),
 			},
@@ -53,7 +56,7 @@ func GetSaticPodSpecs(cfg *apiv1.ClusterConfiguration) map[string]v1.Pod {
 				Image:           images.GetOnecloudImage(constants.OnecloudRegion, cfg),
 				ImagePullPolicy: v1.PullIfNotPresent,
 				Command:         []string{"/opt/yunion/bin/region"},
-				Args:            getRegionArgs(cfg.RegionServer),
+				Args:            getRegionArgs(),
 				VolumeMounts:    staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(constants.OnecloudRegion)),
 				Resources:       staticpodutil.ComponentResources("250m"),
 			},
@@ -68,12 +71,13 @@ func GetSaticPodSpecs(cfg *apiv1.ClusterConfiguration) map[string]v1.Pod {
 				Image:           images.GetOnecloudImage(constants.OnecloudScheduler, cfg),
 				ImagePullPolicy: v1.PullIfNotPresent,
 				Command:         []string{"/opt/yunion/bin/scheduler"},
-				Args:            getRegionArgs(cfg.RegionServer),
+				Args:            getRegionArgs(),
 				VolumeMounts:    staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(constants.OnecloudRegion)),
 				Resources:       staticpodutil.ComponentResources("1024m"),
 			},
 			mounts.GetVolumes(constants.OnecloudScheduler),
 		),
+
 		// glance pod
 		constants.OnecloudGlance: staticpodutil.ComponentPodWithInit(
 			nil,
@@ -82,11 +86,26 @@ func GetSaticPodSpecs(cfg *apiv1.ClusterConfiguration) map[string]v1.Pod {
 				Image:           images.GetOnecloudImage(constants.OnecloudGlance, cfg),
 				ImagePullPolicy: v1.PullIfNotPresent,
 				Command:         []string{"/opt/yunion/bin/glance"},
-				Args:            getGlanceArgs(cfg.Glance),
+				Args:            getGlanceArgs(),
 				VolumeMounts:    staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(constants.OnecloudGlance)),
 				Resources:       staticpodutil.ComponentResources("250m"),
 			},
 			mounts.GetVolumes(constants.OnecloudGlance),
+		),
+
+		// baremetal agent pod
+		constants.OnecloudBaremetal: staticpodutil.ComponentPodWithHostIPC(
+			&v1.Container{
+				Name:         constants.OnecloudBaremetal,
+				Image:        images.GetOnecloudImage(constants.OnecloudBaremetalAgent, cfg),
+				Command:      []string{"/opt/yunion/bin/baremetal-agent"},
+				Args:         []string{"--config", occonfig.BaremetalConfigFilePath()},
+				VolumeMounts: staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(constants.OnecloudBaremetal)),
+				SecurityContext: &v1.SecurityContext{
+					Privileged: &True,
+				},
+			},
+			mounts.GetVolumes(constants.OnecloudBaremetal),
 		),
 	}
 
@@ -149,7 +168,7 @@ func BuildArgumentListFromMap(base map[string]string, override map[string]string
 	return command
 }
 
-func getKeystoneArgs(cfg apiv1.Keystone) []string {
+func getKeystoneArgs() []string {
 	defaultArgs := map[string]string{
 		"config": occonfig.KeystoneConfigFilePath(),
 	}
@@ -157,20 +176,18 @@ func getKeystoneArgs(cfg apiv1.Keystone) []string {
 	return BuildArgumentListFromMap(defaultArgs, nil)
 }
 
-func getKeystoneInitArgs(cfg apiv1.Keystone) []string {
+func getKeystoneInitArgs(bootstrapPassword string) []string {
 	defaultArgs := map[string]string{
 		"config":             occonfig.KeystoneConfigFilePath(),
 		"auto-sync-table":    "",
 		"exit-after-db-init": "",
 	}
-	if cfg.BootstrapAdminUserPassword != "" {
-		defaultArgs["bootstrap-admin-user-password"] = cfg.BootstrapAdminUserPassword
-	}
+	defaultArgs["bootstrap-admin-user-password"] = bootstrapPassword
 
 	return BuildArgumentListFromMap(defaultArgs, nil)
 }
 
-func getRegionArgs(cfg apiv1.RegionServer) []string {
+func getRegionArgs() []string {
 	defaultArgs := map[string]string{
 		"config": occonfig.RegionConfigFilePath(),
 	}
@@ -178,7 +195,7 @@ func getRegionArgs(cfg apiv1.RegionServer) []string {
 	return BuildArgumentListFromMap(defaultArgs, nil)
 }
 
-func getGlanceArgs(cfg apiv1.Glance) []string {
+func getGlanceArgs() []string {
 	defaultArgs := map[string]string{
 		"config": occonfig.GlanceConfigFilePath(),
 	}

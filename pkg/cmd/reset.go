@@ -6,8 +6,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"yunion.io/x/ocadm/pkg/util/mysql"
-
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"k8s.io/apimachinery/pkg/util/sets"
@@ -24,6 +22,7 @@ import (
 	apis "yunion.io/x/ocadm/pkg/apis/v1"
 	"yunion.io/x/ocadm/pkg/options"
 	configutil "yunion.io/x/ocadm/pkg/util/config"
+	"yunion.io/x/ocadm/pkg/util/mysql"
 )
 
 // NewCmdReset returns the "ocadm reset" command
@@ -125,7 +124,7 @@ func (r *Reset) resetDB(connInfo *apis.MysqlConnection) error {
 	if err != nil {
 		return err
 	}
-	for _, db := range []string{constants.KeystoneDB, constants.RegionDB, constants.GlanceDB} {
+	for _, db := range []string{constants.KeystoneDB, constants.RegionDB} {
 		if err := conn.DropDatabase(db); err != nil {
 			return errors.Wrapf(err, "drop db %s", db)
 		}

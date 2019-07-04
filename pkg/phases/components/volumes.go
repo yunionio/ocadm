@@ -1,4 +1,4 @@
-package controlplane
+package components
 
 import (
 	"fmt"
@@ -84,7 +84,7 @@ func getHostPathVolumesForTheControlPlane(cfg *apiv1.ClusterConfiguration) contr
 		true,
 		&hostPathFileOrCreate,
 	)
-	// Read-only mount for the region certs
+	// Read-only mount for the scheduler certs
 	mounts.NewHostPathMount(
 		constants.OnecloudScheduler,
 		constants.OnecloudPKICertsVolumeName,
@@ -119,8 +119,8 @@ func getHostPathVolumesForTheControlPlane(cfg *apiv1.ClusterConfiguration) contr
 	mounts.NewHostPathMount(
 		constants.OnecloudGlance,
 		constants.OnecloudGlanceImageVolumeName,
-		cfg.Glance.FilesystemStoreDatadir,
-		cfg.Glance.FilesystemStoreDatadir,
+		constants.OnecloudGlanceFileStoreDir,
+		constants.OnecloudGlanceFileStoreDir,
 		false,
 		&hostPathDirectoryOrCreate,
 	)
@@ -135,13 +135,51 @@ func getHostPathVolumesForTheControlPlane(cfg *apiv1.ClusterConfiguration) contr
 		&hostPathDirectoryOrCreate,
 	)
 
-	// Read-only mount for the glance probe iamge
+	// Read-only mount for the glance probe image
 	mounts.NewHostPathMount(
 		constants.OnecloudGlance,
 		constants.OnecloudKernelVolumeName,
 		constants.OnecloudKernelPath,
 		constants.OnecloudKernelPath,
 		true,
+		&hostPathDirectoryOrCreate,
+	)
+
+	// Read-only mount for the baremetal config file
+	baremetalConfigFile := occonfig.BaremetalConfigFilePath()
+	mounts.NewHostPathMount(
+		constants.OnecloudBaremetal,
+		constants.OnecloudConfigVolumeName,
+		baremetalConfigFile,
+		baremetalConfigFile,
+		true,
+		&hostPathFileOrCreate,
+	)
+	// Read-only mount for the region certs
+	mounts.NewHostPathMount(
+		constants.OnecloudBaremetal,
+		constants.OnecloudPKICertsVolumeName,
+		cfg.OnecloudCertificatesDir,
+		cfg.OnecloudCertificatesDir,
+		true,
+		&hostPathDirectoryOrCreate,
+	)
+	// Read-only mount for the baremetal tftp root
+	mounts.NewHostPathMount(
+		constants.OnecloudBaremetal,
+		constants.OnecloudBaremetalTFTPVolumeName,
+		constants.OnecloudBaremetalTFTPRoot,
+		constants.OnecloudBaremetalTFTPRoot,
+		true,
+		&hostPathDirectoryOrCreate,
+	)
+	// Read-write for baremetal desc save path
+	mounts.NewHostPathMount(
+		constants.OnecloudBaremetal,
+		constants.OnecloudBaremetalsVolumeName,
+		constants.OnecloudBaremetalsPath,
+		constants.OnecloudBaremetalsPath,
+		false,
 		&hostPathDirectoryOrCreate,
 	)
 

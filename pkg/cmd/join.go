@@ -140,6 +140,7 @@ func NewCmdJoin(out io.Writer, joinOptions *joinOptions) *cobra.Command {
 
 	joinRunner.AppendPhase(kubeadmjoinphases.NewPreflightPhase())
 	joinRunner.AppendPhase(kubeadmjoinphases.NewControlPlanePreparePhase())
+	joinRunner.AppendPhase(joinphases.NewNodePreparePhase())
 	joinRunner.AppendPhase(kubeadmjoinphases.NewCheckEtcdPhase())
 	joinRunner.AppendPhase(kubeadmjoinphases.NewKubeletStartPhase())
 	joinRunner.AppendPhase(kubeadmjoinphases.NewControlPlaneJoinPhase())
@@ -371,10 +372,10 @@ func (j *joinData) TLSBootstrapCfg() (*clientcmdapi.Config, error) {
 	return tlsBootstrapCfg, err
 }
 
-// InitCfg returns the InitConfiguration.
-func (j *joinData) InitCfg() (*kubeadmapi.InitConfiguration, error) {
+// OnecloudInitCfg returns the InitConfiguration.
+func (j *joinData) OnecloudInitCfg() (*apiv1.InitConfiguration, error) {
 	if j.initCfg != nil {
-		return &j.initCfg.InitConfiguration, nil
+		return j.initCfg, nil
 	}
 	if _, err := j.TLSBootstrapCfg(); err != nil {
 		return nil, err
@@ -385,6 +386,15 @@ func (j *joinData) InitCfg() (*kubeadmapi.InitConfiguration, error) {
 		return nil, err
 	}
 	j.initCfg = initCfg
+	return j.initCfg, nil
+}
+
+// InitCfg returns the kubeadm InitConfiguration.
+func (j *joinData) InitCfg() (*kubeadmapi.InitConfiguration, error) {
+	initCfg, err := j.OnecloudInitCfg()
+	if err != nil {
+		return nil, err
+	}
 	return &initCfg.InitConfiguration, err
 }
 

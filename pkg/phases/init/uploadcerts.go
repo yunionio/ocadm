@@ -51,7 +51,7 @@ func runUploadCerts(c workflow.RunData) error {
 		data.SetCertificateKey(certificateKey)
 	}
 
-	if err := copycerts.UploadCerts(client, data.OnecloudCfg(), data.CertificateKey()); err != nil {
+	if err := copycerts.UploadCerts(client, data.OnecloudCfg()); err != nil {
 		return errors.Wrap(err, "error uploading onecloud certs")
 	}
 	if !data.SkipCertificateKeyPrint() {

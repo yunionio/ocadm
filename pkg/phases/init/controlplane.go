@@ -2,11 +2,10 @@ package init
 
 import (
 	"fmt"
+	"yunion.io/x/ocadm/pkg/phases/components"
 
 	"github.com/pkg/errors"
 	"k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/workflow"
-
-	"yunion.io/x/ocadm/pkg/phases/controlplane"
 )
 
 func runControlPlaneSubphase(component string) func(c workflow.RunData) error {
@@ -18,6 +17,6 @@ func runControlPlaneSubphase(component string) func(c workflow.RunData) error {
 		cfg := data.OnecloudCfg()
 
 		fmt.Printf("[oc-control-plane] Creating static Pod manifest for %q\n", component)
-		return controlplane.CreateStaticPodFiles(data.ManifestDir(), &cfg.ClusterConfiguration, component)
+		return components.CreateStaticPodFiles(data.ManifestDir(), &cfg.ClusterConfiguration, component)
 	}
 }

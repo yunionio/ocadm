@@ -2,18 +2,18 @@ package init
 
 import (
 	"fmt"
-	"github.com/spf13/pflag"
-	"k8s.io/kubernetes/cmd/kubeadm/app/util/pkiutil"
-	"k8s.io/kubernetes/pkg/util/normalizer"
 	"strings"
 
 	"github.com/pkg/errors"
+	"github.com/spf13/pflag"
 	kubeadmapi "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm"
 	kubeadmscheme "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/scheme"
 	kubeadmapiv1beta1 "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta1"
 	"k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/workflow"
 	cmdutil "k8s.io/kubernetes/cmd/kubeadm/app/cmd/util"
 	kubeadmutil "k8s.io/kubernetes/cmd/kubeadm/app/util"
+	"k8s.io/kubernetes/cmd/kubeadm/app/util/pkiutil"
+	"k8s.io/kubernetes/pkg/util/normalizer"
 
 	ocadmscheme "yunion.io/x/ocadm/pkg/apis/scheme"
 	apis "yunion.io/x/ocadm/pkg/apis/v1"

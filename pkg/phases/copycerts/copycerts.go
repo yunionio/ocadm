@@ -1,7 +1,6 @@
 package copycerts
 
 import (
-	"encoding/hex"
 	"fmt"
 	"io/ioutil"
 	"k8s.io/klog"
@@ -59,18 +58,14 @@ func createShortLivedBootstrapToken(client clientset.Interface) (string, error) 
 }
 
 // UploadCerts save certs needs to create a new onecloud service
-func UploadCerts(client clientset.Interface, cfg *apiv1.InitConfiguration, key string) error {
+func UploadCerts(client clientset.Interface, cfg *apiv1.InitConfiguration) error {
 	fmt.Printf("[oc-upload-certs] Storing the certificates in ConfigMap %q in the %q namespace\n", constants.OcadmCertsSecret, metav1.NamespaceSystem)
-	decodedKey, err := hex.DecodeString(key)
-	if err != nil {
-		return err
-	}
 	tokenID, err := createShortLivedBootstrapToken(client)
 	if err != nil {
 		return err
 	}
 
-	secretData, err := getDataFromDisk(cfg, decodedKey)
+	secretData, err := getDataFromDisk(cfg)
 	if err != nil {
 		return err
 	}
@@ -118,17 +113,19 @@ func loadAndEncryptCert(certPath string, key []byte) ([]byte, error) {
 func certsToTransfer(cfg *apiv1.InitConfiguration) map[string]string {
 	certsDir := cfg.OnecloudCertificatesDir
 	certs := map[string]string{
-		constants.CACertName: path.Join(certsDir, constants.CACertName),
-		constants.CAKeyName:  path.Join(certsDir, constants.CAKeyName),
+		constants.CACertName:    path.Join(certsDir, constants.CACertName),
+		constants.CAKeyName:     path.Join(certsDir, constants.CAKeyName),
+		constants.ClimcCertName: path.Join(certsDir, constants.ClimcCertName),
+		constants.ClimcKeyName:  path.Join(certsDir, constants.ClimcKeyName),
 	}
 
 	return certs
 }
 
-func getDataFromDisk(cfg *apiv1.InitConfiguration, key []byte) (map[string][]byte, error) {
+func getDataFromDisk(cfg *apiv1.InitConfiguration) (map[string][]byte, error) {
 	secretData := map[string][]byte{}
 	for certName, certPath := range certsToTransfer(cfg) {
-		cert, err := loadAndEncryptCert(certPath, key)
+		cert, err := ioutil.ReadFile(certPath)
 		if err == nil || (err != nil && os.IsNotExist(err)) {
 			secretData[certOrKeyNameToSecretName(certName)] = cert
 		} else {
@@ -139,20 +136,15 @@ func getDataFromDisk(cfg *apiv1.InitConfiguration, key []byte) (map[string][]byt
 }
 
 // DownloadCerts downloads the certificates needed to join a new control plane.
-func DownloadCerts(client clientset.Interface, cfg *apiv1.InitConfiguration, key string) error {
+func DownloadCerts(client clientset.Interface, cfg *apiv1.InitConfiguration) error {
 	fmt.Printf("[download-certs] Downloading the certificates in Secret %q in the %q Namespace\n", constants.OcadmCertsSecret, metav1.NamespaceSystem)
-
-	decodedKey, err := hex.DecodeString(key)
-	if err != nil {
-		return errors.Wrap(err, "error decoding certificate key")
-	}
 
 	secret, err := getSecret(client)
 	if err != nil {
 		return errors.Wrap(err, "error downloading the secret")
 	}
 
-	secretData, err := getDataFromSecret(secret, decodedKey)
+	secretData, err := getDataFromSecret(secret)
 	if err != nil {
 		return errors.Wrap(err, "error decoding secret data with provided key")
 	}
@@ -194,22 +186,12 @@ func getSecret(client clientset.Interface) (*v1.Secret, error) {
 	return secret, nil
 }
 
-func getDataFromSecret(secret *v1.Secret, key []byte) (map[string][]byte, error) {
+func getDataFromSecret(secret *v1.Secret) (map[string][]byte, error) {
 	secretData := map[string][]byte{}
-	for secretName, encryptedSecret := range secret.Data {
+	for secretName, cert := range secret.Data {
 		// In some cases the secret might have empty data if the secrets were not present on disk
 		// when uploading. This can specially happen with external insecure etcd (no certs)
-		if len(encryptedSecret) > 0 {
-			cert, err := cryptoutil.DecryptBytes(encryptedSecret, key)
-			if err != nil {
-				// If any of the decrypt operations fail do not return a partial result,
-				// return an empty result immediately
-				return map[string][]byte{}, err
-			}
-			secretData[secretName] = cert
-		} else {
-			secretData[secretName] = []byte{}
-		}
+		secretData[secretName] = cert
 	}
 	return secretData, nil
 }

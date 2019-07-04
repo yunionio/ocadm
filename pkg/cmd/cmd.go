@@ -24,6 +24,8 @@ func NewOneCloudAdminCommand(in io.Reader, out, err io.Writer) (*cobra.Command, 
 	cmds.AddCommand(NewCmdInit(out, nil))
 	cmds.AddCommand(NewCmdJoin(out, nil))
 	cmds.AddCommand(NewCmdReset(in, out))
+	cmds.AddCommand(NewCmdToken(out, err))
+	cmds.AddCommand(NewCmdComponent(out))
 
 	commandFns := []func() *cobra.Command{
 		kubeadm,

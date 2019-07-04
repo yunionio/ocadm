@@ -44,5 +44,8 @@ func FetchInitConfigurationFromCluster(client clientset.Interface, w io.Writer, 
 	}
 
 	initcfg.InitConfiguration = *kubeadmCfg
+	if err := SetInitDynamicDefaults(initcfg); err != nil {
+		return nil, errors.Wrap(err, "failed to set dynamic defaults")
+	}
 	return initcfg, nil
 }

@@ -233,41 +233,11 @@ func SetHostLocalDynamicDefaults(info *apiv1.HostLocalInfo, kubeadmAPILocalAddre
 	return nil
 }
 
-type ServiceDynamicDefault struct {
-	DefaultDB     string
-	DefaultDBUser string
-}
-
 func SetServicesDynamicDefaults(cfg *apiv1.ClusterConfiguration, authAddress string) error {
-	sqlConn := cfg.MysqlConnection
-	for toSet, info := range map[*apiv1.DBInfo]ServiceDynamicDefault{
-		&cfg.Keystone.ServiceDBOptions.DBInfo: {
-			DefaultDB:     constants.KeystoneDB,
-			DefaultDBUser: constants.KeystoneDBUser,
-		},
-		&cfg.RegionServer.ServiceDBOptions.DBInfo: {
-			DefaultDB:     constants.RegionDB,
-			DefaultDBUser: constants.RegionDBUser,
-		},
-		&cfg.Glance.ServiceDBOptions.DBInfo: {
-			DefaultDB:     constants.GlanceDB,
-			DefaultDBUser: constants.GlanceDBUser,
-		},
-	} {
-		if err := SetServiceDBInfo(toSet, &sqlConn, &info); err != nil {
-			return errors.Wrapf(err, "Set default db %s info", info.DefaultDB)
-		}
-	}
-	for _, commonCfg := range map[string]*apiv1.ServiceCommonOptions{
-		constants.OnecloudRegion: &cfg.RegionServer.ServiceCommonOptions,
-		constants.OnecloudGlance: &cfg.Glance.ServiceCommonOptions,
-	} {
-		SetServiceAuthInfo(commonCfg, cfg.Keystone, authAddress)
-	}
 	return nil
 }
 
-func SetServiceDBInfo(cfg *apiv1.DBInfo, conn *apiv1.MysqlConnection, defaultConf *ServiceDynamicDefault) error {
+func SetServiceDBInfo(cfg *apiv1.DBInfo, conn *apiv1.MysqlConnection, db, dbUser string) {
 	if cfg.Host == "" {
 		cfg.Host = conn.Server
 	}
@@ -275,17 +245,16 @@ func SetServiceDBInfo(cfg *apiv1.DBInfo, conn *apiv1.MysqlConnection, defaultCon
 		cfg.Port = conn.Port
 	}
 	if cfg.Database == "" {
-		cfg.Database = defaultConf.DefaultDB
+		cfg.Database = db
 	}
 	if cfg.Username == "" {
-		cfg.Username = defaultConf.DefaultDBUser
+		cfg.Username = dbUser
 	}
 	if cfg.Password == "" {
 		cfg.Password = passwd.GeneratePassword()
 	}
-	return nil
 }
 
-func SetServiceAuthInfo(cfg *apiv1.ServiceCommonOptions, keystone apiv1.Keystone, localAddress string) {
-	FillServiceCommonOptions(cfg, keystone, localAddress)
+func SetServiceAuthInfo(cfg *apiv1.ServiceCommonOptions, region string, authURL string) {
+	FillServiceCommonOptions(cfg, region, authURL)
 }

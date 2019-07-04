@@ -73,9 +73,9 @@ func SetDefaults_ClusterConfiguration(obj *ClusterConfiguration) {
 	if obj.Region == "" {
 		obj.Region = DefaultOnecloudRegion
 	}
-	SetDefaults_Keystone(&obj.Keystone)
-	SetDefaults_RegionServer(&obj.RegionServer, obj.Region)
-	SetDefaults_Glance(&obj.Glance, obj.Region)
+	if obj.BootstrapPassword == "" {
+		obj.BootstrapPassword = passwd.GeneratePassword()
+	}
 }
 
 // SetDefaults_JoinConfiguration assigns default values to a regular node
@@ -160,9 +160,6 @@ func SetDefaults_Keystone(obj *Keystone) {
 		obj.FernetKeyRepository = DefaultKeystoneFernetKeyRepository
 	}
 	obj.SetupCredentialKeys = false
-	if obj.BootstrapAdminUserPassword == "" {
-		obj.BootstrapAdminUserPassword = passwd.GeneratePassword()
-	}
 	if obj.AutoSyncIntervalSeconds == 0 {
 		obj.AutoSyncIntervalSeconds = 30
 	}
@@ -203,6 +200,10 @@ func SetDefaults_RegionServer(obj *RegionServer, region string) {
 	if obj.SchedulerPort == 0 {
 		obj.SchedulerPort = constants.SchedulerPort
 	}
+}
+
+func SetDefaults_BaremetalAgent(obj *BaremetalAgent, region string) {
+	SetDefaults_ServiceCommonOptions(&obj.ServiceCommonOptions, region, constants.SysAdminProject, constants.BaremetalAdminUser, constants.BaremetalPort)
 }
 
 func SetDefaults_HostLocalInfo(obj *HostLocalInfo) {

@@ -44,17 +44,11 @@ type ClusterConfiguration struct {
 	// OnecloudVersion is the target version of the control plane.
 	OnecloudVersion string
 
-	// Keystone holds configuration for keystone.
-	Keystone Keystone
-
-	// RegionServer holds configuration for controller region service.
-	RegionServer RegionServer
-
 	// Region specify keystone auth region
 	Region string
 
-	// Glance service holds configureation for image manager glance service
-	Glance Glance
+	// BootstrapPassword is the system admin user bootstrap password
+	BootstrapPassword string
 
 	// ImageRepository sets the container registry to pull images from.
 	// If empty, `k8s.gcr.io` will be used by default; in case of kubernetes version is a CI build (kubernetes version starts with `ci/` or `ci-cross/`)
@@ -188,9 +182,6 @@ type Keystone struct {
 	// setup standalone fernet keys for credentials, default: false
 	SetupCredentialKeys bool
 
-	// bootstreap sysadmin user password
-	BootstrapAdminUserPassword string
-
 	// frequency to check auto sync tasks, default: 30
 	AutoSyncIntervalSeconds int
 
@@ -199,29 +190,6 @@ type Keystone struct {
 
 	// frequency tp fetch project resource counts, default: 900
 	FetchProjectResourceCountIntervalSeconds int
-}
-
-type Glance struct {
-	ServiceCommonOptions
-	ServiceDBOptions ServiceDBOptions
-
-	// Common image quota per tenant, default 10
-	DefaultImageQuota int
-
-	// Directory that the Filesystem backend store writes image data to
-	FilesystemStoreDatadir string
-
-	// directory to store image torrent files
-	TorrentStoreDir string
-
-	// Enable torrent service
-	EnableTorrentService bool
-
-	// target image formats that the system will automatically convert to, default: qcow2,vmdk,vhd
-	TargetImageFormats []string
-
-	// path to torrent executable, default /opt/yunion/bin/torrent
-	TorrentClientPath string
 }
 
 type RegionServer struct {
@@ -247,4 +215,36 @@ type RegionServer struct {
 	BaremetalPreparePackageUrl string
 	// Kvm baremetal convert option
 	ConvertHypervisorDefaultTemplate string
+}
+
+type Glance struct {
+	ServiceCommonOptions
+	ServiceDBOptions ServiceDBOptions
+
+	// Common image quota per tenant, default 10
+	DefaultImageQuota int
+
+	// Directory that the Filesystem backend store writes image data to
+	FilesystemStoreDatadir string
+
+	// directory to store image torrent files
+	TorrentStoreDir string
+
+	// Enable torrent service
+	EnableTorrentService bool
+
+	// target image formats that the system will automatically convert to, default: qcow2,vmdk,vhd
+	TargetImageFormats []string
+
+	// path to torrent executable, default /opt/yunion/bin/torrent
+	TorrentClientPath string
+}
+
+type BaremetalAgent struct {
+	ServiceCommonOptions
+
+	AutoRegisterBaremetal  bool
+	LinuxDefaultRootUser   bool
+	DefaultIPMIPassword    string
+	EnableTFTPHTTPDownload bool
 }

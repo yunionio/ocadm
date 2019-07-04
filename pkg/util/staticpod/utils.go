@@ -18,3 +18,10 @@ func ComponentPodWithInit(initContainer, container *v1.Container, volumes map[st
 	}
 	return pod
 }
+
+func ComponentPodWithHostIPC(container *v1.Container, volumes map[string]v1.Volume) v1.Pod {
+	pod := ComponentPodWithInit(nil, container, volumes)
+	pod.Spec.HostIPC = true
+	pod.Spec.HostPID = true
+	return pod
+}

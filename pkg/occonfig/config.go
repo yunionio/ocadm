@@ -16,6 +16,7 @@ import (
 	"github.com/pkg/errors"
 
 	"yunion.io/x/jsonutils"
+	baremetaloptions "yunion.io/x/onecloud/pkg/baremetal/options"
 	regionoptions "yunion.io/x/onecloud/pkg/compute/options"
 	imageoptions "yunion.io/x/onecloud/pkg/image/options"
 	keystoneoptions "yunion.io/x/onecloud/pkg/keystone/options"
@@ -93,14 +94,14 @@ func WriteRCAdminConfigFile(opt *RCAdminConfig) error {
 	if err := writeOnecloudFile(configFile, content); err != nil {
 		return err
 	}
-	if err := writeOnecloudConfigFile(constants.OnecloudConfigDir, constants.OnecloudAdminConfigFileName, opt); err != nil {
+	if err := WriteOnecloudConfigFile(constants.OnecloudConfigDir, constants.OnecloudAdminConfigFileName, opt); err != nil {
 		return err
 	}
 	return nil
 }
 
 func WriteKeystoneConfigFile(opt keystoneoptions.SKeystoneOptions) error {
-	return writeOnecloudConfigFile(
+	return WriteOnecloudConfigFile(
 		constants.OnecloudKeystoneConfigDir,
 		constants.OnecloudKeystoneConfigFileName,
 		opt,
@@ -113,7 +114,7 @@ type RegionSchedulerOptions struct {
 }
 
 func WriteRegionConfigFile(opt RegionSchedulerOptions) error {
-	return writeOnecloudConfigFile(
+	return WriteOnecloudConfigFile(
 		constants.OnecloudConfigDir,
 		constants.OnecloudRegionConfigFileName,
 		opt,
@@ -121,9 +122,17 @@ func WriteRegionConfigFile(opt RegionSchedulerOptions) error {
 }
 
 func WriteGlanceConfigFile(opt imageoptions.SImageOptions) error {
-	return writeOnecloudConfigFile(
+	return WriteOnecloudConfigFile(
 		constants.OnecloudGlanceConfigDir,
 		constants.OnecloudGlanceConfigFileName,
+		opt,
+	)
+}
+
+func WriteBaremetalConfigFile(opt baremetaloptions.BaremetalOptions) error {
+	return WriteOnecloudConfigFile(
+		constants.OnecloudConfigDir,
+		constants.OnecloudBaremetalConfigFileName,
 		opt,
 	)
 }
@@ -156,11 +165,18 @@ func GlanceConfigFilePath() string {
 	)
 }
 
+func BaremetalConfigFilePath() string {
+	return YAMLConfigFilePath(
+		constants.OnecloudConfigDir,
+		constants.OnecloudBaremetalConfigFileName,
+	)
+}
+
 func YAMLConfigFilePath(dir string, fileName string) string {
 	return path.Join(dir, fmt.Sprintf("%s%s", fileName, constants.OnecloudConfigFileSuffix))
 }
 
-func writeOnecloudConfigFile(dir string, fileName string, optStruct interface{}) error {
+func WriteOnecloudConfigFile(dir string, fileName string, optStruct interface{}) error {
 	configFile := YAMLConfigFilePath(dir, fileName)
 	content := jsonutils.Marshal(optStruct).YAMLString()
 	return writeOnecloudFile(configFile, content)
@@ -177,17 +193,29 @@ func writeOnecloudFile(filePath string, content string) error {
 	return nil
 }
 
-func ClientSessionFromFile(configFile string) (*mcclient.ClientSession, error) {
+func NewRCAdminConfigByFile(configFile string) (*RCAdminConfig, error) {
 	data, err := ioutil.ReadFile(configFile)
 	if err != nil {
 		return nil, err
 	}
+	return NewRCAdminConfigByBytes(data)
+}
+
+func NewRCAdminConfigByBytes(data []byte) (*RCAdminConfig, error) {
 	obj, err := jsonutils.ParseYAML(string(data))
 	if err != nil {
 		return nil, err
 	}
 	config := new(RCAdminConfig)
 	if err := obj.Unmarshal(config); err != nil {
+		return nil, err
+	}
+	return config, nil
+}
+
+func ClientSessionFromFile(configFile string) (*mcclient.ClientSession, error) {
+	config, err := NewRCAdminConfigByFile(configFile)
+	if err != nil {
 		return nil, err
 	}
 	cli := mcclient.NewClient(
@@ -221,14 +249,18 @@ func ClientSessionFromFile(configFile string) (*mcclient.ClientSession, error) {
 }
 
 func InitServiceAccount(s *mcclient.ClientSession, username string, password string) error {
-	_, exists, err := onecloud.IsUserExists(s, username)
+	obj, exists, err := onecloud.IsUserExists(s, username)
 	if err != nil {
 		return err
 	}
 	if exists {
-		return errors.Errorf("user %s already exists", username)
+		id, _ := obj.GetString("id")
+		if _, err := onecloud.ChangeUserPassword(s, id, password); err != nil {
+			return errors.Wrapf(err, "user %s already exists, update password", username)
+		}
+		return nil
 	}
-	obj, err := onecloud.CreateUser(s, username, password)
+	obj, err = onecloud.CreateUser(s, username, password)
 	if err != nil {
 		return errors.Wrapf(err, "create user %s", username)
 	}
@@ -275,4 +307,12 @@ func RegisterServicePublicInternalEndpoint(
 ) error {
 	return RegisterServiceEndpointByInterfaces(s, regionId, serviceName, serviceType,
 		endpointUrl, []string{constants.EndpointTypeInternal, constants.EndpointTypePublic})
+}
+
+func GetConfigFileObject(filepath string) (jsonutils.JSONObject, error) {
+	content, err := ioutil.ReadFile(filepath)
+	if err != nil {
+		return nil, err
+	}
+	return jsonutils.ParseYAML(string(content))
 }

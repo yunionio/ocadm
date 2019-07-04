@@ -16,8 +16,14 @@ func GetOnecloudImage(image string, cfg *v1.ClusterConfiguration) string {
 // GetAllImages returns a list of container images expects to use on a control plane node
 func GetAllImages(cfg *v1.ClusterConfiguration, kubeadmCfg *kubeadmapi.ClusterConfiguration) []string {
 	imgs := images.GetAllImages(kubeadmCfg)
-	imgs = append(imgs, GetOnecloudImage(constants.OnecloudKeystone, cfg))
-	imgs = append(imgs, GetOnecloudImage(constants.OnecloudRegion, cfg))
-	imgs = append(imgs, GetOnecloudImage(constants.OnecloudScheduler, cfg))
+	for _, component := range []string{
+		constants.OnecloudKeystone,
+		constants.OnecloudRegion,
+		constants.OnecloudScheduler,
+		constants.OnecloudGlance,
+		constants.OnecloudBaremetal,
+	} {
+		imgs = append(imgs, GetOnecloudImage(component, cfg))
+	}
 	return imgs
 }

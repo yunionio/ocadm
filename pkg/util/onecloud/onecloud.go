@@ -3,10 +3,10 @@ package onecloud
 import (
 	"net/http"
 	"strings"
+
 	"yunion.io/x/jsonutils"
 	"yunion.io/x/onecloud/pkg/mcclient"
 	"yunion.io/x/onecloud/pkg/mcclient/modules"
-
 	"yunion.io/x/onecloud/pkg/util/httputils"
 )
 
@@ -51,6 +51,23 @@ func EnsureResource(
 		return obj, nil
 	}
 	return createFunc()
+}
+
+func DeleteResource(
+	s *mcclient.ClientSession,
+	man modules.Manager,
+	name string,
+) error {
+	obj, exists, err := IsResourceExists(s, man, name)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return nil
+	}
+	id, _ := obj.GetString("id")
+	_, err = man.Delete(s, id, nil)
+	return err
 }
 
 func IsRoleExists(s *mcclient.ClientSession, roleName string) (jsonutils.JSONObject, bool, error) {
@@ -138,6 +155,12 @@ func CreateUser(s *mcclient.ClientSession, username string, password string) (js
 	params.Add(jsonutils.NewString(username), "name")
 	params.Add(jsonutils.NewString(password), "password")
 	return modules.UsersV3.Create(s, params)
+}
+
+func ChangeUserPassword(s *mcclient.ClientSession, username string, password string) (jsonutils.JSONObject, error) {
+	params := jsonutils.NewDict()
+	params.Add(jsonutils.NewString(password), "password")
+	return modules.UsersV3.Update(s, username, params)
 }
 
 func ProjectAddUser(s *mcclient.ClientSession, projectId string, userId string, roleId string) error {
@@ -255,4 +278,57 @@ func EnsureDynamicSchedtag(s *mcclient.ClientSession, name, schedtag, condition 
 	return EnsureResource(s, &modules.Dynamicschedtags, name, func() (jsonutils.JSONObject, error) {
 		return CreateDynamicSchedtag(s, name, schedtag, condition)
 	})
+}
+
+func GetEndpointsByService(s *mcclient.ClientSession, serviceName string) ([]jsonutils.JSONObject, error) {
+	obj, err := modules.ServicesV3.Get(s, serviceName, nil)
+	if err != nil {
+		return nil, err
+	}
+	svcId, _ := obj.GetString("id")
+	searchParams := jsonutils.NewDict()
+	searchParams.Add(jsonutils.NewString(svcId), "service_id")
+	ret, err := modules.EndpointsV3.List(s, searchParams)
+	if err != nil {
+		return nil, err
+	}
+	return ret.Data, nil
+}
+
+func DisableService(s *mcclient.ClientSession, id string) error {
+	params := jsonutils.NewDict()
+	params.Add(jsonutils.JSONFalse, "enabled")
+	_, err := modules.ServicesV3.Patch(s, id, params)
+	return err
+}
+
+func DisableEndpoint(s *mcclient.ClientSession, id string) error {
+	params := jsonutils.NewDict()
+	params.Add(jsonutils.JSONFalse, "enabled")
+	_, err := modules.EndpointsV3.Patch(s, id, params)
+	return err
+}
+
+func DeleteServiceEndpoints(s *mcclient.ClientSession, serviceName string) error {
+	endpoints, err := GetEndpointsByService(s, serviceName)
+	if err != nil {
+		if IsNotFoundError(err) {
+			return nil
+		}
+		return err
+	}
+	for _, ep := range endpoints {
+		id, _ := ep.GetString("id")
+		tmpId := id
+		if err := DisableEndpoint(s, tmpId); err != nil {
+			return err
+		}
+		if _, err := modules.EndpointsV3.Delete(s, id, nil); err != nil {
+			return err
+		}
+	}
+	if err := DisableService(s, serviceName); err != nil {
+		return err
+	}
+	return DeleteResource(s, &modules.ServicesV3, serviceName)
 }

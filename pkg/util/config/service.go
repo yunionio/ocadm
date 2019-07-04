@@ -6,7 +6,6 @@ import (
 
 	"github.com/pkg/errors"
 
-	"yunion.io/x/ocadm/pkg/apis/constants"
 	"yunion.io/x/onecloud/pkg/cloudcommon/options"
 	"yunion.io/x/pkg/util/reflectutils"
 	"yunion.io/x/structarg"
@@ -21,11 +20,11 @@ func InitDBUser(conn *mysql.Connection, info apis.DBInfo) error {
 	if err != nil {
 		return errors.Wrap(err, "check db exists")
 	}
-	if dbExists {
-		return errors.Errorf("database %q already exists", dbName)
-	}
-	if err := conn.CreateDatabase(dbName); err != nil {
-		return errors.Wrapf(err, "create database %q", dbName)
+	if !dbExists {
+		//return errors.Errorf("database %q already exists", dbName)
+		if err := conn.CreateDatabase(dbName); err != nil {
+			return errors.Wrapf(err, "create database %q", dbName)
+		}
 	}
 	user := info.Username
 	password := info.Password
@@ -36,7 +35,7 @@ func InitDBUser(conn *mysql.Connection, info apis.DBInfo) error {
 }
 
 func SetOptionsDefault(opt interface{}, serviceType string) error {
-	parser, err := structarg.NewArgumentParser(opt, constants.ServiceTypeCompute, "", "")
+	parser, err := structarg.NewArgumentParser(opt, serviceType, "", "")
 	if err != nil {
 		return err
 	}
@@ -91,6 +90,7 @@ func GetAuthURL(config apis.Keystone, address string) string {
 	return fmt.Sprintf("%s://%s:%d/v3", proto, address, config.ServiceBaseOptions.Port)
 }
 
-func FillServiceCommonOptions(opt *apis.ServiceCommonOptions, authConfig apis.Keystone, address string) {
-	opt.AuthURL = GetAuthURL(authConfig, address)
+func FillServiceCommonOptions(opt *apis.ServiceCommonOptions, region, address string) {
+	opt.Region = region
+	opt.AuthURL = address
 }

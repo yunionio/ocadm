@@ -50,7 +50,7 @@ var (
 
 		You should now deploy a pod network to the cluster.
 		Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
-		  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+		  https://kubernetes.io/docs/concepts/cluster-administration/components/
 
 		{{if .ControlPlaneEndpoint -}}
 		{{if .UploadCerts -}}
@@ -180,8 +180,6 @@ func NewCmdInit(out io.Writer, initOptions *initOptions) *cobra.Command {
 	initRunner.AppendPhase(initphases.NewUploadConfigPhase())
 	initRunner.AppendPhase(initphases.NewRegionPhase())
 	initRunner.AppendPhase(initphases.NewSchedulerPhase())
-	initRunner.AppendPhase(initphases.NewGlancePhase())
-	//initRunner.AppendPhase(initphases.NewOCControlPlanePhase())
 
 	// sets the data builder function, that will be used by the runner
 	// both when running the entire workflow or single phases

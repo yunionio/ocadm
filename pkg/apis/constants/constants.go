@@ -30,16 +30,27 @@ const (
 	RegionDB           = "yunioncloud"
 	RegionDBUser       = "yunioncloud"
 
+	BaremetalAdminUser    = "baremetal"
+	BaremetalAdminProject = SysAdminProject
+	BaremetalPort         = 8879
+
+	WebconsoleAdminUser    = "webconsole"
+	WebconsoleAdminProject = SysAdminProject
+	WebconsolePort         = 8899
+
 	AnsibleServerAdminUser    = "ansibleadmin"
 	AnsibleServerAdminProject = SysAdminProject
 	AnsibleServerPort         = 8890
 	AnsibleServerDB           = "yunionansible"
 
-	OnecloudKeystone   = "keystone"
-	OnecloudRegion     = "region"
-	OnecloudScheduler  = "scheduler"
-	OnecloudGlance     = "glance"
-	OnecloudAPIGateway = "yunionapi"
+	OnecloudKeystone       = "keystone"
+	OnecloudRegion         = "region"
+	OnecloudScheduler      = "scheduler"
+	OnecloudGlance         = "glance"
+	OnecloudBaremetal      = "baremetal"
+	OnecloudBaremetalAgent = "baremetal-agent" // used by image
+	OnecloudWebconsole     = "webconsole"
+	OnecloudAPIGateway     = "yunionapi"
 
 	EndpointTypeInternal = "internal"
 	EndpointTypePublic   = "public"
@@ -58,6 +69,9 @@ const (
 	ServiceNameScheduler = "scheduler"
 	ServiceTypeScheduler = "scheduler"
 
+	ServiceNameWebconsole = "webconsole"
+	ServiceTypeWebconsole = "webconsole"
+
 	ServiceNameInfluxdb = "influxdb"
 	ServiceTypeInfluxdb = "influxdb"
 
@@ -74,14 +88,16 @@ const (
 )
 
 const (
-	OnecloudConfigVolumeName      = "config"
-	OnecloudEtcKeystoneVolumeName = "etc-yunion-keystone"
-	OnecloudOptVolumeName         = "opt-yunion"
-	OnecloudOptTmpVolumeName      = "opt-yunion-tmp"
-	OnecloudPKICertsVolumeName    = "pki-certs"
-	OnecloudGlanceImageVolumeName = "glance-images"
-	OnecloudQemuBinaryVolumeName  = "qemu"
-	OnecloudKernelVolumeName      = "kernel"
+	OnecloudConfigVolumeName        = "config"
+	OnecloudEtcKeystoneVolumeName   = "etc-yunion-keystone"
+	OnecloudOptVolumeName           = "opt-yunion"
+	OnecloudOptTmpVolumeName        = "opt-yunion-tmp"
+	OnecloudPKICertsVolumeName      = "pki-certs"
+	OnecloudGlanceImageVolumeName   = "glance-images"
+	OnecloudQemuBinaryVolumeName    = "qemu"
+	OnecloudKernelVolumeName        = "kernel"
+	OnecloudBaremetalTFTPVolumeName = "tftp"
+	OnecloudBaremetalsVolumeName    = "bms"
 
 	OnecloudConfigDir              = "/etc/yunion"
 	OnecloudKeystoneConfigDir      = "/etc/yunion/keystone"
@@ -100,6 +116,12 @@ const (
 
 	OnecloudQemuPath   = "/usr/local/qemu-2.12.1"
 	OnecloudKernelPath = "/lib/modules"
+
+	OnecloudBaremetalConfigFileName = "baremetal.conf"
+	OnecloudBaremetalsPath          = "/opt/cloud/workspace/baremetals"
+	OnecloudBaremetalTFTPRoot       = "/opt/cloud/yunion/baremetal"
+
+	OnecloudWebconsoleConfigFileName = "webconsole.conf"
 
 	// OnecloudAdminConfigConfigMap specifies in what ConfigMap in the kube-system namespace the `ocadm init` configuration should be stored
 	OnecloudAdminConfigConfigMap = "ocadm-config"
@@ -128,6 +150,8 @@ const (
 	// CAKeyName defines certificate name
 	CAKeyName = kubeadmconstants.CAKeyName
 
+	AdminKubeConfigFileName = kubeadmconstants.AdminKubeConfigFileName
+
 	// KeystoneCertAndKeyBaseName defines keystone server certificate and key base name
 	KeystoneCertAndKeyBaseName = "keystone"
 	// KeystoneCertName defines keystone server certificate name
@@ -146,6 +170,12 @@ const (
 	GlanceCertAndKeyBaseName = "glance"
 	GlanceCertName           = "glance.crt"
 	GlanceKeyName            = "glance.key"
+
+	BaremetalCertName = "baremetal.crt"
+	BaremetalKeyName  = "baremetal.key"
+
+	WebconsoleCertName = "webconsole.crt"
+	WebconsoleKeyName  = "webconsole.key"
 
 	OcadmCertsSecret = "ocadm-certs"
 )
@@ -191,7 +221,8 @@ const (
 )
 
 var (
-	GetStaticPodFilepath   = kubeadmconstants.GetStaticPodFilepath
-	GetStaticPodDirectory  = kubeadmconstants.GetStaticPodDirectory
-	GetAdminKubeConfigPath = kubeadmconstants.GetAdminKubeConfigPath
+	GetStaticPodFilepath     = kubeadmconstants.GetStaticPodFilepath
+	GetStaticPodDirectory    = kubeadmconstants.GetStaticPodDirectory
+	GetAdminKubeConfigPath   = kubeadmconstants.GetAdminKubeConfigPath
+	GetKubeletKubeConfigPath = kubeadmconstants.GetKubeletKubeConfigPath
 )

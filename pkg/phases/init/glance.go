@@ -1,18 +1,6 @@
 package init
 
-import (
-	"k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/workflow"
-
-	"yunion.io/x/ocadm/pkg/apis/constants"
-	v1 "yunion.io/x/ocadm/pkg/apis/v1"
-	"yunion.io/x/ocadm/pkg/options"
-	"yunion.io/x/ocadm/pkg/phases/glance"
-	"yunion.io/x/ocadm/pkg/util/mysql"
-	"yunion.io/x/ocadm/pkg/util/onecloud"
-	"yunion.io/x/onecloud/pkg/mcclient"
-)
-
-func NewGlancePhase() workflow.Phase {
+/*func NewGlancePhase() workflow.Phase {
 	servicePhase := &ServiceBasePhase{
 		Name: constants.ServiceNameGlance,
 		Type: constants.ServiceTypeGlance,
@@ -32,4 +20,4 @@ func NewGlancePhase() workflow.Phase {
 		},
 	}
 	return servicePhase.ToPhase()
-}
+}*/

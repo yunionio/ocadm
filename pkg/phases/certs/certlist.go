@@ -191,10 +191,7 @@ func (c Certificates) AsMap() CertificateMap {
 func GetDefaultCertList() Certificates {
 	return Certificates{
 		&OcadmCertRootCA,
-		&OcadmCertKeystoneServer,
-		&OcadmCertRegionServer,
 		&OcadmClimcCertClient,
-		&OcadmCertGlanceServer,
 	}
 }
 
@@ -208,11 +205,8 @@ var (
 			CommonName: "onecloud",
 		},
 	}
-	// OcadmCertKeystoneServer is the definition of the cert used to serve the identity service.
-	OcadmCertKeystoneServer = newOcServiceCert("ca", constants.ServiceNameKeystone, constants.KeystoneCertName)
 	// OcadmCertRegionServer is the definition of the cert used to serve compute controller service.
-	OcadmCertRegionServer = newOcServiceCert("ca", constants.ServiceNameRegion, constants.RegionCertName)
-	OcadmCertGlanceServer = newOcServiceCert("ca", constants.ServiceNameGlance, constants.GlanceCertName)
+	OcadmCertGlanceServer = NewOcServiceCert("ca", constants.ServiceNameGlance, constants.GlanceCertName)
 	// OcadmCertClient is the definition of the cert used by the cli to access the api server
 	OcadmClimcCertClient = OnecloudCert{
 		Name:     "climc",
@@ -226,7 +220,7 @@ var (
 	}
 )
 
-func newOcServiceCert(caName string, serviceName string, certName string) OnecloudCert {
+func NewOcServiceCert(caName string, serviceName string, certName string) OnecloudCert {
 	return OnecloudCert{
 		Name:     serviceName,
 		LongName: fmt.Sprintf("certificate for serving the %s service", serviceName),

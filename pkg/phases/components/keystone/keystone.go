@@ -5,24 +5,52 @@ import (
 	"path"
 
 	"github.com/pkg/errors"
+
 	"yunion.io/x/jsonutils"
+	"yunion.io/x/ocadm/pkg/util/onecloud"
 	identityapi "yunion.io/x/onecloud/pkg/apis/identity"
 	"yunion.io/x/onecloud/pkg/keystone/options"
 	"yunion.io/x/onecloud/pkg/mcclient"
 	"yunion.io/x/onecloud/pkg/mcclient/modules"
 
 	"yunion.io/x/ocadm/pkg/apis/constants"
-	apis "yunion.io/x/ocadm/pkg/apis/v1"
+	apiv1 "yunion.io/x/ocadm/pkg/apis/v1"
 	"yunion.io/x/ocadm/pkg/occonfig"
+	"yunion.io/x/ocadm/pkg/phases/components"
 	configutil "yunion.io/x/ocadm/pkg/util/config"
-	"yunion.io/x/ocadm/pkg/util/mysql"
-	"yunion.io/x/ocadm/pkg/util/onecloud"
 )
 
-func GetKeystoneOptions(config *apis.Keystone, certDir string) (*options.SKeystoneOptions, error) {
+var KeystoneComponent *components.Component
+
+func init() {
+	KeystoneComponent = &components.Component{
+		Name:        constants.OnecloudKeystone,
+		ServiceName: constants.ServiceNameKeystone,
+		ServiceType: constants.ServiceTypeIdentity,
+		CertConfig: &components.CertConfig{
+			CertName: constants.KeystoneCertName,
+		},
+		ConfigDir:            constants.OnecloudKeystoneConfigDir,
+		ConfigFileName:       constants.OnecloudKeystoneConfigFileName,
+		ConfigurationFactory: GetKeystoneOptions,
+		GetDBInfo:            GetDBInfo,
+		GetServiceAccount:    nil,
+		SetupFunc:            SetupKeystone,
+		WaitRunningFunc: func(waiter onecloud.Waiter) error {
+			return waiter.WaitForKeystone()
+		},
+		SysInitFunc: DoSysInit,
+	}
+}
+
+func GetKeystoneOptions(_ *occonfig.RCAdminConfig, clusterCfg *apiv1.ClusterConfiguration, _ *apiv1.HostLocalInfo, certDir string) (interface{}, interface{}, error) {
+	config := &apiv1.Keystone{}
+	apiv1.SetDefaults_Keystone(config)
+	configutil.SetServiceDBInfo(&config.ServiceDBOptions.DBInfo, &clusterCfg.MysqlConnection, constants.KeystoneDB, constants.KeystoneDBUser)
+
 	opt := &options.Options
 	if err := configutil.SetOptionsDefault(opt, identityapi.SERVICE_TYPE); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	configutil.SetDBOptions(&opt.DBOptions, config.ServiceDBOptions)
 
@@ -30,36 +58,24 @@ func GetKeystoneOptions(config *apis.Keystone, certDir string) (*options.SKeysto
 
 	configutil.SetServiceBaseOptions(&opt.BaseOptions, config.ServiceBaseOptions)
 
-	bootstrapAdminUserPasswd := config.BootstrapAdminUserPassword
+	bootstrapAdminUserPasswd := clusterCfg.BootstrapPassword
 	opt.BootstrapAdminUserPassword = bootstrapAdminUserPasswd
 	opt.AdminPort = config.AdminPort
 
-	return opt, nil
+	return config, opt, nil
 }
 
-func SetupKeystone(
-	rootDBConn *mysql.Connection,
-	config *apis.Keystone,
-	region string,
-	localCfg *apis.HostLocalInfo,
-	certDir string,
-) error {
-	dbInfo := config.ServiceDBOptions.DBInfo
-	err := configutil.InitDBUser(rootDBConn, dbInfo)
-	if err != nil {
-		return err
-	}
-	opt, err := GetKeystoneOptions(config, certDir)
-	if err != nil {
-		return err
-	}
-	if err := occonfig.WriteKeystoneConfigFile(*opt); err != nil {
-		return errors.Wrap(err, "write keystone config file")
-	}
+func GetDBInfo(obj interface{}) *apiv1.DBInfo {
+	return &obj.(*apiv1.Keystone).ServiceDBOptions.DBInfo
+}
+
+func SetupKeystone(_ *mcclient.ClientSession, configObj interface{}, clusterCfg *apiv1.ClusterConfiguration, localCfg *apiv1.HostLocalInfo) error {
+	config := configObj.(*apiv1.Keystone)
+	certDir := clusterCfg.OnecloudCertificatesDir
 	rcAdminConfig := occonfig.NewRCAdminConfig(
 		configutil.GetAuthURL(*config, localCfg.ManagementNetInterface.IPAddress()),
-		region,
-		config.BootstrapAdminUserPassword,
+		clusterCfg.Region,
+		clusterCfg.BootstrapPassword,
 		path.Join(certDir, constants.ClimcCertName),
 		path.Join(certDir, constants.ClimcKeyName),
 	)
@@ -69,7 +85,7 @@ func SetupKeystone(
 	return nil
 }
 
-func DoSysInit(s *mcclient.ClientSession, cfg *apis.ClusterConfiguration, localCfg *apis.HostLocalInfo) error {
+func DoSysInit(s *mcclient.ClientSession, cfg *apiv1.ClusterConfiguration, localCfg *apiv1.HostLocalInfo) error {
 	if err := doPolicyRoleInit(s); err != nil {
 		return errors.Wrap(err, "policy role init")
 	}
@@ -83,9 +99,19 @@ func DoSysInit(s *mcclient.ClientSession, cfg *apis.ClusterConfiguration, localC
 	if err := doRegisterTracker(s, cfg.Region); err != nil {
 		return errors.Wrap(err, "register tracker endpoint")
 	}
-	adminPort := cfg.Keystone.AdminPort
-	publicPort := cfg.Keystone.ServiceBaseOptions.Port
-	if err := doRegisterIdentity(s, cfg.Region, localCfg.ManagementNetInterface.Address.String(), adminPort, publicPort, true); err != nil {
+	keystoneCfgObj, err := occonfig.GetConfigFileObject(occonfig.KeystoneConfigFilePath())
+	if err != nil {
+		return err
+	}
+	adminPort, err := keystoneCfgObj.Int("admin_port")
+	if err != nil {
+		return err
+	}
+	publicPort, err := keystoneCfgObj.Int("port")
+	if err != nil {
+		return err
+	}
+	if err := doRegisterIdentity(s, cfg.Region, localCfg.ManagementNetInterface.Address.String(), int(adminPort), int(publicPort), true); err != nil {
 		return errors.Wrap(err, "register identity endpoint")
 	}
 	if err := makeDomainAdminPublic(s); err != nil {
