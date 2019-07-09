@@ -172,6 +172,13 @@ func BaremetalConfigFilePath() string {
 	)
 }
 
+func WebconsoleConfigFilePath() string {
+	return YAMLConfigFilePath(
+		constants.OnecloudConfigDir,
+		constants.OnecloudWebconsoleConfigFileName,
+	)
+}
+
 func YAMLConfigFilePath(dir string, fileName string) string {
 	return path.Join(dir, fmt.Sprintf("%s%s", fileName, constants.OnecloudConfigFileSuffix))
 }

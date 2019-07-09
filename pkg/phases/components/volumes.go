@@ -183,6 +183,27 @@ func getHostPathVolumesForTheControlPlane(cfg *apiv1.ClusterConfiguration) contr
 		&hostPathDirectoryOrCreate,
 	)
 
+	// Read-only mount for the webconsole config file
+	webconsoleConfigFile := occonfig.WebconsoleConfigFilePath()
+	mounts.NewHostPathMount(
+		constants.OnecloudWebconsole,
+		constants.OnecloudConfigVolumeName,
+		webconsoleConfigFile,
+		webconsoleConfigFile,
+		true,
+		&hostPathFileOrCreate,
+	)
+
+	// Read-only mount for the webconsole certs
+	mounts.NewHostPathMount(
+		constants.OnecloudWebconsole,
+		constants.OnecloudPKICertsVolumeName,
+		cfg.OnecloudCertificatesDir,
+		cfg.OnecloudCertificatesDir,
+		true,
+		&hostPathDirectoryOrCreate,
+	)
+
 	return mounts
 }
 

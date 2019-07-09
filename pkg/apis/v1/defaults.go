@@ -225,3 +225,7 @@ func SetDefaults_Glance(obj *Glance, region string) {
 		obj.TorrentStoreDir = constants.OnecloudGlanceTorrentStoreDir
 	}
 }
+
+func SetDefaults_Webconsole(obj *Webconsole, region string) {
+	SetDefaults_ServiceCommonOptions(&obj.ServiceCommonOptions, region, constants.WebconsoleAdminProject, constants.WebconsoleAdminUser, constants.WebconsolePort)
+}

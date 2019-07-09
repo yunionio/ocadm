@@ -85,7 +85,7 @@ func SetupGlanceServer(
 	localCfg *apiv1.HostLocalInfo,
 ) error {
 	config := cfgObj.(*apiv1.Glance)
-	url := fmt.Sprintf("https://%s:%d", localCfg.ManagementNetInterface.IPAddress(), config.Port)
+	url := fmt.Sprintf("https://%s:%d/v1", localCfg.ManagementNetInterface.IPAddress(), config.Port)
 	if err := occonfig.RegisterServicePublicInternalEndpoint(s, config.Region, constants.ServiceNameGlance, constants.ServiceTypeGlance, url); err != nil {
 		return errors.Wrap(err, "register service")
 	}

@@ -248,3 +248,10 @@ type BaremetalAgent struct {
 	DefaultIPMIPassword    string
 	EnableTFTPHTTPDownload bool
 }
+
+type Webconsole struct {
+	ServiceCommonOptions
+
+	APIServer string
+	EnableAutoLogin bool
+}

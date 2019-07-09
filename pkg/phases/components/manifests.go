@@ -88,7 +88,7 @@ func GetSaticPodSpecs(cfg *apiv1.ClusterConfiguration) map[string]v1.Pod {
 				Command:         []string{"/opt/yunion/bin/glance"},
 				Args:            getGlanceArgs(),
 				VolumeMounts:    staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(constants.OnecloudGlance)),
-				Resources:       staticpodutil.ComponentResources("250m"),
+				Resources:       staticpodutil.ComponentResources("1024m"),
 			},
 			mounts.GetVolumes(constants.OnecloudGlance),
 		),
@@ -106,6 +106,21 @@ func GetSaticPodSpecs(cfg *apiv1.ClusterConfiguration) map[string]v1.Pod {
 				},
 			},
 			mounts.GetVolumes(constants.OnecloudBaremetal),
+		),
+
+		// webconsole pod
+		constants.OnecloudWebconsole: staticpodutil.ComponentPodWithInit(
+			nil,
+			&v1.Container{
+				Name:            constants.OnecloudWebconsole,
+				Image:           images.GetOnecloudImage(constants.OnecloudWebconsole, cfg),
+				ImagePullPolicy: v1.PullIfNotPresent,
+				Command:         []string{"/opt/yunion/bin/webconsole"},
+				Args:            []string{"--config", occonfig.WebconsoleConfigFilePath()},
+				VolumeMounts:    staticpodutil.VolumeMountMapToSlice(mounts.GetVolumeMounts(constants.OnecloudWebconsole)),
+				Resources:       staticpodutil.ComponentResources("250m"),
+			},
+			mounts.GetVolumes(constants.OnecloudWebconsole),
 		),
 	}
 
