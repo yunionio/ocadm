@@ -94,6 +94,7 @@ const (
 	OnecloudOptTmpVolumeName        = "opt-yunion-tmp"
 	OnecloudPKICertsVolumeName      = "pki-certs"
 	OnecloudGlanceImageVolumeName   = "glance-images"
+	OnecloudGlanceImageTorrentName  = "glance-torrents"
 	OnecloudQemuBinaryVolumeName    = "qemu"
 	OnecloudKernelVolumeName        = "kernel"
 	OnecloudBaremetalTFTPVolumeName = "tftp"

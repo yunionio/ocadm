@@ -21,7 +21,7 @@ func GetAllImages(cfg *v1.ClusterConfiguration, kubeadmCfg *kubeadmapi.ClusterCo
 		constants.OnecloudRegion,
 		constants.OnecloudScheduler,
 		constants.OnecloudGlance,
-		constants.OnecloudBaremetal,
+		constants.OnecloudBaremetalAgent,
 	} {
 		imgs = append(imgs, GetOnecloudImage(component, cfg))
 	}

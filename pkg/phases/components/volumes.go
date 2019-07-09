@@ -128,10 +128,10 @@ func getHostPathVolumesForTheControlPlane(cfg *apiv1.ClusterConfiguration) contr
 	// Read-only mount for the glance probe image
 	mounts.NewHostPathMount(
 		constants.OnecloudGlance,
-		constants.OnecloudQemuBinaryVolumeName,
-		constants.OnecloudQemuPath,
-		constants.OnecloudQemuPath,
-		true,
+		constants.OnecloudGlanceImageTorrentName,
+		constants.OnecloudGlanceTorrentStoreDir,
+		constants.OnecloudGlanceTorrentStoreDir,
+		false,
 		&hostPathDirectoryOrCreate,
 	)
 
