@@ -65,12 +65,13 @@ $ yum install --assumeyes bridge-utils conntrack-tools jq kubelet-1.14.3-0 kubea
 $ mkdir /etc/docker
 $ cat <<EOF >/etc/docker/daemon.json
 {
-  "bip": "172.17.0.1/16",
+  "bridge": "none",
+  "iptables": false,
   "exec-opts":
     [
       "native.cgroupdriver=cgroupfs"
     ],
-  "graph": "/opt/docker",
+  "data-root": "/opt/docker",
   "live-restore": true,
   "log-driver": "json-file",
   "log-opts":

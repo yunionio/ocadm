@@ -38,6 +38,8 @@ const (
 	WebconsoleAdminProject = SysAdminProject
 	WebconsolePort         = 8899
 
+	InfluxdbPort = 8086
+
 	AnsibleServerAdminUser    = "ansibleadmin"
 	AnsibleServerAdminProject = SysAdminProject
 	AnsibleServerPort         = 8890
@@ -50,6 +52,7 @@ const (
 	OnecloudBaremetal      = "baremetal"
 	OnecloudBaremetalAgent = "baremetal-agent" // used by image
 	OnecloudWebconsole     = "webconsole"
+	OnecloudInfluxdb       = "influxdb"
 	OnecloudAPIGateway     = "yunionapi"
 
 	EndpointTypeInternal = "internal"
@@ -124,6 +127,8 @@ const (
 
 	OnecloudWebconsoleConfigFileName = "webconsole.conf"
 
+	OnecloudInfluxdbConfigFileName = "influxdb.conf"
+
 	// OnecloudAdminConfigConfigMap specifies in what ConfigMap in the kube-system namespace the `ocadm init` configuration should be stored
 	OnecloudAdminConfigConfigMap = "ocadm-config"
 
@@ -177,6 +182,9 @@ const (
 
 	WebconsoleCertName = "webconsole.crt"
 	WebconsoleKeyName  = "webconsole.key"
+
+	InfluxdbCertName = "influxdb.crt"
+	InfluxdbKeyName  = "influxdb.key"
 
 	OcadmCertsSecret = "ocadm-certs"
 )

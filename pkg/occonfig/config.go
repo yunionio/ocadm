@@ -91,7 +91,7 @@ func WriteRCAdminConfigFile(opt *RCAdminConfig) error {
 	if err != nil {
 		return err
 	}
-	if err := writeOnecloudFile(configFile, content); err != nil {
+	if err := WriteOnecloudFile(configFile, content); err != nil {
 		return err
 	}
 	if err := WriteOnecloudConfigFile(constants.OnecloudConfigDir, constants.OnecloudAdminConfigFileName, opt); err != nil {
@@ -179,6 +179,12 @@ func WebconsoleConfigFilePath() string {
 	)
 }
 
+func InfluxdbConfigFilePath() string {
+	return path.Join(
+		constants.OnecloudConfigDir,
+		constants.OnecloudInfluxdbConfigFileName)
+}
+
 func YAMLConfigFilePath(dir string, fileName string) string {
 	return path.Join(dir, fmt.Sprintf("%s%s", fileName, constants.OnecloudConfigFileSuffix))
 }
@@ -186,10 +192,10 @@ func YAMLConfigFilePath(dir string, fileName string) string {
 func WriteOnecloudConfigFile(dir string, fileName string, optStruct interface{}) error {
 	configFile := YAMLConfigFilePath(dir, fileName)
 	content := jsonutils.Marshal(optStruct).YAMLString()
-	return writeOnecloudFile(configFile, content)
+	return WriteOnecloudFile(configFile, content)
 }
 
-func writeOnecloudFile(filePath string, content string) error {
+func WriteOnecloudFile(filePath string, content string) error {
 	parentDir := path.Dir(filePath)
 	if err := os.MkdirAll(parentDir, 0755); err != nil {
 		return errors.Wrapf(err, "create dir %s", parentDir)

@@ -8,6 +8,7 @@ import (
 	"yunion.io/x/ocadm/pkg/phases/components"
 	"yunion.io/x/ocadm/pkg/phases/components/baremetal"
 	"yunion.io/x/ocadm/pkg/phases/components/glance"
+	"yunion.io/x/ocadm/pkg/phases/components/influxdb"
 	"yunion.io/x/ocadm/pkg/phases/components/webconsole"
 )
 
@@ -20,6 +21,7 @@ func registerComponentCmds() {
 		glance.GlanceComponent,
 		baremetal.BaremetalComponent,
 		webconsole.WebconsoleComponent,
+		influxdb.InfluxdbComponent,
 	}
 	for _, c := range installComponents {
 		addCmdSubCmd(components.InstallCmd, c.ToInstallCmd(), c.ToInstallPhase())
@@ -30,6 +32,7 @@ func registerComponentCmds() {
 		glance.GlanceComponent,
 		baremetal.BaremetalComponent,
 		webconsole.WebconsoleComponent,
+		influxdb.InfluxdbComponent,
 	}
 	for _, c := range uninstallComponents {
 		addCmdSubCmd(components.UninstallCmd, c.ToUninstallCmd(), c.ToUninstallPhase())

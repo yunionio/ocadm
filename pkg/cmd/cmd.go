@@ -2,10 +2,8 @@ package cmd
 
 import (
 	"io"
-	"os"
 
 	"github.com/spf13/cobra"
-	kubeadmcmd "k8s.io/kubernetes/cmd/kubeadm/app/cmd"
 )
 
 func NewOneCloudAdminCommand(in io.Reader, out, err io.Writer) (*cobra.Command, []func() *cobra.Command) {
@@ -14,9 +12,9 @@ func NewOneCloudAdminCommand(in io.Reader, out, err io.Writer) (*cobra.Command, 
 		Short: "Deploy and manage onecloud services on kubernetes cluster",
 	}
 
-	kubeadm := func() *cobra.Command {
+	/*kubeadm := func() *cobra.Command {
 		return kubeadmcmd.NewKubeadmCommand(os.Stdin, os.Stdout, os.Stderr)
-	}
+	}*/
 
 	cmds.ResetFlags()
 
@@ -28,7 +26,7 @@ func NewOneCloudAdminCommand(in io.Reader, out, err io.Writer) (*cobra.Command, 
 	cmds.AddCommand(NewCmdComponent(out))
 
 	commandFns := []func() *cobra.Command{
-		kubeadm,
+		//kubeadm,
 	}
 
 	for i := range commandFns {

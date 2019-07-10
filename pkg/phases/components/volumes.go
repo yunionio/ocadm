@@ -204,6 +204,27 @@ func getHostPathVolumesForTheControlPlane(cfg *apiv1.ClusterConfiguration) contr
 		&hostPathDirectoryOrCreate,
 	)
 
+	// Read-only mount for the influxdb config file
+	influxdbConfigFile := occonfig.InfluxdbConfigFilePath()
+	mounts.NewHostPathMount(
+		constants.OnecloudInfluxdb,
+		constants.OnecloudConfigVolumeName,
+		influxdbConfigFile,
+		influxdbConfigFile,
+		true,
+		&hostPathFileOrCreate,
+	)
+
+	// Read-write mount for influxdb /var/lib/influxdb
+	mounts.NewHostPathMount(
+		constants.OnecloudInfluxdb,
+		"var-lib",
+		"/var/lib/influxdb",
+		"/var/lib/influxdb",
+		false,
+		&hostPathDirectoryOrCreate,
+	)
+
 	return mounts
 }
 

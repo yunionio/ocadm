@@ -122,6 +122,18 @@ func GetSaticPodSpecs(cfg *apiv1.ClusterConfiguration) map[string]v1.Pod {
 			},
 			mounts.GetVolumes(constants.OnecloudWebconsole),
 		),
+
+		// influxdb pod
+		constants.OnecloudInfluxdb: staticpodutil.ComponentPodWithInit(
+			nil,
+			&v1.Container{
+				Name:            constants.OnecloudInfluxdb,
+				Image:           images.GetGenericImage(cfg.ImageRepository, constants.OnecloudInfluxdb, "1.7.7"),
+				ImagePullPolicy: v1.PullIfNotPresent,
+				Command:         []string{"influxd", "-config", "/etc/influxdb/influxdb.conf"},
+			},
+			mounts.GetVolumes(constants.OnecloudInfluxdb),
+		),
 	}
 
 	return staticPodSpecs

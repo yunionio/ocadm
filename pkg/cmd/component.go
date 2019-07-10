@@ -13,10 +13,9 @@ import (
 func NewCmdComponent(out io.Writer) *cobra.Command {
 	cmds := &cobra.Command{
 		Use:   "component",
-		Short: "component: manage onecloud components",
+		Short: "Manage onecloud components",
 	}
 
-	//cmds.AddCommand(newCmdComponentInstall(out, cOpt))
 	cmds.AddCommand(componentsphase.InstallCmd.GetCmd())
 	cmds.AddCommand(componentsphase.UninstallCmd.GetCmd())
 
