@@ -7,10 +7,14 @@ import (
 	"yunion.io/x/ocadm/pkg/apis/v1"
 )
 
+var (
+	GetGenericImage = images.GetGenericImage
+)
+
 func GetOnecloudImage(image string, cfg *v1.ClusterConfiguration) string {
 	repoPrefix := cfg.ImageRepository
 	onecloudImageTag := cfg.OnecloudVersion
-	return images.GetGenericImage(repoPrefix, image, onecloudImageTag)
+	return GetGenericImage(repoPrefix, image, onecloudImageTag)
 }
 
 // GetAllImages returns a list of container images expects to use on a control plane node
@@ -20,8 +24,8 @@ func GetAllImages(cfg *v1.ClusterConfiguration, kubeadmCfg *kubeadmapi.ClusterCo
 		constants.OnecloudKeystone,
 		constants.OnecloudRegion,
 		constants.OnecloudScheduler,
+		constants.OnecloudWebconsole,
 		constants.OnecloudGlance,
-		constants.OnecloudBaremetalAgent,
 	} {
 		imgs = append(imgs, GetOnecloudImage(component, cfg))
 	}

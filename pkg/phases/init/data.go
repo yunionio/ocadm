@@ -4,6 +4,7 @@ import (
 	initphases "k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/init"
 
 	apiv1 "yunion.io/x/ocadm/pkg/apis/v1"
+	"yunion.io/x/ocadm/pkg/util/kubectl"
 	"yunion.io/x/ocadm/pkg/util/mysql"
 	"yunion.io/x/onecloud/pkg/mcclient"
 )
@@ -20,4 +21,5 @@ type InitData interface {
 	OnecloudClientSession() (*mcclient.ClientSession, error)
 	OnecloudCertificateWriteDir() string
 	OnecloudCertificateDir() string
+	KubectlClient() (*kubectl.Client, error)
 }

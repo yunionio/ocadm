@@ -12,6 +12,7 @@ import (
 
 const (
 	DefaultKubernetesVersion           = "v1.14.3"
+	DefaultPodSubnetCIDR               = "10.40.0.0/16"
 	DefaultOnecloudVersion             = "latest"
 	DefaultOnecloudRegion              = "region0"
 	DefaultOnecloudZone                = "zone0"
@@ -94,6 +95,8 @@ func setDefaults_kubeadmInitConfiguration(obj *kubeadmapi.InitConfiguration) {
 	defaultversionedcfg := &kubeadmapiv1beta1.InitConfiguration{}
 	kubeadmscheme.Scheme.Convert(obj, defaultversionedcfg, nil)
 	kubeadmscheme.Scheme.Default(defaultversionedcfg)
+	defaultversionedcfg.KubernetesVersion = DefaultKubernetesVersion
+	defaultversionedcfg.Networking.PodSubnet = DefaultPodSubnetCIDR
 
 	// Takes passed flags into account; the defaulting is executed once again enforcing assignment of
 	// static default values to cfg only for values not provided with flags

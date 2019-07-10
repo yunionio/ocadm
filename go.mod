@@ -50,6 +50,8 @@ require (
 	k8s.io/kubelet v0.0.0-20190606211701-c7caf0079385 // indirect
 	k8s.io/kubernetes v1.14.3
 	k8s.io/utils v0.0.0-20190607212802-c55fbcfc754a
+	sigs.k8s.io/cluster-api v0.1.4
+	sigs.k8s.io/controller-runtime v0.1.11 // indirect
 	yunion.io/x/jsonutils v0.0.0-20190625054549-a964e1e8a051
 	yunion.io/x/onecloud v0.0.0-20190626003349-5ad94587367b
 	yunion.io/x/pkg v0.0.0-20190620104149-945c25821dbf
