@@ -3,13 +3,15 @@ package init
 import (
 	"github.com/pkg/errors"
 	clientset "k8s.io/client-go/kubernetes"
+	kubeadmapi "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm"
 	"k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/workflow"
 	"k8s.io/kubernetes/pkg/util/normalizer"
-	"yunion.io/x/ocadm/pkg/util/kubectl"
 
 	apiv1 "yunion.io/x/ocadm/pkg/apis/v1"
 	"yunion.io/x/ocadm/pkg/options"
 	calicoaddon "yunion.io/x/ocadm/pkg/phases/addons/calico"
+	ocaddon "yunion.io/x/ocadm/pkg/phases/addons/onecloudoperator"
+	"yunion.io/x/ocadm/pkg/util/kubectl"
 )
 
 var (
@@ -35,6 +37,11 @@ func NewOCAddonPhase() workflow.Phase {
 				Short: "Install the calico cni addon to a Kubernetes cluster",
 				Long:  CalicoCNIAddonLongDesc,
 				Run:   runCalicoAddon,
+			},
+			{
+				Name:  "onecloud-operator",
+				Short: "Install the onecloud operator addon",
+				Run:   runOCOperatorAddon,
 			},
 		},
 	}
@@ -63,6 +70,23 @@ func runCalicoAddon(c workflow.RunData) error {
 		return err
 	}
 	return calicoaddon.EnsureCalicoAddon(&cfg.InitConfiguration.ClusterConfiguration, kubectlCli)
+}
+
+func runOCOperatorAddon(c workflow.RunData) error {
+	cfg, _, kubectlCli, err := getInitData(c)
+	if err != nil {
+		return err
+	}
+	for _, f := range []func(*kubeadmapi.ClusterConfiguration, *kubectl.Client) error{
+		ocaddon.EnsureOnecloudOperatorAddon,
+		ocaddon.EnsureLocalPathProvisionerAddon,
+		ocaddon.EnsureIngressTraefikAddon,
+	} {
+		if err := f(&cfg.InitConfiguration.ClusterConfiguration, kubectlCli); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func getAddonPhaseFlags(name string) []string {

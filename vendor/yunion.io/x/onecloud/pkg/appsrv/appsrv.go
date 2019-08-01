@@ -245,12 +245,21 @@ func (app *Application) defaultHandle(w http.ResponseWriter, r *http.Request, ri
 		if ok {
 			fw := newResponseWriterChannel(w)
 			worker := make(chan *SWorker)
-			to := hand.processTimeout
+			to := hand.FetchProcessTimeout(r)
 			if to == 0 {
 				to = app.processTimeout
 			}
-			ctx, cancel := context.WithTimeout(app.context, to)
-			defer cancel()
+			var (
+				ctx = app.context
+
+				cancel context.CancelFunc = nil
+			)
+			if to > 0 {
+				ctx, cancel = context.WithTimeout(app.context, to)
+			}
+			if cancel != nil {
+				defer cancel()
+			}
 			session := hand.workerMan
 			if session == nil {
 				if r.Method == "GET" || r.Method == "HEAD" {
@@ -434,6 +443,7 @@ func (app *Application) ListenAndServeWithoutCleanup(addr, certFile, keyFile str
 func (app *Application) ListenAndServeTLSWithCleanup2(addr string, certFile, keyFile string, onStop func(), isMaster bool) {
 	if isMaster {
 		app.addDefaultHandlers()
+		AddPProfHandler(app)
 	}
 	s := app.initServer(addr)
 	if isMaster {

@@ -11,7 +11,7 @@ import (
 	bootstrapapi "k8s.io/cluster-bootstrap/token/api"
 	"k8s.io/klog"
 	kubeadmscheme "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/scheme"
-	kubeadmapiv1beta1 "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta1"
+	kubeadmapiv1beta2 "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta2"
 	"k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/validation"
 	kubeadmcmd "k8s.io/kubernetes/cmd/kubeadm/app/cmd"
 	"k8s.io/kubernetes/cmd/kubeadm/app/cmd/options"
@@ -93,7 +93,7 @@ func NewCmdToken(out io.Writer, errW io.Writer) *cobra.Command {
 			cfg, err := configutil.FetchInitConfigurationFromCluster(client, out, "token", true)
 			kubeadmutil.CheckErr(err)
 
-			kubeadmcfg := &kubeadmapiv1beta1.InitConfiguration{}
+			kubeadmcfg := &kubeadmapiv1beta2.InitConfiguration{}
 			err = kubeadmscheme.Scheme.Convert(&cfg.InitConfiguration, kubeadmcfg, nil)
 			kubeadmutil.CheckErr(err)
 
@@ -151,7 +151,7 @@ func NewCmdToken(out io.Writer, errW io.Writer) *cobra.Command {
 			client, err := getClientset(kubeConfigFile, dryRun)
 			kubeadmutil.CheckErr(err)
 
-			err = kubeadmcmd.RunDeleteToken(out, client, args[0])
+			err = kubeadmcmd.RunDeleteTokens(out, client, args)
 			kubeadmutil.CheckErr(err)
 		},
 	}

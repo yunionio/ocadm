@@ -140,7 +140,7 @@ func NewCmdJoin(out io.Writer, joinOptions *joinOptions) *cobra.Command {
 
 	joinRunner.AppendPhase(kubeadmjoinphases.NewPreflightPhase())
 	joinRunner.AppendPhase(kubeadmjoinphases.NewControlPlanePreparePhase())
-	joinRunner.AppendPhase(joinphases.NewNodePreparePhase())
+	//joinRunner.AppendPhase(joinphases.NewNodePreparePhase())
 	joinRunner.AppendPhase(kubeadmjoinphases.NewCheckEtcdPhase())
 	joinRunner.AppendPhase(kubeadmjoinphases.NewKubeletStartPhase())
 	joinRunner.AppendPhase(kubeadmjoinphases.NewControlPlaneJoinPhase())
@@ -294,7 +294,7 @@ func newJoinData(cmd *cobra.Command, args []string, opt *joinOptions, out io.Wri
 		}
 	}
 
-	ignorePreflightErrorsSet, err := validation.ValidateIgnorePreflightErrors(opt.ignorePreflightErrors)
+	ignorePreflightErrorsSet, err := validation.ValidateIgnorePreflightErrors(opt.ignorePreflightErrors, nil)
 	if err != nil {
 		return nil, err
 	}

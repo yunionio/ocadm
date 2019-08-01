@@ -22,7 +22,7 @@ import (
 
 func GetVersion(s *mcclient.ClientSession, serviceType string) (string, error) {
 	man := &BaseManager{serviceType: serviceType}
-	resp, err := man.rawRequest(s, "GET", "/version", nil, nil)
+	resp, err := man.rawBaseUrlRequest(s, "GET", "/version", nil, nil)
 	if err != nil {
 		return "", err
 	}

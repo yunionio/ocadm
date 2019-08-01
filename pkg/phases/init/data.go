@@ -19,7 +19,5 @@ type InitData interface {
 	OnecloudAdminConfigPath() string
 	OnecloudCfg() *apiv1.InitConfiguration
 	OnecloudClientSession() (*mcclient.ClientSession, error)
-	OnecloudCertificateWriteDir() string
-	OnecloudCertificateDir() string
 	KubectlClient() (*kubectl.Client, error)
 }

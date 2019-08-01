@@ -25,7 +25,6 @@ import (
 	apiv1 "yunion.io/x/ocadm/pkg/apis/v1"
 	ocadmutil "yunion.io/x/ocadm/pkg/util"
 	netutil "yunion.io/x/ocadm/pkg/util/net"
-	"yunion.io/x/ocadm/pkg/util/passwd"
 )
 
 // MarshalInitConfigurationToBytes marshals the internal InitConfiguration object to bytes. It writes the embedded
@@ -235,26 +234,4 @@ func SetHostLocalDynamicDefaults(info *apiv1.HostLocalInfo, kubeadmAPILocalAddre
 
 func SetServicesDynamicDefaults(cfg *apiv1.ClusterConfiguration, authAddress string) error {
 	return nil
-}
-
-func SetServiceDBInfo(cfg *apiv1.DBInfo, conn *apiv1.MysqlConnection, db, dbUser string) {
-	if cfg.Host == "" {
-		cfg.Host = conn.Server
-	}
-	if cfg.Port == 0 {
-		cfg.Port = conn.Port
-	}
-	if cfg.Database == "" {
-		cfg.Database = db
-	}
-	if cfg.Username == "" {
-		cfg.Username = dbUser
-	}
-	if cfg.Password == "" {
-		cfg.Password = passwd.GeneratePassword()
-	}
-}
-
-func SetServiceAuthInfo(cfg *apiv1.ServiceCommonOptions, region string, authURL string) {
-	FillServiceCommonOptions(cfg, region, authURL)
 }

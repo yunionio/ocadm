@@ -93,6 +93,14 @@ func (this *Client) AuthVersion() string {
 	}
 }
 
+func (this *Client) SetServiceCatalog(catalog IServiceCatalog) {
+	this.serviceCatalog = catalog
+}
+
+func (this *Client) GetServiceCatalog() IServiceCatalog {
+	return this.serviceCatalog
+}
+
 func (this *Client) NewAuthTokenCredential() TokenCredential {
 	if this.AuthVersion() == "v3" {
 		return &TokenCredentialV3{}
@@ -230,10 +238,11 @@ func (this *Client) unmarshalV3Token(rbody jsonutils.JSONObject, tokenId string)
 		err = fmt.Errorf("Invalid response when unmarshal V3 Token: %v", err)
 	}
 	cata := cred.GetServiceCatalog()
-	if cata == nil {
-		log.Fatalf("No srvice catalog avaiable")
+	if cata == nil || cata.Len() == 0 {
+		log.Warningf("No service catalog avaiable")
+	} else {
+		this.serviceCatalog = cata
 	}
-	this.serviceCatalog = cata
 	return
 }
 
@@ -246,10 +255,11 @@ func (this *Client) unmarshalV2Token(rbody jsonutils.JSONObject) (cred TokenCred
 			err = fmt.Errorf("Invalid response when unmarshal V2 Token: %s", err)
 		}
 		cata := cred.GetServiceCatalog()
-		if cata == nil {
-			log.Fatalf("No srvice catalog avaiable")
+		if cata == nil || cata.Len() == 0 {
+			log.Warningf("No srvice catalog avaiable")
+		} else {
+			this.serviceCatalog = cata
 		}
-		this.serviceCatalog = cata
 		return
 	}
 	err = fmt.Errorf("Invalid response: no access object")
@@ -304,10 +314,11 @@ func (this *Client) SetProject(tenantId, tenantName, tenantDomain string, token 
 func (this *Client) NewSession(ctx context.Context, region, zone, endpointType string, token TokenCredential, apiVersion string) *ClientSession {
 	cata := token.GetServiceCatalog()
 	if this.serviceCatalog == nil {
-		if cata == nil {
-			log.Fatalf("Missing service catalog in token")
+		if cata == nil || cata.Len() == 0 {
+			log.Warningf("Missing service catalog in token")
+		} else {
+			this.serviceCatalog = cata
 		}
-		this.serviceCatalog = cata
 	}
 	if ctx == nil {
 		ctx = context.Background()

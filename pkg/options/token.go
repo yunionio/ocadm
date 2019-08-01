@@ -3,7 +3,7 @@ package options
 import (
 	kubeadmapi "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm"
 	kubeadmscheme "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/scheme"
-	kubeadmapiv1beta1 "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta1"
+	kubeadmapiv1beta2 "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta2"
 	kubeadmoptions "k8s.io/kubernetes/cmd/kubeadm/app/cmd/options"
 )
 
@@ -20,7 +20,7 @@ type BootstrapTokenOptions struct {
 }
 
 func (bio *BootstrapTokenOptions) ApplyTo(cfg *kubeadmapi.InitConfiguration) error {
-	externalCfg := &kubeadmapiv1beta1.InitConfiguration{}
+	externalCfg := &kubeadmapiv1beta2.InitConfiguration{}
 	kubeadmscheme.Scheme.Default(externalCfg)
 	if err := bio.BootstrapTokenOptions.ApplyTo(externalCfg); err != nil {
 		return err

@@ -65,7 +65,7 @@ type BaseOptions struct {
 
 	IsSlaveNode bool `help:"Region service slave node"`
 
-	CalculateQuotaUsageIntervalSeconds int `help:"interval to calculate quota usages, default 5 minutes" default:"300"`
+	CalculateQuotaUsageIntervalSeconds int `help:"interval to calculate quota usages, default 30 minutes" default:"900"`
 
 	structarg.BaseOptions
 }
@@ -78,6 +78,8 @@ type CommonOptions struct {
 	AdminProject       string `help:"Admin project" default:"system" alias:"admin-tenant-name"`
 	AdminProjectDomain string `help:"Domain of Admin project"`
 	AuthTokenCacheSize uint32 `help:"Auth token Cache Size" default:"2048"`
+
+	TenantCacheExpireSeconds int `help:"expire seconds of cached tenant/domain info. defailt 15 minutes" default:"900"`
 
 	BaseOptions
 }

@@ -53,21 +53,21 @@ var (
 		{{if .ControlPlaneEndpoint -}}
 		{{if .UploadCerts -}}
 		You can now join any number of the control-plane node running the following command on each as root:
-					  
+
 		  {{.joinControlPlaneCommand}}
-					
+
 		Please note that the certificate-key gives access to cluster sensitive data, keep it secret!
-		As a safeguard, uploaded-certs will be deleted in two hours; If necessary, you can use 
+		As a safeguard, uploaded-certs will be deleted in two hours; If necessary, you can use
 		"ocadm init phase upload-certs --experimental-upload-certs" to reload certs afterward.
-		  
+
 		{{else -}}
-		You can now join any number of control-plane nodes by copying certificate authorities 
+		You can now join any number of control-plane nodes by copying certificate authorities
 		and service account keys on each node and then running the following as root:
-				  
-		  {{.joinControlPlaneCommand}}	  
-		  
+
+		  {{.joinControlPlaneCommand}}
+
 		{{end}}{{end}}Then you can join any number of worker nodes by running the following on each as root:
-						  
+
 		{{.joinWorkerCommand}}
 		`)))
 )
@@ -164,22 +164,17 @@ func NewCmdInit(out io.Writer, initOptions *initOptions) *cobra.Command {
 	initRunner.AppendPhase(initphases.NewPreflightPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewKubeletStartPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewCertsPhase())
-	initRunner.AppendPhase(initphases.NewCertsPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewKubeConfigPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewControlPlanePhase())
 	initRunner.AppendPhase(kubeadminitphases.NewEtcdPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewWaitControlPlanePhase())
 	initRunner.AppendPhase(kubeadminitphases.NewUploadConfigPhase())
+	initRunner.AppendPhase(initphases.NewUploadConfigPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewUploadCertsPhase())
-	initRunner.AppendPhase(initphases.NewOCUploadCertsPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewMarkControlPlanePhase())
 	initRunner.AppendPhase(kubeadminitphases.NewBootstrapTokenPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewAddonPhase())
 	initRunner.AppendPhase(initphases.NewOCAddonPhase())
-	initRunner.AppendPhase(initphases.NewKeystonePhase())
-	initRunner.AppendPhase(initphases.NewUploadConfigPhase())
-	initRunner.AppendPhase(initphases.NewRegionPhase())
-	initRunner.AppendPhase(initphases.NewSchedulerPhase())
 
 	// sets the data builder function, that will be used by the runner
 	// both when running the entire workflow or single phases
@@ -207,10 +202,6 @@ func AddInitConfigFlags(flagSet *flag.FlagSet, cfg *v1.InitConfiguration) {
 	flagSet.StringVar(
 		&cfg.Zone, options.Zone, cfg.Zone,
 		"Onecloud init zone",
-	)
-	flagSet.StringVar(
-		&cfg.OnecloudCertificatesDir, options.CertificatesDir, cfg.OnecloudCertificatesDir,
-		`The path where to save and store the certificates.`,
 	)
 	flagSet.StringVar(
 		&cfg.MysqlConnection.Server, options.MysqlAddress, cfg.MysqlConnection.Server,
@@ -312,7 +303,7 @@ func newInitData(cmd *cobra.Command, args []string, options *initOptions, out io
 		return nil, err
 	}
 
-	ignorePreflightErrorsSet, err := validation.ValidateIgnorePreflightErrors(options.ignorePreflightErrors)
+	ignorePreflightErrorsSet, err := validation.ValidateIgnorePreflightErrors(options.ignorePreflightErrors, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -461,22 +452,9 @@ func (d *initData) CertificateWriteDir() string {
 	return d.certificatesDir
 }
 
-// OnecloudCertificateWriteDir returns the path to the certificate folder or the temporary folder path in case of DryRun.
-func (d *initData) OnecloudCertificateWriteDir() string {
-	if d.dryRun {
-		return d.dryRunDir
-	}
-	return d.OnecloudCfg().OnecloudCertificatesDir
-}
-
 // CertificateDir returns the CertificateDir as originally specified by the user.
 func (d *initData) CertificateDir() string {
 	return d.certificatesDir
-}
-
-// CertificateDir returns the CertificateDir as originally specified by the user.
-func (d *initData) OnecloudCertificateDir() string {
-	return d.OnecloudCfg().OnecloudCertificatesDir
 }
 
 // KubeConfigDir returns the path of the Kubernetes configuration folder or the temporary folder path in case of DryRun.

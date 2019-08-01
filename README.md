@@ -91,17 +91,14 @@ $ systemctl enable --now docker
 $ systemctl enable kubelet
 ```
 
-3. qemu
-
-4. kernel
-
-5. restart
-重启使内核生效
-
 # init
 
 ```bash
-$ ./ocadm init --mysql-host <> --mysql-user root --mysql-password "$MYSQL_PASSWD" --kubernetes-version v1.14.3
+# create kubernetes cluster
+$ ./ocadm init --mysql-host "$MYSQL_HOST" --mysql-user root --mysql-password "$MYSQL_PASSWD"
+
+# create onecloud cluster
+$ ./ocadm cluster create
 ```
 
 # reset

@@ -141,7 +141,7 @@ func (this *ClientSession) GetServiceVersionURL(service, endpointType, apiVersio
 	}
 	service = this.getServiceName(service, apiVersion)
 	url, err := this.token.GetServiceURL(service, this.region, this.zone, endpointType)
-	if err != nil {
+	if err != nil && this.client.serviceCatalog != nil {
 		url, err = this.client.serviceCatalog.GetServiceURL(service, this.region, this.zone, endpointType)
 	}
 	if err != nil && service == api.SERVICE_TYPE {
@@ -161,7 +161,7 @@ func (this *ClientSession) GetServiceVersionURLs(service, endpointType, apiVersi
 	}
 	service = this.getServiceName(service, apiVersion)
 	urls, err := this.token.GetServiceURLs(service, this.region, this.zone, endpointType)
-	if err != nil {
+	if err != nil && this.client.serviceCatalog != nil {
 		urls, err = this.client.serviceCatalog.GetServiceURLs(service, this.region, this.zone, endpointType)
 	}
 	if err != nil && service == api.SERVICE_TYPE {
@@ -182,14 +182,19 @@ func (this *ClientSession) getBaseUrl(service, endpointType, apiVersion string) 
 	}
 }
 
-func (this *ClientSession) RawVersionRequest(
-	service, endpointType string, method httputils.THttpMethod, url string,
+func (this *ClientSession) RawBaseUrlRequest(
+	service, endpointType string,
+	method httputils.THttpMethod, url string,
 	headers http.Header, body io.Reader,
 	apiVersion string,
+	baseurlFactory func(string) string,
 ) (*http.Response, error) {
 	baseurl, err := this.getBaseUrl(service, endpointType, apiVersion)
 	if err != nil {
 		return nil, err
+	}
+	if baseurlFactory != nil {
+		baseurl = baseurlFactory(baseurl)
 	}
 	tmpHeader := http.Header{}
 	if headers != nil {
@@ -203,6 +208,14 @@ func (this *ClientSession) RawVersionRequest(
 	return this.client.rawRequest(ctx, baseurl,
 		this.token.GetTokenString(),
 		method, url, tmpHeader, body)
+}
+
+func (this *ClientSession) RawVersionRequest(
+	service, endpointType string, method httputils.THttpMethod, url string,
+	headers http.Header, body io.Reader,
+	apiVersion string,
+) (*http.Response, error) {
+	return this.RawBaseUrlRequest(service, endpointType, method, url, headers, body, apiVersion, nil)
 }
 
 func (this *ClientSession) RawRequest(service, endpointType string, method httputils.THttpMethod, url string, headers http.Header, body io.Reader) (*http.Response, error) {

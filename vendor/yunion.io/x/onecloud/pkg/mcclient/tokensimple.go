@@ -137,12 +137,20 @@ func (self *SSimpleToken) GetRegions() []string {
 	return nil
 }
 
+func (self *SSimpleToken) Len() int {
+	return 0
+}
+
 func (self *SSimpleToken) GetServiceURL(service, region, zone, endpointType string) (string, error) {
 	return "", fmt.Errorf("Not available")
 }
 
 func (self *SSimpleToken) GetServiceURLs(service, region, zone, endpointType string) ([]string, error) {
 	return nil, fmt.Errorf("Not available")
+}
+
+func (this *SSimpleToken) GetServicesByInterface(region string, infType string) []ExternalService {
+	return nil
 }
 
 func (self *SSimpleToken) GetInternalServices(region string) []string {

@@ -3,7 +3,7 @@ package config
 import (
 	"k8s.io/klog"
 	kubeadmscheme "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/scheme"
-	kubeadmapiv1beta1 "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta1"
+	kubeadmapiv1beta2 "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta2"
 	kubeadmconfig "k8s.io/kubernetes/cmd/kubeadm/app/util/config"
 
 	ocadmscheme "yunion.io/x/ocadm/pkg/apis/scheme"
@@ -43,7 +43,7 @@ func DefaultedJoinConfiguration(defaultcfg *apiv1.JoinConfiguration) (*apiv1.Joi
 	ocadmscheme.Scheme.Default(internalcfg)
 	ocadmscheme.Scheme.Convert(defaultcfg, internalcfg, nil)
 	// TODO: set dynamic config
-	kubeadmVersionCfg := &kubeadmapiv1beta1.JoinConfiguration{}
+	kubeadmVersionCfg := &kubeadmapiv1beta2.JoinConfiguration{}
 	kubeadmscheme.Scheme.Default(kubeadmVersionCfg)
 	kubeadmscheme.Scheme.Convert(&internalcfg.JoinConfiguration, kubeadmVersionCfg, nil)
 	kubeadmInternalCfg, err := kubeadmconfig.DefaultedJoinConfiguration(kubeadmVersionCfg)

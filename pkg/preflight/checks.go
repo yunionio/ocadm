@@ -145,13 +145,13 @@ func RunInitNodeChecks(
 }
 
 func RunPullImagesCheck(execer utilsexec.Interface, cfg *v1.InitConfiguration, kubeadmCfg *kubeadmapi.InitConfiguration, ignorePreflightErrors sets.String) error {
-	containerRuntime, err := utilruntime.NewContainerRuntime(utilsexec.New(), kubeadmCfg.GetCRISocket())
+	containerRuntime, err := utilruntime.NewContainerRuntime(utilsexec.New(), kubeadmCfg.NodeRegistration.CRISocket)
 	if err != nil {
 		return err
 	}
 
 	checks := []k8spreflight.Checker{
-		ImagePullCheck{runtime: containerRuntime, imageList: images.GetAllImages(&kubeadmCfg.ClusterConfiguration)},
+		ImagePullCheck{runtime: containerRuntime, imageList: images.GetControlPlaneImages(&kubeadmCfg.ClusterConfiguration)},
 	}
 	return k8spreflight.RunChecks(checks, os.Stderr, ignorePreflightErrors)
 }

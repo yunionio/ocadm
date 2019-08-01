@@ -19,15 +19,14 @@ func GetOnecloudImage(image string, cfg *v1.ClusterConfiguration) string {
 
 // GetAllImages returns a list of container images expects to use on a control plane node
 func GetAllImages(cfg *v1.ClusterConfiguration, kubeadmCfg *kubeadmapi.ClusterConfiguration) []string {
-	imgs := images.GetAllImages(kubeadmCfg)
+	imgs := images.GetControlPlaneImages(kubeadmCfg)
 	for _, component := range []string{
-		constants.OnecloudKeystone,
-		constants.OnecloudRegion,
-		constants.OnecloudScheduler,
-		constants.OnecloudWebconsole,
-		constants.OnecloudGlance,
+		constants.OnecloudOperator,
 	} {
 		imgs = append(imgs, GetOnecloudImage(component, cfg))
 	}
+	repoPrefix := cfg.ImageRepository
+	imgs = append(imgs, GetGenericImage(repoPrefix, constants.RancherLocalPathProvisioner, constants.DefaultLocalProvisionerVersion))
+	imgs = append(imgs, GetGenericImage(repoPrefix, constants.IngressControllerTraefik, constants.DefaultTraefikVersin))
 	return imgs
 }

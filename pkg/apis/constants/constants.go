@@ -45,15 +45,11 @@ const (
 	AnsibleServerPort         = 8890
 	AnsibleServerDB           = "yunionansible"
 
-	OnecloudKeystone       = "keystone"
-	OnecloudRegion         = "region"
-	OnecloudScheduler      = "scheduler"
-	OnecloudGlance         = "glance"
-	OnecloudBaremetal      = "baremetal"
-	OnecloudBaremetalAgent = "baremetal-agent" // used by image
-	OnecloudWebconsole     = "webconsole"
-	OnecloudInfluxdb       = "influxdb"
-	OnecloudAPIGateway     = "yunionapi"
+	OnecloudOperator               = "onecloud-operator"
+	RancherLocalPathProvisioner    = "local-path-provisioner"
+	IngressControllerTraefik       = "traefik"
+	DefaultLocalProvisionerVersion = "v0.0.9"
+	DefaultTraefikVersin           = "v1.7"
 
 	EndpointTypeInternal = "internal"
 	EndpointTypePublic   = "public"
@@ -91,6 +87,7 @@ const (
 )
 
 const (
+	OnecloudNamespace               = "onecloud"
 	OnecloudConfigVolumeName        = "config"
 	OnecloudEtcKeystoneVolumeName   = "etc-yunion-keystone"
 	OnecloudOptVolumeName           = "opt-yunion"

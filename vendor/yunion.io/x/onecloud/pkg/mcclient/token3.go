@@ -21,8 +21,9 @@ import (
 	"time"
 
 	"yunion.io/x/jsonutils"
-	"yunion.io/x/onecloud/pkg/util/rbacutils"
 	"yunion.io/x/pkg/utils"
+
+	"yunion.io/x/onecloud/pkg/util/rbacutils"
 )
 
 const REGION_ZONE_SEP = '-'
@@ -75,6 +76,7 @@ type KeystoneTokenV3 struct {
 	IssuedAt  time.Time                `json:"issued_at"`
 	Methods   []string                 `json:"methods"`
 	Project   KeystoneProjectV3        `json:"project"`
+	Projects  []KeystoneProjectV3      `json:"projects"`
 	Roles     []KeystoneRoleV3         `json:"roles"`
 	User      KeystoneUserV3           `json:"user"`
 	Catalog   KeystoneServiceCatalogV3 `json:"catalog"`
@@ -175,12 +177,20 @@ func (this *TokenCredentialV3) GetRegions() []string {
 	return this.Token.Catalog.getRegions()
 }
 
+func (this *TokenCredentialV3) Len() int {
+	return this.Token.Catalog.Len()
+}
+
 func (this *TokenCredentialV3) GetServiceURL(service, region, zone, endpointType string) (string, error) {
 	return this.Token.Catalog.GetServiceURL(service, region, zone, endpointType)
 }
 
 func (this *TokenCredentialV3) GetServiceURLs(service, region, zone, endpointType string) ([]string, error) {
 	return this.Token.Catalog.GetServiceURLs(service, region, zone, endpointType)
+}
+
+func (this *TokenCredentialV3) GetServicesByInterface(region string, infType string) []ExternalService {
+	return this.Token.Catalog.GetServicesByInterface(region, infType)
 }
 
 func (this *TokenCredentialV3) GetInternalServices(region string) []string {
@@ -226,11 +236,15 @@ func (catalog KeystoneServiceCatalogV3) getInternalServices(region string) []str
 }
 
 func (catalog KeystoneServiceCatalogV3) getExternalServices(region string) []ExternalService {
+	return catalog.GetServicesByInterface(region, "console")
+}
+
+func (catalog KeystoneServiceCatalogV3) GetServicesByInterface(region string, infType string) []ExternalService {
 	services := make([]ExternalService, 0)
 	for i := 0; i < len(catalog); i++ {
 		for j := 0; j < len(catalog[i].Endpoints); j++ {
 			if catalog[i].Endpoints[j].RegionId == region &&
-				catalog[i].Endpoints[j].Interface == "console" &&
+				catalog[i].Endpoints[j].Interface == infType &&
 				len(catalog[i].Endpoints[j].Name) > 0 {
 				srv := ExternalService{Name: catalog[i].Endpoints[j].Name,
 					Url: catalog[i].Endpoints[j].Url}
@@ -290,6 +304,10 @@ func Id2RegionZone(id string) (string, string) {
 	} else {
 		return id, ""
 	}
+}
+
+func (catalog KeystoneServiceCatalogV3) Len() int {
+	return len(catalog)
 }
 
 func (catalog KeystoneServiceCatalogV3) GetServiceURL(service, region, zone, endpointType string) (string, error) {

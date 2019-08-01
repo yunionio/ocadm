@@ -1,10 +1,10 @@
 export GO111MODULE:=on
 
-build: generate
+build:
 	go build -o ./_output/bin/ocadm cmd/main.go
 
 generate:
-	./hack/update-codegen.sh
+	./hack/codegen.sh
 
 clean:
 	rm -rf ./_output

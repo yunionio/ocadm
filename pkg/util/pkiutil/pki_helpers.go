@@ -4,7 +4,6 @@ import (
 	"crypto"
 	"crypto/rand"
 	cryptorand "crypto/rand"
-	"crypto/rsa"
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"fmt"
@@ -34,7 +33,7 @@ var (
 )
 
 // NewCertAndKey creates new certificate and key by passing the certificate authority certificate and key
-func NewCertAndKey(caCert *x509.Certificate, caKey *rsa.PrivateKey, config *certutil.Config) (*x509.Certificate, *rsa.PrivateKey, error) {
+func NewCertAndKey(caCert *x509.Certificate, caKey crypto.Signer, config *certutil.Config) (*x509.Certificate, crypto.Signer, error) {
 	key, err := NewPrivateKey()
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "unable to create private key")

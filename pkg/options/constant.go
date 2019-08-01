@@ -130,4 +130,6 @@ const (
 
 	// SkipCertificateKeyPrint flag instruct kubeadm to skip printing certificate key used to encrypt certs by 'kubeadm init'.
 	SkipCertificateKeyPrint = kubeadmoptions.SkipCertificateKeyPrint
+
+	ForceReset = kubeadmoptions.ForceReset
 )
