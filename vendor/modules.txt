@@ -344,12 +344,12 @@ k8s.io/apimachinery/pkg/util/net
 k8s.io/apimachinery/pkg/util/yaml
 k8s.io/apimachinery/pkg/util/strategicpatch
 k8s.io/apimachinery/pkg/util/rand
+k8s.io/apimachinery/pkg/api/equality
 k8s.io/apimachinery/pkg/apis/meta/v1/unstructured
 k8s.io/apimachinery/third_party/forked/golang/reflect
 k8s.io/apimachinery/pkg/util/framer
 k8s.io/apimachinery/pkg/runtime/serializer/streaming
 k8s.io/apimachinery/pkg/util/clock
-k8s.io/apimachinery/pkg/api/equality
 k8s.io/apimachinery/pkg/api/validation
 k8s.io/apimachinery/pkg/apis/meta/v1/validation
 k8s.io/apimachinery/pkg/util/diff
@@ -357,8 +357,8 @@ k8s.io/apimachinery/pkg/util/mergepatch
 k8s.io/apimachinery/third_party/forked/golang/json
 k8s.io/apimachinery/pkg/api/meta
 k8s.io/apimachinery/pkg/apis/meta/internalversion
-k8s.io/apimachinery/pkg/apis/meta/v1beta1
 k8s.io/apimachinery/pkg/util/cache
+k8s.io/apimachinery/pkg/apis/meta/v1beta1
 # k8s.io/apiserver v0.0.0 => k8s.io/apiserver v0.0.0-20190620085212-47dc9a115b18
 k8s.io/apiserver/pkg/util/feature
 k8s.io/apiserver/pkg/authentication/user
@@ -418,6 +418,9 @@ k8s.io/client-go/dynamic
 k8s.io/client-go/kubernetes/fake
 k8s.io/client-go/testing
 k8s.io/client-go/util/retry
+k8s.io/client-go/listers/apps/v1
+k8s.io/client-go/listers/core/v1
+k8s.io/client-go/tools/record
 k8s.io/client-go/tools/reference
 k8s.io/client-go/pkg/version
 k8s.io/client-go/plugin/pkg/client/auth/exec
@@ -462,21 +465,19 @@ k8s.io/client-go/kubernetes/typed/settings/v1alpha1/fake
 k8s.io/client-go/kubernetes/typed/storage/v1/fake
 k8s.io/client-go/kubernetes/typed/storage/v1alpha1/fake
 k8s.io/client-go/kubernetes/typed/storage/v1beta1/fake
-k8s.io/client-go/tools/record
+k8s.io/client-go/tools/cache
+k8s.io/client-go/tools/record/util
 k8s.io/client-go/pkg/apis/clientauthentication
 k8s.io/client-go/pkg/apis/clientauthentication/v1alpha1
 k8s.io/client-go/pkg/apis/clientauthentication/v1beta1
 k8s.io/client-go/util/connrotation
 k8s.io/client-go/util/certificate/csr
 k8s.io/client-go/informers/core/v1
-k8s.io/client-go/listers/core/v1
-k8s.io/client-go/tools/cache
 k8s.io/client-go/util/workqueue
-k8s.io/client-go/tools/record/util
+k8s.io/client-go/tools/pager
 k8s.io/client-go/restmapper
 k8s.io/client-go/tools/watch
 k8s.io/client-go/informers/internalinterfaces
-k8s.io/client-go/tools/pager
 k8s.io/client-go/dynamic/dynamicinformer
 k8s.io/client-go/informers
 k8s.io/client-go/dynamic/dynamiclister
@@ -529,7 +530,6 @@ k8s.io/client-go/informers/storage/v1
 k8s.io/client-go/informers/storage/v1alpha1
 k8s.io/client-go/informers/storage/v1beta1
 k8s.io/client-go/listers/admissionregistration/v1beta1
-k8s.io/client-go/listers/apps/v1
 k8s.io/client-go/listers/apps/v1beta1
 k8s.io/client-go/listers/apps/v1beta2
 k8s.io/client-go/listers/auditregistration/v1alpha1
@@ -694,8 +694,8 @@ k8s.io/utils/integer
 k8s.io/utils/pointer
 k8s.io/utils/net
 k8s.io/utils/path
-k8s.io/utils/trace
 k8s.io/utils/buffer
+k8s.io/utils/trace
 # sigs.k8s.io/cluster-api v0.1.4
 sigs.k8s.io/cluster-api/cmd/clusterctl/clientcmd
 sigs.k8s.io/cluster-api/pkg/util
@@ -742,12 +742,16 @@ yunion.io/x/onecloud/pkg/util/choices
 yunion.io/x/onecloud/pkg/appsrv
 yunion.io/x/onecloud/pkg/proxy
 yunion.io/x/onecloud/pkg/util/hashcache
-# yunion.io/x/onecloud-operator v0.0.1-alpha1
+# yunion.io/x/onecloud-operator v0.0.1-alpha2
 yunion.io/x/onecloud-operator/pkg/apis/onecloud/v1alpha1
 yunion.io/x/onecloud-operator/pkg/client/clientset/versioned
+yunion.io/x/onecloud-operator/pkg/controller
 yunion.io/x/onecloud-operator/pkg/apis/constants
 yunion.io/x/onecloud-operator/pkg/util/passwd
 yunion.io/x/onecloud-operator/pkg/client/clientset/versioned/typed/onecloud/v1alpha1
+yunion.io/x/onecloud-operator/pkg/client/listers/onecloud/v1alpha1
+yunion.io/x/onecloud-operator/pkg/util/onecloud
+yunion.io/x/onecloud-operator/pkg/util/pkiutil
 yunion.io/x/onecloud-operator/pkg/client/clientset/versioned/scheme
 # yunion.io/x/pkg v0.0.0-20190628082551-f4033ba2ea30
 yunion.io/x/pkg/util/seclib

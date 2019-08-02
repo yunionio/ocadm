@@ -99,6 +99,12 @@ $ ./ocadm init --mysql-host "$MYSQL_HOST" --mysql-user root --mysql-password "$M
 
 # create onecloud cluster
 $ ./ocadm cluster create
+
+# get cluster
+$ kubectl get onecloudcluster -n onecloud
+
+# view cluster pods
+$ kubectl get pods -n onecloud
 ```
 
 # reset
