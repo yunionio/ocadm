@@ -5,6 +5,7 @@ import (
 	kubeadmapi "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm"
 	kubeadmscheme "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/scheme"
 	kubeadmapiv1beta2 "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta2"
+	kubeproxyconfig "k8s.io/kubernetes/pkg/proxy/apis/config"
 )
 
 const (
@@ -97,6 +98,11 @@ func setDefaults_kubeadmInitConfiguration(obj *kubeadmapi.InitConfiguration) {
 	}
 	obj.APIServer.ExtraArgs["service-node-port-range"] = "5000-35357"
 	obj.ImageRepository = DefaultImageRepository
+	if obj.ComponentConfigs.KubeProxy == nil {
+		obj.ComponentConfigs.KubeProxy = &kubeproxyconfig.KubeProxyConfiguration{
+			Mode: kubeproxyconfig.ProxyModeIPVS,
+		}
+	}
 }
 
 func SetDefaults_HostLocalInfo(obj *HostLocalInfo) {
