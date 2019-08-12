@@ -13,13 +13,14 @@ const (
 )
 
 const (
-	MysqlAddress    = "mysql-host"
-	MysqlUser       = "mysql-user"
-	MysqlPassword   = "mysql-password"
-	MysqlPort       = "mysql-port"
-	Region          = "region"
-	Zone            = "zone"
-	OnecloudVersion = "onecloud-version"
+	MysqlAddress         = "mysql-host"
+	MysqlUser            = "mysql-user"
+	MysqlPassword        = "mysql-password"
+	MysqlPort            = "mysql-port"
+	Region               = "region"
+	Zone                 = "zone"
+	OnecloudVersion      = "onecloud-version"
+	ControlPlaneEndpoint = "control-plane-endpoint"
 )
 
 const (

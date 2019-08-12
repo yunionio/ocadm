@@ -169,10 +169,10 @@ func NewCmdInit(out io.Writer, initOptions *initOptions) *cobra.Command {
 	initRunner.AppendPhase(kubeadminitphases.NewEtcdPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewWaitControlPlanePhase())
 	initRunner.AppendPhase(kubeadminitphases.NewUploadConfigPhase())
-	initRunner.AppendPhase(initphases.NewUploadConfigPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewUploadCertsPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewMarkControlPlanePhase())
 	initRunner.AppendPhase(kubeadminitphases.NewBootstrapTokenPhase())
+	initRunner.AppendPhase(initphases.NewUploadConfigPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewAddonPhase())
 	initRunner.AppendPhase(initphases.NewOCAddonPhase())
 
@@ -254,6 +254,10 @@ func AddKubeadmInitConfigFlags(flagSet *flag.FlagSet, cfg *kubeadmapi.InitConfig
 	cmdutil.AddCRISocketFlag(flagSet, &cfg.NodeRegistration.CRISocket)
 	flagSet.StringVar(featureGatesString, options.FeatureGatesString, *featureGatesString, "A set of key=value pairs that describe feature gates for various features. "+
 		"Options are:\n"+strings.Join(features.KnownFeatures(&features.InitFeatureGates), "\n"))
+	flagSet.StringVar(
+		&cfg.ClusterConfiguration.ControlPlaneEndpoint, options.ControlPlaneEndpoint, "",
+		"The load balancer vip for control plane master nodes.",
+	)
 }
 
 // AddInitOtherFlags adds init flags that are not bound to a configuration file to the given flagset

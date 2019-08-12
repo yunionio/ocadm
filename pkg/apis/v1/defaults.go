@@ -84,12 +84,18 @@ func setDefaults_kubeadmJoinConfiguration(obj *kubeadmapi.JoinConfiguration) {
 
 func setDefaults_kubeadmInitConfiguration(obj *kubeadmapi.InitConfiguration) {
 	defaultversionedcfg := &kubeadmapiv1beta2.InitConfiguration{}
+	dvClustercfg := &kubeadmapiv1beta2.ClusterConfiguration{}
+	clusterConfig := &obj.ClusterConfiguration
 	kubeadmscheme.Scheme.Convert(obj, defaultversionedcfg, nil)
 	kubeadmscheme.Scheme.Default(defaultversionedcfg)
+
+	kubeadmscheme.Scheme.Convert(clusterConfig, dvClustercfg, nil)
+	kubeadmscheme.Scheme.Default(dvClustercfg)
 
 	// Takes passed flags into account; the defaulting is executed once again enforcing assignment of
 	// static default values to cfg only for values not provided with flags
 	kubeadmscheme.Scheme.Convert(defaultversionedcfg, obj, nil)
+	kubeadmscheme.Scheme.Convert(dvClustercfg, &obj.ClusterConfiguration, nil)
 
 	obj.KubernetesVersion = DefaultKubernetesVersion
 	obj.Networking.PodSubnet = DefaultPodSubnetCIDR

@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -118,6 +119,9 @@ func CreateCluster(data *clusterData) (*v1alpha1.OnecloudCluster, error) {
 
 func newCluster(cfg *apiv1.InitConfiguration) *v1alpha1.OnecloudCluster {
 	lbEndpoint := cfg.ControlPlaneEndpoint
+	if lbEndpoint != "" {
+		lbEndpoint = strings.Split(lbEndpoint, ":")[0]
+	}
 	if lbEndpoint == "" {
 		lbEndpoint = cfg.ManagementNetInterface.IPAddress()
 	}
