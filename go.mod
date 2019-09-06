@@ -12,6 +12,7 @@ require (
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/evanphx/json-patch v4.5.0+incompatible // indirect
+	github.com/ghodss/yaml v1.0.0
 	github.com/go-logr/logr v0.1.0 // indirect
 	github.com/go-logr/zapr v0.1.1 // indirect
 	github.com/go-sql-driver/mysql v1.4.1
@@ -38,7 +39,7 @@ require (
 	sigs.k8s.io/testing_frameworks v0.1.1 // indirect
 	yunion.io/x/jsonutils v0.0.0-20190625054549-a964e1e8a051
 	yunion.io/x/onecloud v0.0.0-20190725062408-c88eae5261a2
-	yunion.io/x/onecloud-operator v0.0.1-alpha2
+	yunion.io/x/onecloud-operator v0.0.1-alpha2.0.20190919062109-f48871684b03
 	yunion.io/x/pkg v0.0.0-20190628082551-f4033ba2ea30
 )
 
