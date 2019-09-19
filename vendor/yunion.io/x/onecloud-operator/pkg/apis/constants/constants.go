@@ -36,6 +36,12 @@ const (
 )
 
 const (
+	OnecloudEditionAnnotationKey string = "onecloud.yunion.io/edition"
+	OnecloudCommunityEdition     string = "ce"
+	OnecloudEnterpriseEdition    string = "ee"
+)
+
+const (
 	OnecloudClusterKind               = "OnecloudCluster"
 	OnecloudClusterConfigKind         = "OnecloudClusterConfig"
 	OnecloudClusterConfigConfigMapKey = OnecloudClusterConfigKind
@@ -77,6 +83,11 @@ const (
 	BaremetalAdminProject = SysAdminProject
 	BaremetalPort         = 8879
 
+	KubeServerAdminUser = "kubeserver"
+	KubeServerPort      = 8443
+	KubeServerDB        = "kubeserver"
+	KubeServerDBUser    = "kubeserver"
+
 	WebconsoleAdminUser    = "webconsole"
 	WebconsoleAdminProject = SysAdminProject
 	WebconsolePort         = 8899
@@ -86,11 +97,19 @@ const (
 	LoggerDB        = "yunionlogger"
 	LoggerDBUser    = "yunionlogger"
 
-	YunionAPIAdminUser = "yunionapi"
-	YunionAPIPort      = 53000
+	APIGatewayAdminUser = "yunionapi"
+	APIGatewayPort      = 9300
+	APIWebsocketPort    = 10443
 
 	YunionAgentAdminUser = "yunionagent"
 	YunionAgentPort      = 9899
+	YunionAgentDB        = "yunionagent"
+	YunionAgentDBUser    = "yunionagent"
+
+	YunionConfAdminUser = "yunionconf"
+	YunionConfPort      = 9889
+	YunionConfDB        = "yunionconf"
+	YunionConfDBUser    = "yunionconf"
 
 	InfluxdbPort      = 8086
 	InfluxdbDataStore = "/var/lib/influxdb"
@@ -123,8 +142,17 @@ const (
 	ServiceNameLogger = "log"
 	ServiceTypeLogger = "log"
 
+	ServiceNameYunionConf = "yunionconf"
+	ServiceTypeYunionConf = "yunionconf"
+
+	ServiceNameYunionAgent = "yunionagent"
+	ServiceTypeYunionAgent = "yunionagent"
+
 	ServiceNameInfluxdb = "influxdb"
 	ServiceTypeInfluxdb = "influxdb"
+
+	ServiceNameKubeServer = "k8s"
+	ServiceTypeKubeServer = "k8s"
 
 	ServiceURLCloudmeta  = "https://meta.yunion.cn"
 	ServiceNameCloudmeta = "cloudmeta"

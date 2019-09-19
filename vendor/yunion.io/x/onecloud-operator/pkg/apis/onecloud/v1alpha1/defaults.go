@@ -73,8 +73,19 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec) {
 		WebconsoleComponentType: &obj.Webconsole,
 		SchedulerComponentType:  &obj.Scheduler,
 		LoggerComponentType:     &obj.Logger,
+		YunionconfComponentType: &obj.Yunionconf,
+		APIGatewayComponentType: &obj.APIGateway,
+		WebComponentType:        &obj.Web,
+		KubeServerComponentType: &obj.KubeServer,
 	} {
-		SetDefaults_DeploymentSpec(spec, getImage(obj.ImageRepository, cType, obj.Version))
+		SetDefaults_DeploymentSpec(spec, getImage(obj.ImageRepository, spec.Repository, cType, spec.ImageName, obj.Version, spec.Tag))
+	}
+
+	for cType, spec := range map[ComponentType]*DeploymentSpec{
+		APIGatewayComponentType: &obj.APIGateway,
+		WebComponentType:        &obj.Web,
+	} {
+		SetDefaults_DeploymentSpecEdition(spec, cType)
 	}
 
 	type stateDeploy struct {
@@ -83,8 +94,9 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec) {
 		version string
 	}
 	for cType, spec := range map[ComponentType]*stateDeploy{
-		GlanceComponentType:   &stateDeploy{&obj.Glance, DefaultGlanceStoreageSize, obj.Version},
-		InfluxdbComponentType: &stateDeploy{&obj.Influxdb, DefaultInfluxdbStorageSize, DefaultInfluxdbImageVersion},
+		GlanceComponentType:      {&obj.Glance, DefaultGlanceStoreageSize, obj.Version},
+		InfluxdbComponentType:    {&obj.Influxdb, DefaultInfluxdbStorageSize, DefaultInfluxdbImageVersion},
+		YunionagentComponentType: {&obj.Yunionagent, "1G", obj.Version},
 	} {
 		SetDefaults_StatefulDeploymentSpec(cType, spec.obj, spec.size, obj.ImageRepository, spec.version)
 	}
@@ -99,19 +111,30 @@ func SetDefaults_Mysql(obj *Mysql) {
 	}
 }
 
-func getImage(repo string, componentType ComponentType, version string) string {
-	return fmt.Sprintf("%s/%s:%s", repo, componentType, version)
+func getImage(globalRepo, specRepo string, componentType ComponentType, componentName string, globalVersion, tag string) string {
+	repo := specRepo
+	if specRepo == "" {
+		repo = globalRepo
+	}
+	version := tag
+	if version == "" {
+		version = globalVersion
+	}
+	if componentName == "" {
+		componentName = componentType.String()
+	}
+	return fmt.Sprintf("%s/%s:%s", repo, componentName, version)
 }
 
 func SetDefaults_KeystoneSpec(obj *KeystoneSpec, imageRepo, version string) {
-	SetDefaults_DeploymentSpec(&obj.DeploymentSpec, getImage(imageRepo, KeystoneComponentType, version))
+	SetDefaults_DeploymentSpec(&obj.DeploymentSpec, getImage(imageRepo, obj.Repository, KeystoneComponentType, obj.ImageName, version, obj.Tag))
 	if obj.BootstrapPassword == "" {
 		obj.BootstrapPassword = passwd.GeneratePassword()
 	}
 }
 
 func SetDefaults_RegionSpec(obj *RegionSpec, imageRepo, version string) {
-	SetDefaults_DeploymentSpec(&obj.DeploymentSpec, getImage(imageRepo, RegionComponentType, version))
+	SetDefaults_DeploymentSpec(&obj.DeploymentSpec, getImage(imageRepo, obj.Repository, RegionComponentType, obj.ImageName, version, obj.Tag))
 }
 
 func setPVCStoreage(obj *ContainerSpec, size string) {
@@ -124,7 +147,7 @@ func setPVCStoreage(obj *ContainerSpec, size string) {
 }
 
 func SetDefaults_StatefulDeploymentSpec(ctype ComponentType, obj *StatefulDeploymentSpec, defaultSize string, imageRepo, version string) {
-	SetDefaults_DeploymentSpec(&obj.DeploymentSpec, getImage(imageRepo, ctype, version))
+	SetDefaults_DeploymentSpec(&obj.DeploymentSpec, getImage(imageRepo, obj.Repository, ctype, obj.ImageName, version, obj.Tag))
 	if obj.StorageClassName == "" {
 		obj.StorageClassName = DefaultStorageClass
 	}
@@ -132,12 +155,13 @@ func SetDefaults_StatefulDeploymentSpec(ctype ComponentType, obj *StatefulDeploy
 }
 
 func SetDefaults_DeploymentSpec(obj *DeploymentSpec, image string) {
-	if obj.Replicas == 0 {
+	if obj.Replicas <= 0 {
 		obj.Replicas = 1
 	}
-	if obj.Image == "" {
-		obj.Image = image
+	if obj.Disable {
+		obj.Replicas = 0
 	}
+	obj.Image = image
 	// add tolerations
 	if len(obj.Tolerations) == 0 {
 		obj.Tolerations = append(obj.Tolerations, []corev1.Toleration{
@@ -153,6 +177,15 @@ func SetDefaults_DeploymentSpec(obj *DeploymentSpec, image string) {
 	}
 }
 
+func SetDefaults_DeploymentSpecEdition(obj *DeploymentSpec, cType ComponentType) {
+	if obj.Annotations == nil {
+		obj.Annotations = map[string]string{}
+	}
+	if _, ok := obj.Annotations[constants.OnecloudEditionAnnotationKey]; !ok {
+		obj.Annotations[constants.OnecloudEditionAnnotationKey] = constants.OnecloudCommunityEdition
+	}
+}
+
 func SetDefaults_OnecloudClusterConfig(obj *OnecloudClusterConfig) {
 	SetDefaults_KeystoneConfig(&obj.Keystone)
 
@@ -163,6 +196,7 @@ func SetDefaults_OnecloudClusterConfig(obj *OnecloudClusterConfig) {
 
 	for opt, userPort := range map[*ServiceCommonOptions]userPort{
 		&obj.Webconsole: {constants.WebconsoleAdminUser, constants.WebconsolePort},
+		&obj.APIGateway: {constants.APIGatewayAdminUser, constants.APIGatewayPort},
 	} {
 		SetDefaults_ServiceCommonOptions(opt, userPort.user, userPort.port)
 	}
@@ -178,6 +212,9 @@ func SetDefaults_OnecloudClusterConfig(obj *OnecloudClusterConfig) {
 		&obj.RegionServer.ServiceDBCommonOptions: {constants.RegionAdminUser, constants.RegionPort, constants.RegionDB, constants.RegionDBUser},
 		&obj.Glance.ServiceDBCommonOptions:       {constants.GlanceAdminUser, constants.GlanceAPIPort, constants.GlanceDB, constants.GlanceDBUser},
 		&obj.Logger:                              {constants.LoggerAdminUser, constants.LoggerPort, constants.LoggerDB, constants.LoggerDBUser},
+		&obj.Yunionagent:                         {constants.YunionAgentAdminUser, constants.YunionAgentPort, constants.YunionAgentDB, constants.YunionAgentDBUser},
+		&obj.Yunionconf:                          {constants.YunionConfAdminUser, constants.YunionConfPort, constants.YunionConfDB, constants.YunionConfDBUser},
+		&obj.KubeServer:                          {constants.KubeServerAdminUser, constants.KubeServerPort, constants.KubeServerDB, constants.KubeServerDBUser},
 	} {
 		SetDefaults_ServiceDBCommonOptions(opt, tmp.db, tmp.dbUser, tmp.user, tmp.port)
 	}

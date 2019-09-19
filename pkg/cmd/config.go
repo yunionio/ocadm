@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"strings"
-	"yunion.io/x/ocadm/pkg/apis/scheme"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -16,6 +15,7 @@ import (
 	utilruntime "k8s.io/kubernetes/cmd/kubeadm/app/util/runtime"
 	utilsexec "k8s.io/utils/exec"
 
+	"yunion.io/x/ocadm/pkg/apis/scheme"
 	apiv1 "yunion.io/x/ocadm/pkg/apis/v1"
 	"yunion.io/x/ocadm/pkg/images"
 	configutil "yunion.io/x/ocadm/pkg/util/config"
