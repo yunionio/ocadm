@@ -33,3 +33,6 @@ _output
 GPATH
 GRTAGS
 GTAGS
+
+# packages
+*.rpm
