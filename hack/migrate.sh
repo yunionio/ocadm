@@ -68,6 +68,13 @@ data:
         password: "$MYSQL_PASS_LOGGER"
       username: "$LOGGER_ADMIN_USER"
       password: "$LOGGER_ADMIN_PASS"
+    notify:
+      db:
+        database: "$MYSQL_DB_NOTIFY"
+        username: "$MYSQL_USER_NOTIFY"
+        password: "$MYSQL_PASS_NOTIFY"
+      username: "$YUNION_NOTIFY_DOCKER_USER"
+      password: "$YUNION_NOTIFY_DOCKER_PSWD"
     region:
       db:
         database: "$MYSQL_DB_REGION"
