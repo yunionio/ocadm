@@ -48,7 +48,7 @@ const (
 	OnecloudOperator               = "onecloud-operator"
 	RancherLocalPathProvisioner    = "local-path-provisioner"
 	IngressControllerTraefik       = "traefik"
-	DefaultLocalProvisionerVersion = "v0.0.9"
+	DefaultLocalProvisionerVersion = "v0.0.11"
 	DefaultTraefikVersin           = "v1.7"
 
 	EndpointTypeInternal = "internal"
