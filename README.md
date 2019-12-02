@@ -1,7 +1,7 @@
 # 编译
 
 ```bash
-$ git clone https://github.com/zexi/ocadm $GOPATH/src/yunion.io/x/ocadm
+$ git clone https://github.com/yunionio/ocadm $GOPATH/src/yunion.io/x/ocadm
 $ cd $GOPATH/src/yunion.io/x/ocadm
 $ make
 ```
