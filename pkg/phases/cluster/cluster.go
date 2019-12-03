@@ -139,6 +139,8 @@ func newCluster(cfg *apiv1.InitConfiguration) *v1alpha1.OnecloudCluster {
 			},
 			LoadBalancerEndpoint: lbEndpoint,
 			ImageRepository:      cfg.ImageRepository,
+			Version:              cfg.OnecloudVersion,
+			Region:               cfg.Region,
 		},
 	}
 }
