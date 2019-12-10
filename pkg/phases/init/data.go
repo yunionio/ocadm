@@ -20,4 +20,5 @@ type InitData interface {
 	OnecloudCfg() *apiv1.InitConfiguration
 	OnecloudClientSession() (*mcclient.ClientSession, error)
 	KubectlClient() (*kubectl.Client, error)
+	EnabledHostAgent() bool
 }

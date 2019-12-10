@@ -1,10 +1,14 @@
 package onecloud
 
 import (
+	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 
 	"yunion.io/x/jsonutils"
+	"yunion.io/x/onecloud-operator/pkg/manager/component"
+	"yunion.io/x/onecloud/pkg/hostman/options"
 	"yunion.io/x/onecloud/pkg/mcclient"
 	"yunion.io/x/onecloud/pkg/mcclient/modulebase"
 	"yunion.io/x/onecloud/pkg/mcclient/modules"
@@ -12,7 +16,8 @@ import (
 )
 
 const (
-	NotFoundMsg = "NotFoundError"
+	NotFoundMsg  = "NotFoundError"
+	HostConfFile = "/etc/yunion/host.conf"
 )
 
 func IsNotFoundError(err error) bool {
@@ -332,4 +337,43 @@ func DeleteServiceEndpoints(s *mcclient.ClientSession, serviceName string) error
 		return err
 	}
 	return DeleteResource(s, &modules.ServicesV3, serviceName)
+}
+
+type HostCfg struct {
+	EnableHost bool
+
+	LocalImagePath []string
+	Networks       []string
+	Hostname       string
+}
+
+func GenerateDefaultHostConfig(cfg *HostCfg) error {
+	var o = new(options.SHostOptions)
+	component.SetOptionsDefault(o, "")
+	o.LocalImagePath = cfg.LocalImagePath
+	o.Networks = cfg.Networks
+	o.Hostname = cfg.Hostname
+
+	o.ReportInterval = 60
+	o.BridgeDriver = "openvswitch"
+	o.ServersPath = "/opt/cloud/workspace/servers"
+	o.OvmfPath = "/opt/cloud/contrib/OVMF.fd"
+	if len(o.LocalImagePath) == 0 {
+		o.LocalImagePath = []string{"/opt/cloud/workspace/disks"}
+	}
+	o.ImageCachePath = "/opt/cloud/workspace/disks/image_cache"
+	o.AgentTempPath = "/opt/cloud/workspace/disks/agent_tmp"
+	o.Rack = "rack0"
+	o.Slots = "slot0"
+	o.LinuxDefaultRootUser = true
+	o.EnableOpenflowController = false
+	o.BlockIoScheduler = "cfq"
+	o.EnableTemplateBacking = true
+	o.DefaultQemuVersion = "2.12.1"
+	o.EnableRemoteExecutor = true
+	if _, err := os.Stat(HostConfFile); !os.IsNotExist(err) {
+		os.Rename(HostConfFile, HostConfFile+".backup")
+	}
+	yamlStr := jsonutils.Marshal(o).YAMLString()
+	return ioutil.WriteFile(HostConfFile, []byte(yamlStr), 0664)
 }

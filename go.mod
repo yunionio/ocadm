@@ -36,8 +36,8 @@ require (
 	sigs.k8s.io/controller-runtime v0.1.11 // indirect
 	sigs.k8s.io/testing_frameworks v0.1.1 // indirect
 	yunion.io/x/jsonutils v0.0.0-20191005115334-bb1c187fc0e7
-	yunion.io/x/onecloud v0.0.0-20191202023519-37d19a591faa
-	yunion.io/x/onecloud-operator v0.0.1-alpha3
+	yunion.io/x/onecloud v0.0.0-20191210025243-fdf6f1cbdefd
+	yunion.io/x/onecloud-operator v0.0.1-alpha3.0.20191210044553-8417b3d042fd
 	yunion.io/x/pkg v0.0.0-20191121110824-e03b47b93fe0
 )
 
@@ -68,5 +68,4 @@ replace (
 	k8s.io/sample-apiserver => k8s.io/sample-apiserver v0.0.0-20190718184639-baafa86838c0
 	k8s.io/sample-cli-plugin => k8s.io/sample-cli-plugin v0.0.0-20190718185524-98384bc7a19f
 	k8s.io/sample-controller => k8s.io/sample-controller v0.0.0-20190718184820-732eab031d75
-	yunion.io/x/onecloud => yunion.io/x/onecloud v0.0.0-20191128102229-9b27b0d7bf0e
 )

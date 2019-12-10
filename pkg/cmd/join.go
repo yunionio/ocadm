@@ -30,6 +30,7 @@ import (
 	"yunion.io/x/ocadm/pkg/options"
 	joinphases "yunion.io/x/ocadm/pkg/phases/join"
 	configutil "yunion.io/x/ocadm/pkg/util/config"
+	"yunion.io/x/ocadm/pkg/util/onecloud"
 )
 
 var (
@@ -71,6 +72,7 @@ type joinOptions struct {
 	controlPlane          bool
 	ignorePreflightErrors []string
 	externalcfg           *apiv1.JoinConfiguration
+	hostCfg               *onecloud.HostCfg
 	certificateKey        string
 }
 
@@ -88,6 +90,7 @@ type joinData struct {
 	ignorePreflightErrors sets.String
 	outputWriter          io.Writer
 	certificateKey        string
+	enableHostAgent       bool
 }
 
 // NewCmdJoin returns "ocadm join" command
@@ -108,8 +111,14 @@ func NewCmdJoin(out io.Writer, joinOptions *joinOptions) *cobra.Command {
 			kubeadmutil.CheckErr(err)
 
 			data := c.(*joinData)
+			data.enableHostAgent = joinOptions.hostCfg.EnableHost
 			err = joinRunner.Run(args)
 			kubeadmutil.CheckErr(err)
+
+			err = onecloud.GenerateDefaultHostConfig(joinOptions.hostCfg)
+			if err != nil {
+				fmt.Printf("Generate host config error: %s", err)
+			}
 
 			// if the node is hosting a new control plane instance
 			if data.cfg.ControlPlane != nil {
@@ -137,13 +146,15 @@ func NewCmdJoin(out io.Writer, joinOptions *joinOptions) *cobra.Command {
 
 	addJoinConfigFlags(cmd.Flags(), joinOptions.externalcfg)
 	addJoinOtherFlags(cmd.Flags(), joinOptions)
+	AddHostConfigFlags(cmd.Flags(), joinOptions.hostCfg)
 
 	joinRunner.AppendPhase(kubeadmjoinphases.NewPreflightPhase())
 	joinRunner.AppendPhase(kubeadmjoinphases.NewControlPlanePreparePhase())
-	//joinRunner.AppendPhase(joinphases.NewNodePreparePhase())
+	// joinRunner.AppendPhase(joinphases.NewNodePreparePhase())
 	joinRunner.AppendPhase(kubeadmjoinphases.NewCheckEtcdPhase())
 	joinRunner.AppendPhase(kubeadmjoinphases.NewKubeletStartPhase())
 	joinRunner.AppendPhase(kubeadmjoinphases.NewControlPlaneJoinPhase())
+	joinRunner.AppendPhase(joinphases.NodeEnableHostAgent())
 
 	// sets the data builder function, that will be used by the runner
 	// both when running the entire workflow or single phases
@@ -238,6 +249,7 @@ func newJoinOptions() *joinOptions {
 
 	return &joinOptions{
 		externalcfg: externalcfg,
+		hostCfg:     new(onecloud.HostCfg),
 	}
 }
 
@@ -351,6 +363,11 @@ func newJoinData(cmd *cobra.Command, args []string, opt *joinOptions, out io.Wri
 	}, nil
 }
 
+// EnableHostAgent return is enable host agent
+func (j *joinData) EnabledHostAgent() bool {
+	return j.enableHostAgent
+}
+
 // CertificateKey returns the key used to encrypt the certs.
 func (j *joinData) CertificateKey() string {
 	return j.certificateKey
@@ -359,6 +376,10 @@ func (j *joinData) CertificateKey() string {
 // Cfg returns the JoinConfiguration.
 func (j *joinData) Cfg() *kubeadmapi.JoinConfiguration {
 	return &j.cfg.JoinConfiguration
+}
+
+func (j *joinData) OnecloudJoinCfg() *apiv1.JoinConfiguration {
+	return j.cfg
 }
 
 // TLSBootstrapCfg returns the cluster-info (kubeconfig).
@@ -443,6 +464,7 @@ func fetchInitConfigurationFromJoinConfiguration(cfg *apiv1.JoinConfiguration, t
 	if cfg.ControlPlane != nil {
 		initConfiguration.LocalAPIEndpoint = cfg.ControlPlane.LocalAPIEndpoint
 	}
+	initConfiguration.ComponentConfigs.Kubelet.EvictionHard = ocEvictionHard
 
 	return initConfiguration, nil
 }
