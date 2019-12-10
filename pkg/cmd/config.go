@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"io"
-	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -18,6 +17,7 @@ import (
 	"yunion.io/x/ocadm/pkg/apis/scheme"
 	apiv1 "yunion.io/x/ocadm/pkg/apis/v1"
 	"yunion.io/x/ocadm/pkg/images"
+	"yunion.io/x/ocadm/pkg/options"
 	configutil "yunion.io/x/ocadm/pkg/util/config"
 )
 
@@ -53,7 +53,7 @@ func NewCmdConfigImagesPull() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "pull",
-		Short: "Pull images used by kubeadm.",
+		Short: "Pull images used by ocadm.",
 		Run: func(_ *cobra.Command, _ []string) {
 			externalcfg.InitConfiguration.ClusterConfiguration.FeatureGates, err = features.NewFeatureGate(&features.InitFeatureGates, featureGatesString)
 			kubeadmutil.CheckErr(err)
@@ -102,7 +102,6 @@ func NewCmdConfigImagesList(out io.Writer, mockK8sVersion *string) *cobra.Comman
 	externalCfg := &apiv1.InitConfiguration{}
 	scheme.Scheme.Default(externalCfg)
 	var cfgPath, featureGatesString string
-	var err error
 
 	if mockK8sVersion != nil {
 		externalCfg.KubernetesVersion = *mockK8sVersion
@@ -112,6 +111,7 @@ func NewCmdConfigImagesList(out io.Writer, mockK8sVersion *string) *cobra.Comman
 		Use:   "list",
 		Short: "Print a list of images ocadm will use. The configuration file is used in case any images or image repositories are customized.",
 		Run: func(_ *cobra.Command, _ []string) {
+			var err error
 			externalCfg.InitConfiguration.ClusterConfiguration.FeatureGates, err = features.NewFeatureGate(&features.InitFeatureGates, featureGatesString)
 			imagesList, err := NewImagesList(cfgPath, externalCfg)
 			kubeadmutil.CheckErr(err)
@@ -148,15 +148,9 @@ func (i *ImagesList) Run(out io.Writer) error {
 
 // AddImagesCommonConfigFlags adds the flags that configure kubeadm (and affect the images kubeadm will use)
 func AddImagesCommonConfigFlags(flagSet *flag.FlagSet, cfg *apiv1.InitConfiguration, cfgPath *string, featureGatesString *string) {
-	flagSet.StringVar(
-		&cfg.KubernetesVersion, "kubernetes-version", cfg.KubernetesVersion,
-		`Choose a specific Kubernetes version for the control plane.`,
-	)
-	flagSet.StringVar(
-		&cfg.OnecloudVersion, "onecloud-version", cfg.OnecloudVersion,
-		`Choose a specific Onecloud version for the control plane.`,
-	)
-	flagSet.StringVar(featureGatesString, "feature-gates", *featureGatesString, "A set of key=value pairs that describe feature gates for various features. "+
-		"Options are:\n"+strings.Join(features.KnownFeatures(&features.InitFeatureGates), "\n"))
-	flagSet.StringVar(cfgPath, "config", *cfgPath, "Path to kubeadm config file.")
+	options.AddKubernetesVersionFlag(flagSet, &cfg.KubernetesVersion)
+	options.AddOnecloudVersion(flagSet, &cfg.OnecloudVersion)
+	options.AddFeatureGatesStringFlag(flagSet, featureGatesString)
+	options.AddImageMetaFlags(flagSet, &cfg.ImageRepository)
+	options.AddKubeadmConfigFlag(flagSet, cfgPath)
 }

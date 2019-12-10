@@ -11,8 +11,8 @@ var (
 	GetGenericImage = images.GetGenericImage
 )
 
-func GetOnecloudImage(image string, cfg *v1.ClusterConfiguration) string {
-	repoPrefix := cfg.ImageRepository
+func GetOnecloudImage(image string, cfg *v1.ClusterConfiguration, kubeadmCfg *kubeadmapi.ClusterConfiguration) string {
+	repoPrefix := kubeadmCfg.ImageRepository
 	onecloudImageTag := cfg.OnecloudVersion
 	return GetGenericImage(repoPrefix, image, onecloudImageTag)
 }
@@ -23,10 +23,17 @@ func GetAllImages(cfg *v1.ClusterConfiguration, kubeadmCfg *kubeadmapi.ClusterCo
 	for _, component := range []string{
 		constants.OnecloudOperator,
 	} {
-		imgs = append(imgs, GetOnecloudImage(component, cfg))
+		imgs = append(imgs, GetOnecloudImage(component, cfg, kubeadmCfg))
 	}
-	repoPrefix := cfg.ImageRepository
-	imgs = append(imgs, GetGenericImage(repoPrefix, constants.RancherLocalPathProvisioner, constants.DefaultLocalProvisionerVersion))
-	imgs = append(imgs, GetGenericImage(repoPrefix, constants.IngressControllerTraefik, constants.DefaultTraefikVersin))
+	repoPrefix := kubeadmCfg.ImageRepository
+	for img, version := range map[string]string{
+		constants.CalicoKubeControllers:       constants.DefaultCalicoVersion,
+		constants.CalicoNode:                  constants.DefaultCalicoVersion,
+		constants.CalicoCNI:                   constants.DefaultCalicoVersion,
+		constants.RancherLocalPathProvisioner: constants.DefaultLocalProvisionerVersion,
+		constants.IngressControllerTraefik:    constants.DefaultTraefikVersion,
+	} {
+		imgs = append(imgs, GetGenericImage(repoPrefix, img, version))
+	}
 	return imgs
 }

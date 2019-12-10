@@ -47,9 +47,13 @@ const (
 
 	OnecloudOperator               = "onecloud-operator"
 	RancherLocalPathProvisioner    = "local-path-provisioner"
-	IngressControllerTraefik       = "traefik"
 	DefaultLocalProvisionerVersion = "v0.0.11"
-	DefaultTraefikVersin           = "v1.7"
+	IngressControllerTraefik       = "traefik"
+	DefaultTraefikVersion          = "v1.7"
+	CalicoKubeControllers          = "calico-kube-controllers"
+	CalicoNode                     = "calico-node"
+	CalicoCNI                      = "calico-cni"
+	DefaultCalicoVersion           = "v3.7.2"
 
 	EndpointTypeInternal = "internal"
 	EndpointTypePublic   = "public"

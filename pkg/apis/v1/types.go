@@ -46,12 +46,6 @@ type ClusterConfiguration struct {
 
 	// Region specify keystone auth region
 	Region string
-
-	// ImageRepository sets the container registry to pull images from.
-	// If empty, `k8s.gcr.io` will be used by default; in case of kubernetes version is a CI build (kubernetes version starts with `ci/` or `ci-cross/`)
-	// `gcr.io/kubernetes-ci-images` will be used as a default for control plane components and for kube-proxy, while `k8s.gcr.io`
-	// will be used for all the other images.
-	ImageRepository string
 }
 
 type HostLocalInfo struct {

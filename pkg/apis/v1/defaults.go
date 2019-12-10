@@ -62,9 +62,6 @@ func SetDefaults_ClusterConfiguration(obj *ClusterConfiguration) {
 	if obj.OnecloudVersion == "" {
 		obj.OnecloudVersion = DefaultOnecloudVersion
 	}
-	if obj.ImageRepository == "" {
-		obj.ImageRepository = DefaultImageRepository
-	}
 	if obj.Region == "" {
 		obj.Region = DefaultOnecloudRegion
 	}
@@ -103,7 +100,9 @@ func setDefaults_kubeadmInitConfiguration(obj *kubeadmapi.InitConfiguration) {
 		obj.APIServer.ExtraArgs = make(map[string]string)
 	}
 	obj.APIServer.ExtraArgs["service-node-port-range"] = "5000-35357"
-	obj.ImageRepository = DefaultImageRepository
+	if obj.ImageRepository == "" {
+		obj.ImageRepository = DefaultImageRepository
+	}
 	if obj.ComponentConfigs.KubeProxy == nil {
 		obj.ComponentConfigs.KubeProxy = &kubeproxyconfig.KubeProxyConfiguration{
 			Mode: kubeproxyconfig.ProxyModeIPVS,

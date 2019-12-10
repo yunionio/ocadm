@@ -74,7 +74,7 @@ func (c TraefikConfig) GenerateYAML() (string, error) {
 
 func EnsureIngressTraefikAddon(cfg *kubeadmapi.ClusterConfiguration, client *kubectl.Client) error {
 	repo := cfg.ImageRepository
-	config := TraefikConfig{Image: images.GetGenericImage(repo, constants.IngressControllerTraefik, constants.DefaultTraefikVersin)}
+	config := TraefikConfig{Image: images.GetGenericImage(repo, constants.IngressControllerTraefik, constants.DefaultTraefikVersion)}
 	manifest, err := config.GenerateYAML()
 	if err != nil {
 		return err
