@@ -21,6 +21,9 @@ const (
 	Zone                 = "zone"
 	OnecloudVersion      = "onecloud-version"
 	ControlPlaneEndpoint = "control-plane-endpoint"
+	HostLocalImagePath   = "host-local-image-path"
+	Hostname             = "host-name"
+	HostNetworks         = "host-networks"
 )
 
 const (

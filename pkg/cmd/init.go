@@ -37,6 +37,7 @@ import (
 	configutil "yunion.io/x/ocadm/pkg/util/config"
 	"yunion.io/x/ocadm/pkg/util/kubectl"
 	"yunion.io/x/ocadm/pkg/util/mysql"
+	"yunion.io/x/ocadm/pkg/util/onecloud"
 	"yunion.io/x/onecloud/pkg/mcclient"
 )
 
@@ -70,6 +71,13 @@ var (
 
 		{{.joinWorkerCommand}}
 		`)))
+
+	ocEvictionHard = map[string]string{
+		"memory.available":  "100Mi",
+		"nodefs.available":  "10%",
+		"nodefs.inodesFree": "5%",
+		"imagefs.available": "5%", //default is 15%
+	}
 )
 
 // initOptions defines all the init options exposed via flags by ocadm init.
@@ -85,6 +93,7 @@ type initOptions struct {
 	ignorePreflightErrors   []string
 	bto                     *options.BootstrapTokenOptions
 	externalCfg             *v1.InitConfiguration
+	hostCfg                 *onecloud.HostCfg
 	uploadCerts             bool
 	certificateKey          string
 	skipCertificateKeyPrint bool
@@ -110,6 +119,7 @@ type initData struct {
 	uploadCerts             bool
 	certificateKey          string
 	skipCertificateKeyPrint bool
+	enableHostAgent         bool
 }
 
 // NewCmdInit returns "deployer init" command
@@ -127,10 +137,15 @@ func NewCmdInit(out io.Writer, initOptions *initOptions) *cobra.Command {
 			kubeadmutil.CheckErr(err)
 
 			data := c.(*initData)
+			data.enableHostAgent = initOptions.hostCfg.EnableHost
 			fmt.Printf("[init] Using Kubernetes and Onecloud version: %s & %s\n", data.Cfg().KubernetesVersion, data.OnecloudCfg().OnecloudVersion)
 
 			err = initRunner.Run(args)
 			kubeadmutil.CheckErr(err)
+			err = onecloud.GenerateDefaultHostConfig(initOptions.hostCfg)
+			if err != nil {
+				fmt.Printf("Generate host config error: %s", err)
+			}
 
 			err = showJoinCommand(data, out)
 			kubeadmutil.CheckErr(err)
@@ -143,6 +158,7 @@ func NewCmdInit(out io.Writer, initOptions *initOptions) *cobra.Command {
 	externalKubeadmCfg := &initOptions.externalCfg.InitConfiguration
 	externalCfg := initOptions.externalCfg
 	AddInitConfigFlags(cmd.Flags(), initOptions.externalCfg)
+	AddHostConfigFlags(cmd.Flags(), initOptions.hostCfg)
 	AddKubeadmInitConfigFlags(cmd.Flags(), externalKubeadmCfg, &initOptions.featureGatesString)
 	AddInitOtherFlags(cmd.Flags(), initOptions)
 	initOptions.bto.AddTokenFlag(cmd.Flags())
@@ -175,6 +191,7 @@ func NewCmdInit(out io.Writer, initOptions *initOptions) *cobra.Command {
 	initRunner.AppendPhase(initphases.NewUploadConfigPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewAddonPhase())
 	initRunner.AppendPhase(initphases.NewOCAddonPhase())
+	initRunner.AppendPhase(initphases.NodeEnableHostAgent())
 
 	// sets the data builder function, that will be used by the runner
 	// both when running the entire workflow or single phases
@@ -218,6 +235,25 @@ func AddInitConfigFlags(flagSet *flag.FlagSet, cfg *v1.InitConfiguration) {
 	flagSet.IntVar(
 		&cfg.MysqlConnection.Port, options.MysqlPort, cfg.MysqlConnection.Port,
 		"The port of mysql server",
+	)
+}
+
+func AddHostConfigFlags(flagSet *flag.FlagSet, o *onecloud.HostCfg) {
+	flagSet.StringArrayVar(
+		&o.LocalImagePath, options.HostLocalImagePath, o.LocalImagePath,
+		"Host configure: local image path",
+	)
+	flagSet.StringVar(
+		&o.Hostname, options.Hostname, o.Hostname,
+		"Host configure: host name",
+	)
+	flagSet.StringArrayVar(
+		&o.Networks, options.HostNetworks, o.Networks,
+		"Host configure: networks",
+	)
+	flagSet.BoolVar(
+		&o.EnableHost, "enable-host-agent", o.EnableHost,
+		"Enable host agent",
 	)
 }
 
@@ -290,6 +326,7 @@ func newInitOptions() *initOptions {
 		kubeconfigDir:  kubeadmconstants.KubernetesDir,
 		kubeconfigPath: kubeadmconstants.GetAdminKubeConfigPath(),
 		uploadCerts:    true, // always upload certs
+		hostCfg:        new(onecloud.HostCfg),
 	}
 }
 
@@ -326,6 +363,7 @@ func newInitData(cmd *cobra.Command, args []string, options *initOptions, out io
 	if err != nil {
 		return nil, err
 	}
+	cfg.ComponentConfigs.Kubelet.EvictionHard = ocEvictionHard
 
 	// override node name and CRI socket from the command line options
 	if options.externalCfg.NodeRegistration.Name != "" {
@@ -401,6 +439,11 @@ func newInitData(cmd *cobra.Command, args []string, options *initOptions, out io
 	}
 
 	return data, nil
+}
+
+// EnableHostAgent return is enable host agent
+func (d *initData) EnabledHostAgent() bool {
+	return d.enableHostAgent
 }
 
 // UploadCerts returns Uploadcerts flag.
