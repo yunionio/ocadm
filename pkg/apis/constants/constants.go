@@ -9,42 +9,6 @@ const (
 	SysAdminProject  = "system"
 	DefaultDomain    = "Default"
 
-	KeystoneDB         = "keystone"
-	KeystoneDBUser     = "keystone"
-	KeystonePublicPort = 5000
-	KeystoneAdminPort  = 35357
-
-	GlanceDB           = "glance"
-	GlanceDBUser       = "glance"
-	GlanceAdminUser    = "glance"
-	GlanceAdminProject = SysAdminProject
-	GlanceRegistryPort = 9191
-	GlanceAPIPort      = 9292
-	ServiceNameGlance  = "glance"
-	ServiceTypeGlance  = "image"
-
-	RegionAdminUser    = "regionadmin"
-	RegionAdminProject = SysAdminProject
-	RegionPort         = 8889
-	SchedulerPort      = 8897
-	RegionDB           = "yunioncloud"
-	RegionDBUser       = "yunioncloud"
-
-	BaremetalAdminUser    = "baremetal"
-	BaremetalAdminProject = SysAdminProject
-	BaremetalPort         = 8879
-
-	WebconsoleAdminUser    = "webconsole"
-	WebconsoleAdminProject = SysAdminProject
-	WebconsolePort         = 8899
-
-	InfluxdbPort = 8086
-
-	AnsibleServerAdminUser    = "ansibleadmin"
-	AnsibleServerAdminProject = SysAdminProject
-	AnsibleServerPort         = 8890
-	AnsibleServerDB           = "yunionansible"
-
 	OnecloudOperator               = "onecloud-operator"
 	RancherLocalPathProvisioner    = "local-path-provisioner"
 	DefaultLocalProvisionerVersion = "v0.0.11"

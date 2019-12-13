@@ -99,7 +99,8 @@ func setDefaults_kubeadmInitConfiguration(obj *kubeadmapi.InitConfiguration) {
 	if obj.APIServer.ExtraArgs == nil {
 		obj.APIServer.ExtraArgs = make(map[string]string)
 	}
-	obj.APIServer.ExtraArgs["service-node-port-range"] = "5000-35357"
+	// obj.APIServer.ExtraArgs["service-node-port-range"] = "5000-35357"
+	// obj.APIServer.ExtraArgs["service-node-port-range"] = "30000-32767"
 	if obj.ImageRepository == "" {
 		obj.ImageRepository = DefaultImageRepository
 	}
