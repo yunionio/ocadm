@@ -61,6 +61,12 @@ func cmdHostEnable() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "enable",
 		Short: "Run this command to enable host agent",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if opt.nodes == nil {
+				cmd.Help()
+				kubeadmutil.CheckErr(errors.New("Enable host need input nodes"))
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			_, err := runner.InitData(args)
 			kubeadmutil.CheckErr(err)
