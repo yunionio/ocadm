@@ -27,6 +27,7 @@ import (
 	"yunion.io/x/ocadm/pkg/apis/constants"
 	"yunion.io/x/ocadm/pkg/occonfig"
 	"yunion.io/x/ocadm/pkg/phases/cluster"
+	configtool "yunion.io/x/onecloud-operator/pkg/manager/config"
 )
 
 type IComponent interface {
@@ -105,6 +106,7 @@ type componentsData struct {
 	client        clientset.Interface
 	clusterClient versioned.Interface
 	oc            *onecloud.OnecloudCluster
+	ocCfg         *onecloud.OnecloudClusterConfig
 	cfg           *OnecloudComponentsConfig
 }
 
@@ -130,10 +132,15 @@ func newComponentsData(cmd *cobra.Command, args []string, opt *componentsOptions
 	if err != nil {
 		return nil, errors.Wrapf(err, "Get %s onecloud cluster", cluster.DefaultClusterName)
 	}
+	ocCfg, err := configtool.GetClusterConfigByClient(kubeCli, oc)
+	if err != nil {
+		return nil, errors.Wrapf(err, "Get %s onecloud cluster config", cluster.DefaultClusterName)
+	}
 	data := &componentsData{
 		clusterClient: clusterCli,
 		client:        kubeCli,
 		oc:            oc,
+		ocCfg:         ocCfg,
 	}
 	cfg, err := data.NewOnecloudComponentsConfig()
 	if err != nil {
@@ -194,7 +201,7 @@ func (d *componentsData) OnecloudCluster() *onecloud.OnecloudCluster {
 
 func (d *componentsData) OnecloudRCAdminConfig() *occonfig.RCAdminConfig {
 	return &occonfig.RCAdminConfig{
-		AuthUrl:     fmt.Sprintf("https://%s:%d/v3", d.oc.Spec.LoadBalancerEndpoint, constants.KeystoneAdminPort),
+		AuthUrl:     fmt.Sprintf("https://%s:%d/v3", d.oc.Spec.LoadBalancerEndpoint, d.ocCfg.Keystone.Port),
 		Region:      d.oc.Spec.Region,
 		Username:    "sysadmin",
 		Password:    d.oc.Spec.Keystone.BootstrapPassword,

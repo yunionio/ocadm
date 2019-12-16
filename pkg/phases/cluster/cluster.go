@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 	"k8s.io/klog"
@@ -18,6 +19,7 @@ import (
 
 	"yunion.io/x/onecloud-operator/pkg/apis/onecloud/v1alpha1"
 	"yunion.io/x/onecloud-operator/pkg/client/clientset/versioned"
+	occonfig "yunion.io/x/onecloud-operator/pkg/manager/config"
 
 	"yunion.io/x/ocadm/pkg/apis/constants"
 	apiv1 "yunion.io/x/ocadm/pkg/apis/v1"
@@ -29,8 +31,9 @@ const (
 )
 
 type clusterData struct {
-	cfg    *apiv1.InitConfiguration
-	client versioned.Interface
+	cfg       *apiv1.InitConfiguration
+	client    versioned.Interface
+	k8sClient kubernetes.Interface
 }
 
 func newClusterData(cmd *cobra.Command, args []string) (*clusterData, error) {
@@ -57,14 +60,15 @@ func newClusterData(cmd *cobra.Command, args []string) (*clusterData, error) {
 	if err != nil {
 		return nil, err
 	}
-	initCfg, err := FetchInitConfiguration(tlsBootstrapCfg)
+	k8sCli, initCfg, err := FetchInitConfiguration(tlsBootstrapCfg)
 	if err != nil {
 		return nil, err
 	}
 
 	return &clusterData{
-		cfg:    initCfg,
-		client: cli,
+		cfg:       initCfg,
+		client:    cli,
+		k8sClient: k8sCli,
 	}, nil
 }
 
@@ -151,7 +155,12 @@ func GetClusterRCAdmin(data *clusterData) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	authURL := fmt.Sprintf("https://%s:%d/v3", cluster.Spec.LoadBalancerEndpoint, constants.KeystoneAdminPort)
+	cfg, err := occonfig.GetClusterConfigByClient(data.k8sClient, cluster)
+	if err != nil {
+		return "", err
+	}
+	keystonePort := cfg.Keystone.Port
+	authURL := fmt.Sprintf("https://%s:%d/v3", cluster.Spec.LoadBalancerEndpoint, keystonePort)
 	passwd := cluster.Spec.Keystone.BootstrapPassword
 	return fmt.Sprintf(
 		`export OS_AUTH_URL=%s
@@ -171,15 +180,15 @@ func NewClusterClient(config *clientcmdapi.Config) (*versioned.Clientset, error)
 	return versioned.NewForConfig(clientConfig)
 }
 
-func FetchInitConfiguration(tlsBootstrapCfg *clientcmdapi.Config) (*apiv1.InitConfiguration, error) {
+func FetchInitConfiguration(tlsBootstrapCfg *clientcmdapi.Config) (*kubernetes.Clientset, *apiv1.InitConfiguration, error) {
 	// creates a client to access the cluster using the bootstrap token identity
 	tlsClient, err := kubeconfigutil.ToClientSet(tlsBootstrapCfg)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to access the cluster")
+		return nil, nil, errors.Wrap(err, "unable to access the cluster")
 	}
 	initconfiguration, err := configutil.FetchInitConfigurationFromCluster(tlsClient, ioutil.Discard, "preflight", true)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to fetch the ocadm-config ConfigMap")
+		return nil, nil, errors.Wrap(err, "unable to fetch the ocadm-config ConfigMap")
 	}
-	return initconfiguration, nil
+	return tlsClient, initconfiguration, nil
 }

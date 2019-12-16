@@ -26,7 +26,6 @@ type Waiter interface {
 	WaitForKeystone() error
 	WaitForRegion() error
 	WaitForScheduler() error
-	WaitForGlance() error
 }
 
 type OCWaiter struct {
@@ -154,17 +153,6 @@ func (w *OCWaiter) WaitForScheduler() error {
 			return true, nil
 		}
 		klog.V(1).Infof("scheduler list history error %v", err)
-		return false, nil
-	})
-}
-
-func (w *OCWaiter) WaitForGlance() error {
-	return w.waitForServiceHealthy(constants.ServiceNameGlance, func(s *mcclient.ClientSession) (bool, error) {
-		_, err := modules.Images.List(s, nil)
-		if err == nil {
-			return true, nil
-		}
-		klog.V(1).Infof("image list servers error %v", err)
 		return false, nil
 	})
 }
