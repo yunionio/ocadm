@@ -371,6 +371,9 @@ func GenerateDefaultHostConfig(cfg *HostCfg) error {
 	o.EnableTemplateBacking = true
 	o.DefaultQemuVersion = "2.12.1"
 	o.EnableRemoteExecutor = true
+	if err := os.MkdirAll("/etc/yunion", os.ModePerm); err != nil {
+		return err
+	}
 	if _, err := os.Stat(HostConfFile); !os.IsNotExist(err) {
 		os.Rename(HostConfFile, HostConfFile+".backup")
 	}
