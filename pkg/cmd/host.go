@@ -22,6 +22,7 @@ func NewCmdHost(out io.Writer) *cobra.Command {
 	}
 
 	cmds.AddCommand(cmdHostEnable())
+	cmds.AddCommand(cmdHostDisable())
 
 	return cmds
 }
@@ -78,6 +79,38 @@ func cmdHostEnable() *cobra.Command {
 	}
 	AddHostEnableFlags(cmd.Flags(), opt)
 	runner.AppendPhase(host.NodesEnableHostAgent())
+
+	runner.SetDataInitializer(func(cmd *cobra.Command, args []string) (workflow.RunData, error) {
+		return opt, nil
+	})
+	runner.BindToCommand(cmd)
+
+	return cmd
+}
+
+func cmdHostDisable() *cobra.Command {
+	opt := &hostEnableData{}
+	runner := workflow.NewRunner()
+	cmd := &cobra.Command{
+		Use:   "disable",
+		Short: "Run this command to disable host agent",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if opt.nodes == nil {
+				cmd.Help()
+				kubeadmutil.CheckErr(errors.New("Disable host need input nodes"))
+			}
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			_, err := runner.InitData(args)
+			kubeadmutil.CheckErr(err)
+
+			err = runner.Run(args)
+			kubeadmutil.CheckErr(err)
+		},
+		Args: cobra.NoArgs,
+	}
+	AddHostEnableFlags(cmd.Flags(), opt)
+	runner.AppendPhase(host.NodesDisableHostAgent())
 
 	runner.SetDataInitializer(func(cmd *cobra.Command, args []string) (workflow.RunData, error) {
 		return opt, nil
