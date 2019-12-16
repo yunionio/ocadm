@@ -29,6 +29,20 @@ func NodesEnableHostAgent() workflow.Phase {
 	}
 }
 
+func NodesDisableHostAgent() workflow.Phase {
+	return workflow.Phase{
+		Name:  "disable-host-agent",
+		Short: "Disable host agent",
+		Phases: []workflow.Phase{
+			{
+				Name:  "disable-host-agent",
+				Short: "Add disable host label to node",
+				Run:   batchDisableHostAgent,
+			},
+		},
+	}
+}
+
 func getData(c workflow.RunData) ([]string, clientset.Interface, error) {
 	data, ok := c.(hostEnableData)
 	if !ok {
@@ -63,5 +77,32 @@ func batchEnableHostAgent(c workflow.RunData) error {
 			continue
 		}
 	}
+	klog.Info("Enable host agent phase finished ...")
+	return nil
+}
+
+func batchDisableHostAgent(c workflow.RunData) error {
+	nodes, cli, err := getData(c)
+	if err != nil {
+		return err
+	}
+	for i := 0; i < len(nodes); i++ {
+		klog.Infof("Disable host for node %s", nodes[i])
+		node, err := cli.CoreV1().Nodes().Get(nodes[i], metav1.GetOptions{})
+		if err != nil {
+			klog.Errorf("Node %s disable host failed on get: %s", nodes[i], err)
+			continue
+		}
+		if node.Labels == nil {
+			node.Labels = make(map[string]string)
+		}
+		node.Labels[constants.OnecloudEnableHostLabelKey] = "disable"
+		_, err = cli.CoreV1().Nodes().Update(node)
+		if err != nil {
+			klog.Errorf("Node %s disable host failed on update: %s", nodes[i], err)
+			continue
+		}
+	}
+	klog.Info("Disable host agent phase finished ...")
 	return nil
 }
