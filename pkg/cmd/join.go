@@ -23,6 +23,7 @@ import (
 	"k8s.io/kubernetes/cmd/kubeadm/app/discovery"
 	kubeadmutil "k8s.io/kubernetes/cmd/kubeadm/app/util"
 	kubeconfigutil "k8s.io/kubernetes/cmd/kubeadm/app/util/kubeconfig"
+	operatorconstants "yunion.io/x/onecloud-operator/pkg/apis/constants"
 
 	"yunion.io/x/ocadm/pkg/apis/constants"
 	ocadmscheme "yunion.io/x/ocadm/pkg/apis/scheme"
@@ -132,12 +133,12 @@ func NewCmdJoin(out io.Writer, joinOptions *joinOptions) *cobra.Command {
 					"KubeConfigPath": constants.GetAdminKubeConfigPath(),
 					"etcdMessage":    etcdMessage,
 				}
-				joinControPlaneDoneTemp.Execute(data.outputWriter, ctx)
+				_ = joinControPlaneDoneTemp.Execute(data.outputWriter, ctx)
 
 			} else {
 				// otherwise, if the node joined as a worker node;
 				// outputs the join done message and exit
-				fmt.Fprintf(data.outputWriter, joinWorkerNodeDoneMsg)
+				_, _ = fmt.Fprintf(data.outputWriter, joinWorkerNodeDoneMsg)
 			}
 		},
 		// We accept the control-plane location as an optional positional argument
@@ -155,7 +156,6 @@ func NewCmdJoin(out io.Writer, joinOptions *joinOptions) *cobra.Command {
 	joinRunner.AppendPhase(kubeadmjoinphases.NewKubeletStartPhase())
 	joinRunner.AppendPhase(kubeadmjoinphases.NewControlPlaneJoinPhase())
 	joinRunner.AppendPhase(joinphases.NewControlPlaneJoinPhase())
-	joinRunner.AppendPhase(joinphases.NodeEnableHostAgent())
 
 	// sets the data builder function, that will be used by the runner
 	// both when running the entire workflow or single phases
@@ -406,6 +406,14 @@ func (j *joinData) OnecloudInitCfg() (*apiv1.InitConfiguration, error) {
 	initCfg, err := fetchInitConfigurationFromJoinConfiguration(j.cfg, j.tlsBootstrapCfg)
 	if err != nil {
 		return nil, err
+	}
+	if j.enableHostAgent {
+		if initCfg.NodeRegistration.KubeletExtraArgs == nil {
+			initCfg.NodeRegistration.KubeletExtraArgs = make(map[string]string)
+		}
+		klog.V(1).Infoln("[preflight] Enable host agent")
+		lableStr := fmt.Sprintf("%s=enable", operatorconstants.OnecloudEnableHostLabelKey)
+		initCfg.NodeRegistration.KubeletExtraArgs["node-labels"] = lableStr
 	}
 	j.initCfg = initCfg
 	return j.initCfg, nil
