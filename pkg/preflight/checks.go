@@ -15,7 +15,6 @@ import (
 	utilruntime "k8s.io/kubernetes/cmd/kubeadm/app/util/runtime"
 	utilsexec "k8s.io/utils/exec"
 
-	"yunion.io/x/ocadm/pkg/apis/ports"
 	apis "yunion.io/x/ocadm/pkg/apis/v1"
 	"yunion.io/x/ocadm/pkg/util/mysql"
 
@@ -119,11 +118,6 @@ func RunInitNodeChecks(
 	downloadCerts bool,
 ) error {
 	checks := []k8spreflight.Checker{
-		PortOpenCheck{port: ports.KeystoneAdminPort},
-		PortOpenCheck{port: ports.KeystonePublicPort},
-		PortOpenCheck{port: ports.RegionPort},
-		PortOpenCheck{port: ports.SchedulerPort},
-		PortOpenCheck{port: ports.GlancePort},
 		MysqlCheck{
 			MysqlConnection: &cfg.MysqlConnection,
 		},
