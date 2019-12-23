@@ -75,6 +75,7 @@ type joinOptions struct {
 	externalcfg           *apiv1.JoinConfiguration
 	hostCfg               *onecloud.HostCfg
 	certificateKey        string
+	asOnecloudController  bool
 }
 
 // compile-time assert that the local data object satisfies the phases data interface.
@@ -92,6 +93,7 @@ type joinData struct {
 	outputWriter          io.Writer
 	certificateKey        string
 	enableHostAgent       bool
+	asOnecloudController  bool
 }
 
 // NewCmdJoin returns "ocadm join" command
@@ -113,6 +115,10 @@ func NewCmdJoin(out io.Writer, joinOptions *joinOptions) *cobra.Command {
 
 			data := c.(*joinData)
 			data.enableHostAgent = joinOptions.hostCfg.EnableHost
+			// by default, control plane node as onecloud controller
+			if joinOptions.asOnecloudController || joinOptions.controlPlane {
+				data.asOnecloudController = true
+			}
 			err = joinRunner.Run(args)
 			kubeadmutil.CheckErr(err)
 
@@ -231,6 +237,10 @@ func addJoinOtherFlags(flagSet *flag.FlagSet, joinOptions *joinOptions) {
 	flagSet.StringVar(
 		&joinOptions.certificateKey, options.CertificateKey, "",
 		"Use this key to decrypt the certificate secrets uploaded by init.",
+	)
+	flagSet.BoolVar(
+		&joinOptions.asOnecloudController, options.AsOnecloudController, joinOptions.asOnecloudController,
+		"Join node and set node as onecloud controller",
 	)
 }
 
@@ -407,16 +417,33 @@ func (j *joinData) OnecloudInitCfg() (*apiv1.InitConfiguration, error) {
 	if err != nil {
 		return nil, err
 	}
-	if j.enableHostAgent {
-		if initCfg.NodeRegistration.KubeletExtraArgs == nil {
-			initCfg.NodeRegistration.KubeletExtraArgs = make(map[string]string)
-		}
-		klog.V(1).Infoln("[preflight] Enable host agent")
-		lableStr := fmt.Sprintf("%s=enable", operatorconstants.OnecloudEnableHostLabelKey)
-		initCfg.NodeRegistration.KubeletExtraArgs["node-labels"] = lableStr
-	}
+	initCfg.NodeRegistration.KubeletExtraArgs =
+		customizeKubeletExtarArgs(j.enableHostAgent, j.asOnecloudController)
 	j.initCfg = initCfg
 	return j.initCfg, nil
+}
+
+func customizeKubeletExtarArgs(enableHostAgent, asOnecloudController bool) map[string]string {
+	if !enableHostAgent && !asOnecloudController {
+		return nil
+	}
+	ret := make(map[string]string)
+	if enableHostAgent {
+		klog.V(1).Infoln("[preflight] Enable host agent")
+		lableStr := fmt.Sprintf("%s=enable", operatorconstants.OnecloudEnableHostLabelKey)
+		ret["node-labels"] = lableStr
+	}
+	if asOnecloudController {
+		klog.V(1).Infoln("[preflight] As onecloud controller")
+		var labelStr string
+		if _labelStr, ok := ret["node-labels"]; ok {
+			labelStr = fmt.Sprintf("%s,%s=enable", _labelStr, operatorconstants.OnecloudControllerLabelKey)
+		} else {
+			labelStr = fmt.Sprintf("%s=enable", operatorconstants.OnecloudControllerLabelKey)
+		}
+		ret["node-labels"] = labelStr
+	}
+	return ret
 }
 
 // InitCfg returns the kubeadm InitConfiguration.
