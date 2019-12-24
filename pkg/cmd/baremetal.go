@@ -7,13 +7,11 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
-	clientset "k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 	"k8s.io/klog"
 	"k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/workflow"
 	kubeadmutil "k8s.io/kubernetes/cmd/kubeadm/app/util"
-	kubeconfigutil "k8s.io/kubernetes/cmd/kubeadm/app/util/kubeconfig"
 	"yunion.io/x/ocadm/pkg/apis/constants"
 	"yunion.io/x/ocadm/pkg/phases/baremetal"
 	"yunion.io/x/ocadm/pkg/phases/cluster"
@@ -32,31 +30,13 @@ func NewCmdBaremetal(out io.Writer) *cobra.Command {
 }
 
 type baremetalEnableData struct {
-	nodes           []string
+	nodesBaseData
 	listenInterface string
-	clientSet       *clientset.Clientset
 	client          versioned.Interface
-}
-
-func (d *baremetalEnableData) GetNodes() []string {
-	return d.nodes
 }
 
 func (d *baremetalEnableData) GetListenInterface() string {
 	return d.listenInterface
-}
-
-func (d *baremetalEnableData) ClientSet() (*clientset.Clientset, error) {
-	if d.clientSet != nil {
-		return d.clientSet, nil
-	}
-	path := constants.GetAdminKubeConfigPath()
-	client, err := kubeconfigutil.ClientSetFromFile(path)
-	if err != nil {
-		return nil, errors.Wrap(err, "[preflight] couldn't create Kubernetes client")
-	}
-	d.clientSet = client
-	return client, nil
 }
 
 func (d *baremetalEnableData) VersionedClient() (versioned.Interface, error) {
@@ -91,20 +71,10 @@ func (d *baremetalEnableData) VersionedClient() (versioned.Interface, error) {
 }
 
 func AddBaremetalEnableFlags(flagSet *flag.FlagSet, o *baremetalEnableData) {
-	flagSet.StringArrayVar(
-		&o.nodes, "node", o.nodes,
-		"Node names to enable baremetal agent",
-	)
+	o.AddNodesFlags(flagSet)
 	flagSet.StringVar(
 		&o.listenInterface, "listen-interface", o.listenInterface,
 		"Listen interface nome of baremetal agent",
-	)
-}
-
-func AddBaremetalDisableFlags(flagSet *flag.FlagSet, o *baremetalEnableData) {
-	flagSet.StringArrayVar(
-		&o.nodes, "node", o.nodes,
-		"Node names to enable baremetal agent",
 	)
 }
 
@@ -161,7 +131,7 @@ func cmdBaremetalDisable() *cobra.Command {
 		},
 		Args: cobra.NoArgs,
 	}
-	AddBaremetalDisableFlags(cmd.Flags(), opt)
+	opt.AddNodesFlags(cmd.Flags())
 	runner.AppendPhase(baremetal.NodesDisableBaremetalAgent())
 
 	runner.SetDataInitializer(func(cmd *cobra.Command, args []string) (workflow.RunData, error) {

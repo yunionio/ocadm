@@ -24,6 +24,7 @@ const (
 	HostLocalImagePath   = "host-local-image-path"
 	Hostname             = "host-name"
 	HostNetworks         = "host-networks"
+	AsOnecloudController = "as-onecloud-controller"
 )
 
 const (

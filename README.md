@@ -112,3 +112,14 @@ $ kubectl get pods -n onecloud
 ```bash
 $ ./ocadm reset
 ```
+
+# configure onecloud component
+
+```bash
+$ ./ocadm node disable-host-agent          # Run this command to select node disable host agent
+$ ./ocadm node disable-onecloud-controller # Run this command to select node disable onecloud controller
+$ ./ocadm node enable-host-agent           # Run this command to select node enable host agent
+$ ./ocadm node enable-onecloud-controller  # Run this command to select node enable onecloud controller
+$ ./ocadm baremetal enable                 # Run this command to select node enable baremetal agent
+$ ./ocadm baremetal disable                # Run this command to select node disable baremetal agent
+```

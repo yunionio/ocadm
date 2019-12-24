@@ -373,6 +373,10 @@ func newInitData(cmd *cobra.Command, args []string, options *initOptions, out io
 		cfg.NodeRegistration.CRISocket = options.externalCfg.NodeRegistration.CRISocket
 	}
 
+	// init node always as onecloud controller
+	cfg.NodeRegistration.KubeletExtraArgs =
+		customizeKubeletExtarArgs(options.hostCfg.EnableHost, true)
+
 	if err := configutil.VerifyAPIServerBindAddress(cfg.LocalAPIEndpoint.AdvertiseAddress); err != nil {
 		return nil, err
 	}
