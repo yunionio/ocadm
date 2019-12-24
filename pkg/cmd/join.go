@@ -116,7 +116,7 @@ func NewCmdJoin(out io.Writer, joinOptions *joinOptions) *cobra.Command {
 			data := c.(*joinData)
 			data.enableHostAgent = joinOptions.hostCfg.EnableHost
 			// by default, control plane node as onecloud controller
-			if joinOptions.asOnecloudController || joinOptions.controlPlane {
+			if joinOptions.asOnecloudController {
 				data.asOnecloudController = true
 			}
 			err = joinRunner.Run(args)
