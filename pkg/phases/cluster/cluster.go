@@ -9,6 +9,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	flag "github.com/spf13/pflag"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -24,6 +25,7 @@ import (
 	"yunion.io/x/ocadm/pkg/apis/constants"
 	apiv1 "yunion.io/x/ocadm/pkg/apis/v1"
 	configutil "yunion.io/x/ocadm/pkg/util/config"
+	ocutil "yunion.io/x/ocadm/pkg/util/onecloud"
 )
 
 const (
@@ -72,7 +74,16 @@ func newClusterData(cmd *cobra.Command, args []string) (*clusterData, error) {
 	}, nil
 }
 
+type createOptions struct {
+	useEE bool
+}
+
+func newCreateOptions() *createOptions {
+	return &createOptions{}
+}
+
 func NewCmdCreate(out io.Writer) *cobra.Command {
+	opt := newCreateOptions()
 	cmd := &cobra.Command{
 		Use:   "create",
 		Short: "Run this command to create onecloud cluster",
@@ -80,14 +91,19 @@ func NewCmdCreate(out io.Writer) *cobra.Command {
 			data, err := newClusterData(cmd, args)
 			kubeadmutil.CheckErr(err)
 
-			oc, err := CreateCluster(data)
+			oc, err := CreateCluster(data, opt)
 			kubeadmutil.CheckErr(err)
 
 			fmt.Fprintf(out, "Cluster %s created\n", oc.GetName())
 		},
 		Args: cobra.NoArgs,
 	}
+	AddCreateOptions(cmd.Flags(), opt)
 	return cmd
+}
+
+func AddCreateOptions(flagSet *flag.FlagSet, opt *createOptions) {
+	flagSet.BoolVar(&opt.useEE, "use-ee", opt.useEE, "Use EE edition")
 }
 
 func NewCmdConfig() *cobra.Command {
@@ -108,7 +124,7 @@ func NewCmdConfig() *cobra.Command {
 	return cmd
 }
 
-func CreateCluster(data *clusterData) (*v1alpha1.OnecloudCluster, error) {
+func CreateCluster(data *clusterData, opt *createOptions) (*v1alpha1.OnecloudCluster, error) {
 	cli := data.client
 	cfg := data.cfg
 	ret, err := cli.OnecloudV1alpha1().OnecloudClusters(constants.OnecloudNamespace).List(metav1.ListOptions{})
@@ -118,10 +134,10 @@ func CreateCluster(data *clusterData) (*v1alpha1.OnecloudCluster, error) {
 	if len(ret.Items) != 0 {
 		return nil, errors.Errorf("Cluster already create")
 	}
-	return cli.OnecloudV1alpha1().OnecloudClusters(constants.OnecloudNamespace).Create(newCluster(cfg))
+	return cli.OnecloudV1alpha1().OnecloudClusters(constants.OnecloudNamespace).Create(newCluster(cfg, opt))
 }
 
-func newCluster(cfg *apiv1.InitConfiguration) *v1alpha1.OnecloudCluster {
+func newCluster(cfg *apiv1.InitConfiguration, opt *createOptions) *v1alpha1.OnecloudCluster {
 	lbEndpoint := cfg.ControlPlaneEndpoint
 	if lbEndpoint != "" {
 		lbEndpoint = strings.Split(lbEndpoint, ":")[0]
@@ -129,7 +145,7 @@ func newCluster(cfg *apiv1.InitConfiguration) *v1alpha1.OnecloudCluster {
 	if lbEndpoint == "" {
 		lbEndpoint = cfg.ManagementNetInterface.IPAddress()
 	}
-	return &v1alpha1.OnecloudCluster{
+	oc := &v1alpha1.OnecloudCluster{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: constants.OnecloudNamespace,
 			Name:      DefaultClusterName,
@@ -147,6 +163,12 @@ func newCluster(cfg *apiv1.InitConfiguration) *v1alpha1.OnecloudCluster {
 			Region:               cfg.Region,
 		},
 	}
+	if opt.useEE {
+		ocutil.SetOCUseEE(oc)
+	} else {
+		ocutil.SetOCUseCE(oc)
+	}
+	return oc
 }
 
 func GetClusterRCAdmin(data *clusterData) (string, error) {
