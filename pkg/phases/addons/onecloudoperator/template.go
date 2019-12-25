@@ -267,7 +267,7 @@ spec:
         - --logLevel=INFO
         - --defaultentrypoints=http,https
         - --entrypoints=Name:https Address::443 TLS
-        - --entrypoints=Name:http Address::80
+        - --entrypoints=Name:http Address::80 Redirect.EntryPoint:https
 ---
 kind: Service
 apiVersion: v1
