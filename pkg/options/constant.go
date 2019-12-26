@@ -25,6 +25,7 @@ const (
 	Hostname             = "host-name"
 	HostNetworks         = "host-networks"
 	AsOnecloudController = "as-onecloud-controller"
+	PrintAddonYaml       = "print-addon-yaml"
 )
 
 const (

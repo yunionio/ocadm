@@ -18,6 +18,15 @@ const (
 	CalicoNode                     = "calico-node"
 	CalicoCNI                      = "calico-cni"
 	DefaultCalicoVersion           = "v3.7.2"
+	Loki                           = "loki"
+	DefaultLokiVersion             = "v1.2.0"
+	Promtail                       = "promtail"
+	DefaultPromtailVersion         = DefaultLokiVersion
+	Grafana                        = "grafana"
+	DefaultGrafanaVersion          = "6.5.2"
+	// mirror of kiwigrid/k8s-sidecar:0.1.20
+	K8sSidecar               = "k8s-sidecar"
+	DefaultK8sSidecarVersion = "0.1.20"
 
 	EndpointTypeInternal = "internal"
 	EndpointTypePublic   = "public"
