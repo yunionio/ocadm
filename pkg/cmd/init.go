@@ -97,6 +97,7 @@ type initOptions struct {
 	uploadCerts             bool
 	certificateKey          string
 	skipCertificateKeyPrint bool
+	printAddonYaml          bool
 }
 
 var _ initphases.InitData = &initData{}
@@ -120,6 +121,7 @@ type initData struct {
 	certificateKey          string
 	skipCertificateKeyPrint bool
 	enableHostAgent         bool
+	printAddonYaml          bool
 }
 
 // NewCmdInit returns "deployer init" command
@@ -308,6 +310,10 @@ func AddInitOtherFlags(flagSet *flag.FlagSet, initOptions *initOptions) {
 		&initOptions.dryRun, options.DryRun, initOptions.dryRun,
 		"Don't apply any changes; just output what would be done.",
 	)
+	flagSet.BoolVar(
+		&initOptions.printAddonYaml, options.PrintAddonYaml, initOptions.printAddonYaml,
+		"Print addon yaml manifest",
+	)
 }
 
 // newInitOptions returns a struct ready for being used for creating cmd init flags.
@@ -440,6 +446,7 @@ func newInitData(cmd *cobra.Command, args []string, options *initOptions, out io
 		uploadCerts:             options.uploadCerts,
 		certificateKey:          options.certificateKey,
 		skipCertificateKeyPrint: options.skipCertificateKeyPrint,
+		printAddonYaml:          options.printAddonYaml,
 	}
 
 	return data, nil
@@ -448,6 +455,11 @@ func newInitData(cmd *cobra.Command, args []string, options *initOptions, out io
 // EnableHostAgent return is enable host agent
 func (d *initData) EnabledHostAgent() bool {
 	return d.enableHostAgent
+}
+
+// PrintAddonYaml only print onecloud addon yaml manifest
+func (d *initData) PrintAddonYaml() bool {
+	return d.printAddonYaml
 }
 
 // UploadCerts returns Uploadcerts flag.

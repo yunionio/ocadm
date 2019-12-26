@@ -21,4 +21,5 @@ type InitData interface {
 	OnecloudClientSession() (*mcclient.ClientSession, error)
 	KubectlClient() (*kubectl.Client, error)
 	EnabledHostAgent() bool
+	PrintAddonYaml() bool
 }
