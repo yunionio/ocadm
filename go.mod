@@ -25,7 +25,9 @@ require (
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	gopkg.in/square/go-jose.v2 v2.3.1 // indirect
 	k8s.io/api v0.0.0
+	k8s.io/apiextensions-apiserver v0.0.0
 	k8s.io/apimachinery v0.0.0
+	k8s.io/cli-runtime v0.0.0
 	k8s.io/client-go v12.0.0+incompatible
 	k8s.io/cluster-bootstrap v0.0.0
 	k8s.io/component-base v0.0.0
@@ -36,8 +38,9 @@ require (
 	sigs.k8s.io/controller-runtime v0.1.11 // indirect
 	sigs.k8s.io/testing_frameworks v0.1.1 // indirect
 	yunion.io/x/jsonutils v0.0.0-20191005115334-bb1c187fc0e7
+	yunion.io/x/log v0.0.0-20190629062853-9f6483a7103d
 	yunion.io/x/onecloud v0.0.0-20191210025243-fdf6f1cbdefd
-	yunion.io/x/onecloud-operator v0.0.1-alpha3.0.20191224062032-27808fcfb917
+	yunion.io/x/onecloud-operator v0.0.1-alpha3.0.20191231092239-6c398b6a9bf8
 	yunion.io/x/pkg v0.0.0-20191121110824-e03b47b93fe0
 )
 
