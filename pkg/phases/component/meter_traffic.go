@@ -1,10 +1,10 @@
 package component
 
 import (
-	apps "k8s.io/api/apps/v1"
-	corev1 "k8s.io/api/core/v1"
+//apps "k8s.io/api/apps/v1"
+//corev1 "k8s.io/api/core/v1"
 
-	onecloud "yunion.io/x/onecloud-operator/pkg/apis/onecloud/v1alpha1"
+//onecloud "yunion.io/x/onecloud-operator/pkg/apis/onecloud/v1alpha1"
 )
 
 const (
@@ -130,6 +130,7 @@ jobs.fetch.aliyun.priceinfo=0 30 0 * * ?
 `
 )
 
+/*
 var MeterTrafficComponent IComponent = NewMeterTraffic()
 
 type MeterTraffic struct {
@@ -186,4 +187,4 @@ func (m MeterTraffic) NewCloudUser(cfg *OnecloudComponentsConfig) *onecloud.Clou
 
 func (m MeterTraffic) NewDBConfig(cfg *OnecloudComponentsConfig) *onecloud.DBConfig {
 	return &cfg.MeterConfig.DB
-}
+}*/

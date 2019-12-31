@@ -16,15 +16,8 @@ import (
 const (
 	OnecloudComponentsConfigKey = "OnecloudComponentsConfig"
 
-	MeterAdminUser   = "meter"
-	MeterPort        = 9090
-	MeterDB          = "meter"
-	MeterDBUser      = "meter"
-	ServiceNameMeter = "meter"
-	ServiceTypeMeter = "meter"
-
 	MeterAlertAdminUser   = "meteralert"
-	MeterAlertPort        = 9494
+	MeterAlertPort        = 30929
 	MeterAlertDB          = "meteralert"
 	MeterAlertDBUser      = "meteralert"
 	ServiceNameMeterAlert = "meteralert"
@@ -32,21 +25,21 @@ const (
 
 	CloudmonAdminUser = "cloudmon"
 
-	MeterServicePort      = 9091
-	MeterTrafficPort      = 9093
-	MeterCloudPort        = 9094
+	MeterServicePort      = 30919
+	MeterTrafficPort      = 30939
+	MeterCloudPort        = 30949
 	ServiceNameMeterCloud = "meter-cloud"
 	ServiceTypeMeterCloud = "meter-cloud"
 
 	CloudWatcherAdminUser   = "cloudwatcher"
-	CloudWatcherPort        = 8787
+	CloudWatcherPort        = 30787
 	CloudWatcherDB          = "cloudwatcher"
 	CloudWatcherDBUser      = "cloudwatcher"
 	ServiceNameCloudWatcher = "cloudwatcher"
 	ServiceTypeCloudWatcher = "cloudwatcher"
 
 	ItsmAdminUser   = "itsm"
-	ItsmPort        = 9595
+	ItsmPort        = 30595
 	ItsmDB          = "itsm"
 	ItsmDBUser      = "itsm"
 	ServiceNameItsm = "itsm"
@@ -60,7 +53,6 @@ type ItsmConfigOptions struct {
 }
 
 type OnecloudComponentsConfig struct {
-	MeterConfig        onecloud.ServiceDBCommonOptions `json:"meter"`
 	MeterAlertConfig   onecloud.ServiceDBCommonOptions `json:"meteralert"`
 	CloudmonConfig     onecloud.ServiceCommonOptions   `json:"cloudmon"`
 	CloudWatcherConfig onecloud.ServiceDBCommonOptions `json:"cloudwatcher"`
@@ -90,7 +82,6 @@ func FillOnecloudComponentsConfigDefault(obj *OnecloudComponentsConfig) *Oneclou
 	}
 
 	for opt, tmp := range map[*onecloud.ServiceDBCommonOptions]userDBPort{
-		&obj.MeterConfig:                       {MeterAdminUser, MeterPort, MeterDB, MeterDBUser},
 		&obj.MeterAlertConfig:                  {MeterAlertAdminUser, MeterAlertPort, MeterAlertDB, MeterAlertDBUser},
 		&obj.CloudWatcherConfig:                {CloudWatcherAdminUser, CloudWatcherPort, CloudWatcherDB, CloudWatcherDBUser},
 		&obj.ItsmConfig.ServiceDBCommonOptions: {ItsmAdminUser, ItsmPort, ItsmDB, ItsmDBUser},
