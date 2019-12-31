@@ -16,6 +16,7 @@ func NewCmdCluster(out io.Writer) *cobra.Command {
 
 	cmds.AddCommand(clusterphase.NewCmdCreate(out))
 	cmds.AddCommand(clusterphase.NewCmdConfig())
+	cmds.AddCommand(clusterphase.NewCmdUpdate(out))
 
 	return cmds
 }
