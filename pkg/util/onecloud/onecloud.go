@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	nodeutil "k8s.io/kubernetes/pkg/util/node"
 	"yunion.io/x/jsonutils"
 	"yunion.io/x/onecloud-operator/pkg/manager/component"
 	"yunion.io/x/onecloud/pkg/hostman/options"
@@ -352,7 +353,15 @@ func GenerateDefaultHostConfig(cfg *HostCfg) error {
 	component.SetOptionsDefault(o, "")
 	o.LocalImagePath = cfg.LocalImagePath
 	o.Networks = cfg.Networks
-	o.Hostname = cfg.Hostname
+	if len(cfg.Hostname) > 0 {
+		o.Hostname = cfg.Hostname
+	} else {
+		var err error
+		o.Hostname, err = nodeutil.GetHostname("")
+		if err != nil {
+			return err
+		}
+	}
 
 	o.ReportInterval = 60
 	o.BridgeDriver = "openvswitch"
