@@ -304,6 +304,15 @@ func updateCluster(data *clusterData, opt *updateOptions) error {
 			if err := ocutil.WaitOnecloudDeploymentUpdated(data.client, oc.GetName(), oc.GetNamespace(), 5*time.Minute); err != nil {
 				return errors.Wrap(err, "wait onecloud cluster updated")
 			}
+			rollout, err := data.kubeClient.Rollout()
+			if err != nil {
+				return errors.Wrap(err, "get rollout cmd")
+			}
+			if err := rollout.Status(0).
+				SetNamespace(constants.OnecloudNamespace).
+				RunDeployment(fmt.Sprintf("%s-web", oc.GetName())); err != nil {
+				return err
+			}
 		}
 	}
 	operator, err := data.GetOperator()
