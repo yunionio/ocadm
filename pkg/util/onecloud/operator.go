@@ -113,15 +113,21 @@ var SpecsStatus []SpecStatusPair = []SpecStatusPair{
 		},
 	},
 	{
+		Name: "glance",
+		Getter: func(oc *onecloud.OnecloudCluster) (onecloud.DeploymentSpec, onecloud.DeploymentStatus) {
+			return oc.Spec.Glance.DeploymentSpec, oc.Status.Glance.DeploymentStatus
+		},
+	},
+	{
 		Name: "region",
 		Getter: func(oc *onecloud.OnecloudCluster) (onecloud.DeploymentSpec, onecloud.DeploymentStatus) {
 			return oc.Spec.RegionServer.DeploymentSpec, oc.Status.RegionServer.DeploymentStatus
 		},
 	},
 	{
-		Name: "glance",
+		Name: "scheduler",
 		Getter: func(oc *onecloud.OnecloudCluster) (onecloud.DeploymentSpec, onecloud.DeploymentStatus) {
-			return oc.Spec.Glance.DeploymentSpec, oc.Status.Glance.DeploymentStatus
+			return oc.Spec.Scheduler, oc.Status.Scheduler
 		},
 	},
 	{
@@ -134,6 +140,12 @@ var SpecsStatus []SpecStatusPair = []SpecStatusPair{
 		Name: "web",
 		Getter: func(oc *onecloud.OnecloudCluster) (onecloud.DeploymentSpec, onecloud.DeploymentStatus) {
 			return oc.Spec.Web, oc.Status.Web
+		},
+	},
+	{
+		Name: "cloudnet",
+		Getter: func(oc *onecloud.OnecloudCluster) (onecloud.DeploymentSpec, onecloud.DeploymentStatus) {
+			return oc.Spec.Cloudnet, oc.Status.Cloudnet
 		},
 	},
 }
@@ -154,7 +166,7 @@ func WaitOnecloudDeploymentUpdated(
 	namespace string,
 	timeout time.Duration,
 ) error {
-	return wait.PollImmediate(5*time.Second, timeout, func() (bool, error) {
+	return wait.PollImmediate(10*time.Second, timeout, func() (bool, error) {
 		oc, err := cli.OnecloudV1alpha1().OnecloudClusters(namespace).Get(name, metav1.GetOptions{})
 		if err != nil {
 			return false, err
