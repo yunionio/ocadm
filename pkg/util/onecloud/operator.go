@@ -78,10 +78,10 @@ func isDeploymentImageUpdated(
 	curRepo := curStatus.ImageStatus.Repository
 	curVersion := curStatus.ImageStatus.Tag
 	if repo != curRepo {
-		return false, fmt.Sprintf("expected repo %s => current repo %s", repo, curRepo)
+		return false, fmt.Sprintf("current repo %s => expected repo %s", curRepo, repo)
 	}
 	if version != curVersion {
-		return false, fmt.Sprintf("expected version %s => current version %s", version, curVersion)
+		return false, fmt.Sprintf("current version %s => expected version %s", curVersion, version)
 	}
 	return true, ""
 }
@@ -163,7 +163,7 @@ func WaitOnecloudDeploymentUpdated(
 		if ok {
 			return true, nil
 		}
-		log.Debugf("Wait: %s", reason)
+		log.Infof("Wait: %s", reason)
 		return false, nil
 	})
 }

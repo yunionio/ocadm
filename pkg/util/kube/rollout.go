@@ -5,20 +5,20 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/cli-runtime/pkg/resource"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/tools/cache"
+	watchtools "k8s.io/client-go/tools/watch"
 	"k8s.io/kubernetes/pkg/kubectl"
 	"k8s.io/kubernetes/pkg/kubectl/polymorphichelpers"
 	"k8s.io/kubernetes/pkg/kubectl/scheme"
-	watchtools "k8s.io/client-go/tools/watch"
 	"k8s.io/kubernetes/pkg/kubectl/util/interrupt"
 
 	"yunion.io/x/log"
@@ -41,17 +41,17 @@ func NewRollout(client *Client) (*Rollout, error) {
 		return nil, err
 	}
 	return &Rollout{
-		client: client,
+		client:        client,
 		DynamicClient: dynamicClient,
 	}, nil
 }
 
 func (r *Rollout) Status(timeout time.Duration) *RolloutStatus {
 	status := &RolloutStatus{
-		Rollout: r,
+		Rollout:        r,
 		StatusViewerFn: polymorphichelpers.StatusViewerFn,
-		Builder: r.client.Factory.NewBuilder,
-		Timeout: timeout,
+		Builder:        r.client.Factory.NewBuilder,
+		Timeout:        timeout,
 	}
 	return status
 }
@@ -62,9 +62,9 @@ type RolloutStatus struct {
 	*Rollout
 
 	StatusViewerFn func(*meta.RESTMapping) (kubectl.StatusViewer, error)
-	Builder func() *resource.Builder
-	Timeout time.Duration
-	Revision int64
+	Builder        func() *resource.Builder
+	Timeout        time.Duration
+	Revision       int64
 }
 
 func (r *RolloutStatus) SetNamespace(namespace string) *RolloutStatus {
@@ -120,18 +120,18 @@ func (r *RolloutStatus) run(resType string, name string) error {
 
 	fieldSelector := fields.OneTermEqualSelector("metadata.name", info.Name).String()
 	lw := &cache.ListWatch{
-		ListFunc:        func(options metav1.ListOptions) (runtime.Object, error) {
+		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
 			options.FieldSelector = fieldSelector
 			return r.DynamicClient.Resource(info.Mapping.Resource).Namespace(info.Namespace).List(options)
 		},
-		WatchFunc:       func(options metav1.ListOptions) (watch.Interface, error) {
+		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
 			options.FieldSelector = fieldSelector
 			return r.DynamicClient.Resource(info.Mapping.Resource).Namespace(info.Namespace).Watch(options)
 		},
 	}
 
 	preconditionFunc := func(store cache.Store) (bool, error) {
-		_, exists, err := store.Get(&metav1.ObjectMeta{Namespace:info.Namespace, Name: info.Name})
+		_, exists, err := store.Get(&metav1.ObjectMeta{Namespace: info.Namespace, Name: info.Name})
 		if err != nil {
 			return true, err
 		}
@@ -154,7 +154,7 @@ func (r *RolloutStatus) run(resType string, name string) error {
 				if err != nil {
 					return false, err
 				}
-				log.Debugf("%s/%s status: %v", resType, name, status)
+				log.Infof("%s/%s status: %v", resType, name, status)
 				// Quit waiting if the rollout is done
 				if done {
 					return true, nil

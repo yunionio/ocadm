@@ -40,7 +40,7 @@ require (
 	yunion.io/x/jsonutils v0.0.0-20191005115334-bb1c187fc0e7
 	yunion.io/x/log v0.0.0-20190629062853-9f6483a7103d
 	yunion.io/x/onecloud v0.0.0-20191210025243-fdf6f1cbdefd
-	yunion.io/x/onecloud-operator v0.0.1-alpha3.0.20191231092239-6c398b6a9bf8
+	yunion.io/x/onecloud-operator v0.0.1-alpha3.0.20200102040053-1d185eed3ee8
 	yunion.io/x/pkg v0.0.0-20191121110824-e03b47b93fe0
 )
 
