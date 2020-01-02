@@ -100,6 +100,7 @@ func (data *clusterData) GetOperator() (*appv1.Deployment, error) {
 type createOptions struct {
 	useEE   bool
 	version string
+	wait    bool
 }
 
 func newCreateOptions() *createOptions {
@@ -129,6 +130,7 @@ func NewCmdCreate(out io.Writer) *cobra.Command {
 func AddCreateOptions(flagSet *flag.FlagSet, opt *createOptions) {
 	flagSet.BoolVar(&opt.useEE, "use-ee", opt.useEE, "Use EE edition")
 	flagSet.StringVar(&opt.version, "version", opt.version, "onecloud cluster version")
+	flagSet.BoolVar(&opt.wait, "wait", opt.wait, "wait until workload created")
 }
 
 func NewCmdConfig() *cobra.Command {
@@ -159,7 +161,16 @@ func CreateCluster(data *clusterData, opt *createOptions) (*v1alpha1.OnecloudClu
 	if len(ret.Items) != 0 {
 		return nil, errors.Errorf("Cluster already create")
 	}
-	return cli.OnecloudV1alpha1().OnecloudClusters(constants.OnecloudNamespace).Create(newCluster(cfg, opt))
+	oc, err := cli.OnecloudV1alpha1().OnecloudClusters(constants.OnecloudNamespace).Create(newCluster(cfg, opt))
+	if err != nil {
+		return nil, errors.Wrap(err, "create cluster")
+	}
+	if opt.wait {
+		if err := ocutil.WaitOnecloudDeploymentUpdated(data.client, oc.GetName(), oc.GetNamespace(), 30*time.Minute); err != nil {
+			return oc, errors.Wrap(err, "wait onecloud cluster services running")
+		}
+	}
+	return oc, nil
 }
 
 func newCluster(cfg *apiv1.InitConfiguration, opt *createOptions) *v1alpha1.OnecloudCluster {

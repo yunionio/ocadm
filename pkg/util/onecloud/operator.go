@@ -75,6 +75,9 @@ func isDeploymentImageUpdated(
 	if spec.Tag != "" {
 		version = spec.Tag
 	}
+	if curStatus == nil || curStatus.ImageStatus == nil {
+		return false, fmt.Sprintf("current status is nil, maybe deployment not created")
+	}
 	curRepo := curStatus.ImageStatus.Repository
 	curVersion := curStatus.ImageStatus.Tag
 	if repo != curRepo {
