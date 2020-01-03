@@ -20,6 +20,7 @@ import (
 	kubeadmutil "k8s.io/kubernetes/cmd/kubeadm/app/util"
 	kubeconfigutil "k8s.io/kubernetes/cmd/kubeadm/app/util/kubeconfig"
 
+	operatorconstants "yunion.io/x/onecloud-operator/pkg/apis/constants"
 	"yunion.io/x/onecloud-operator/pkg/apis/onecloud/v1alpha1"
 	"yunion.io/x/onecloud-operator/pkg/client/clientset/versioned"
 	occonfig "yunion.io/x/onecloud-operator/pkg/manager/config"
@@ -259,6 +260,8 @@ type updateOptions struct {
 	operatorVersion string
 	imageRepository string
 	wait            bool
+	useEE           bool
+	useCE           bool
 }
 
 func newUpdateOptions() *updateOptions {
@@ -287,6 +290,8 @@ func AddUpdateOptions(flagSet *flag.FlagSet, opt *updateOptions) {
 	flagSet.StringVar(&opt.operatorVersion, "operator-version", opt.operatorVersion, "onecloud operator version")
 	flagSet.StringVar(&opt.imageRepository, "image-repository", opt.imageRepository, "image registry repo")
 	flagSet.BoolVar(&opt.wait, "wait", opt.wait, "wait until workload updated")
+	flagSet.BoolVar(&opt.useEE, "use-ee", opt.useEE, "use enterprise edition onecloud")
+	flagSet.BoolVar(&opt.useCE, "use-ce", opt.useCE, "use community edition onecloud")
 }
 
 func updateCluster(data *clusterData, opt *updateOptions) error {
@@ -295,6 +300,14 @@ func updateCluster(data *clusterData, opt *updateOptions) error {
 		return errors.Wrap(err, "get default onecloud cluster")
 	}
 	updateOC := false
+	edition := oc.Annotations[operatorconstants.OnecloudEditionAnnotationKey]
+	if opt.useEE && edition != operatorconstants.OnecloudEnterpriseEdition {
+		oc.Annotations[operatorconstants.OnecloudEditionAnnotationKey] = operatorconstants.OnecloudEnterpriseEdition
+		updateOC = true
+	} else if opt.useCE && edition != operatorconstants.OnecloudCommunityEdition {
+		oc.Annotations[operatorconstants.OnecloudEditionAnnotationKey] = operatorconstants.OnecloudCommunityEdition
+		updateOC = true
+	}
 	if opt.version != "" {
 		if opt.version != oc.Spec.Version {
 			oc.Spec.Version = opt.version
