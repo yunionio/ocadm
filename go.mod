@@ -6,6 +6,7 @@ require (
 	github.com/MakeNowJust/heredoc v0.0.0-20171113091838-e9091a26100e // indirect
 	github.com/Microsoft/go-winio v0.4.12 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
+	github.com/Sirupsen/logrus v1.4.2 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v1.13.1 // indirect
@@ -40,7 +41,7 @@ require (
 	yunion.io/x/jsonutils v0.0.0-20191005115334-bb1c187fc0e7
 	yunion.io/x/log v0.0.0-20190629062853-9f6483a7103d
 	yunion.io/x/onecloud v0.0.0-20191210025243-fdf6f1cbdefd
-	yunion.io/x/onecloud-operator v0.0.1-alpha3.0.20200102053438-0de31870c1df
+	yunion.io/x/onecloud-operator v0.0.1-alpha3.0.20200103070230-17713864e6db
 	yunion.io/x/pkg v0.0.0-20191121110824-e03b47b93fe0
 )
 

@@ -16,6 +16,5 @@ func NewCmdComponent(out io.Writer) *cobra.Command {
 	cmds.AddCommand(componentphase.EnableCmd.GetCmd())
 	cmds.AddCommand(componentphase.DisableCmd.GetCmd())
 	cmds.AddCommand(componentphase.NewCmdConfig(out))
-	cmds.AddCommand(componentphase.NewCmdWeb())
 	return cmds
 }

@@ -7,6 +7,7 @@ github.com/360EntSecGroup-Skylar/excelize v1.4.0/go.mod h1:R8KYLmGns0vDPe6/HyphW
 github.com/Azure/azure-sdk-for-go v5.0.0-beta.0.20161118192335-3b1282355199+incompatible/go.mod h1:9XXNKU+eRnpl9moKnB4QOLf1HestfXbmab5FXxiDBjc=
 github.com/Azure/azure-sdk-for-go v21.4.0+incompatible/go.mod h1:9XXNKU+eRnpl9moKnB4QOLf1HestfXbmab5FXxiDBjc=
 github.com/Azure/azure-sdk-for-go v36.1.0+incompatible/go.mod h1:9XXNKU+eRnpl9moKnB4QOLf1HestfXbmab5FXxiDBjc=
+github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 h1:w+iIsaOQNcT7OZ575w+acHgRric5iCyQh+xv+KJ4HB8=
 github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78/go.mod h1:LmzpDX56iTiv29bbRTIsUNlaFfuhWRQBWjQdVyAevI8=
 github.com/Azure/go-autorest v10.15.5+incompatible/go.mod h1:r+4oMnoxhatjLLJ6zxSWATqVooLgysK6ZNox3g/xq24=
 github.com/Azure/go-autorest v11.1.2+incompatible/go.mod h1:r+4oMnoxhatjLLJ6zxSWATqVooLgysK6ZNox3g/xq24=
@@ -987,6 +988,10 @@ yunion.io/x/onecloud-operator v0.0.1-alpha3.0.20200102040053-1d185eed3ee8 h1:s8+
 yunion.io/x/onecloud-operator v0.0.1-alpha3.0.20200102040053-1d185eed3ee8/go.mod h1:MI+Rc2zM+IRykl2flxYIvCWvKSAxgScqMOQH4vmksic=
 yunion.io/x/onecloud-operator v0.0.1-alpha3.0.20200102053438-0de31870c1df h1:WmGvFR0rcneEZnl/TN/Xx90AfP7gSdzwk4YzeJJuQvI=
 yunion.io/x/onecloud-operator v0.0.1-alpha3.0.20200102053438-0de31870c1df/go.mod h1:MI+Rc2zM+IRykl2flxYIvCWvKSAxgScqMOQH4vmksic=
+yunion.io/x/onecloud-operator v0.0.1-alpha3.0.20200102082000-84f2be31c767 h1:rlTTvuzRQPSPCG0wxDYjRsZ8XfguewurfP1UIEMXobo=
+yunion.io/x/onecloud-operator v0.0.1-alpha3.0.20200102082000-84f2be31c767/go.mod h1:MI+Rc2zM+IRykl2flxYIvCWvKSAxgScqMOQH4vmksic=
+yunion.io/x/onecloud-operator v0.0.1-alpha3.0.20200103070230-17713864e6db h1:aF1Xeq7YVzSrlZrLxouG8EPQGpPdWRHohahQr/OWLdc=
+yunion.io/x/onecloud-operator v0.0.1-alpha3.0.20200103070230-17713864e6db/go.mod h1:MI+Rc2zM+IRykl2flxYIvCWvKSAxgScqMOQH4vmksic=
 yunion.io/x/pkg v0.0.0-20190620104149-945c25821dbf h1:OsKC+2ghZHwp+Ztm/MwKlLKKRiE7QcPG8eTp0GmsHbg=
 yunion.io/x/pkg v0.0.0-20190620104149-945c25821dbf/go.mod h1:t6rEGG2sQ4J7DhFxSZVOTjNd0YO/KlfWQyK1W4tog+E=
 yunion.io/x/pkg v0.0.0-20190628082551-f4033ba2ea30/go.mod h1:t6rEGG2sQ4J7DhFxSZVOTjNd0YO/KlfWQyK1W4tog+E=
