@@ -25,12 +25,6 @@ const (
 
 	CloudmonAdminUser = "cloudmon"
 
-	MeterServicePort      = 30919
-	MeterTrafficPort      = 30939
-	MeterCloudPort        = 30949
-	ServiceNameMeterCloud = "meter-cloud"
-	ServiceTypeMeterCloud = "meter-cloud"
-
 	CloudWatcherAdminUser   = "cloudwatcher"
 	CloudWatcherPort        = 30787
 	CloudWatcherDB          = "cloudwatcher"

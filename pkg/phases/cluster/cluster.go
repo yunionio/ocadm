@@ -300,6 +300,9 @@ func updateCluster(data *clusterData, opt *updateOptions) error {
 		return errors.Wrap(err, "get default onecloud cluster")
 	}
 	updateOC := false
+	if oc.Annotations == nil {
+		oc.Annotations = make(map[string]string)
+	}
 	edition := oc.Annotations[operatorconstants.OnecloudEditionAnnotationKey]
 	if opt.useEE && edition != operatorconstants.OnecloudEnterpriseEdition {
 		oc.Annotations[operatorconstants.OnecloudEditionAnnotationKey] = operatorconstants.OnecloudEnterpriseEdition
