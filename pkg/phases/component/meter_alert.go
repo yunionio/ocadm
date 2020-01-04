@@ -71,11 +71,11 @@ spring.liquibase.change-log=classpath:sql/master.xml
 # ----------------------------------------
 
 # OneCloud Authentication
-yunionyun.auth.url={{.AuthURL}}
-yunionyun.auth.domain={{.AuthDomain}}
-yunionyun.auth.username={{.AuthUsername}}
-yunionyun.auth.password={{.AuthPassword}}
-yunionyun.auth.project={{.AuthProject}}
+yunion.rc.auth.url={{.AuthURL}}
+yunion.rc.auth.domain={{.AuthDomain}}
+yunion.rc.auth.username={{.AuthUsername}}
+yunion.rc.auth.password={{.AuthPassword}}
+yunion.rc.auth.project={{.AuthProject}}
 yunion.rc.auth.region={{.Region}}
 yunion.rc.auth.cache-size=500
 yunion.rc.auth.timeout=1000
