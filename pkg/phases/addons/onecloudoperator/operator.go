@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	DefaultOperatorVersion = "v0.0.1"
+	DefaultOperatorVersion = constants.DefaultOperatorVersion
 )
 
 type OperatorConfig struct {
