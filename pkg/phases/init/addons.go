@@ -76,12 +76,10 @@ func enableHostAgent(c workflow.RunData) error {
 
 func newAddonPhase(name string, rf func(workflow.RunData) error) workflow.Phase {
 	return workflow.Phase{
-		Name:  name,
-		Short: fmt.Sprintf("Install the %s addon to a Kubernetes cluster", name),
-		InheritFlags: []string{
-			options.PrintAddonYaml,
-		},
-		Run: rf,
+		Name:         name,
+		Short:        fmt.Sprintf("Install the %s addon to a Kubernetes cluster", name),
+		InheritFlags: getAddonPhaseFlags(name),
+		Run:          rf,
 	}
 }
 
@@ -92,6 +90,7 @@ func NewOCAddonPhase() workflow.Phase {
 		Short: "Installs onecloud required addons to kubernetes cluster",
 		InheritFlags: []string{
 			options.PrintAddonYaml,
+			options.OperatorVersion,
 		},
 		Phases: []workflow.Phase{
 			{
@@ -142,7 +141,9 @@ func runCalicoAddon(c workflow.RunData) error {
 }
 
 func runOCOperatorAddon(c workflow.RunData) error {
-	return kubectlApplyAddon(c, ocaddon.NewOperatorConfig)
+	return kubectlApplyAddon(c, func(cfg *kubeadmapi.ClusterConfiguration) addons.Configer {
+		return ocaddon.NewOperatorConfig(cfg, c.(InitData).OperatorVersion())
+	})
 }
 
 func runCSIAddon(c workflow.RunData) error {
@@ -176,6 +177,13 @@ func getAddonPhaseFlags(name string) []string {
 		flags = append(flags,
 			options.NetworkingPodSubnet,
 			options.PrintAddonYaml,
+			options.OperatorVersion,
+		)
+	}
+	if name == "onecloud-operator" {
+		flags = append(flags,
+			options.PrintAddonYaml,
+			options.OperatorVersion,
 		)
 	}
 	return flags

@@ -30,6 +30,10 @@ func AddImageMetaFlags(fs *pflag.FlagSet, imageRepository *string) {
 	fs.StringVar(imageRepository, ImageRepository, v1.DefaultImageRepository, "Choose a container registry to pull control plane images from")
 }
 
+func AddOperatorVersionFlags(fs *pflag.FlagSet, version *string) {
+	fs.StringVar(version, OperatorVersion, v1.DefaultOperatorVersion, "Choose onecloud operator version")
+}
+
 var (
 	// AddKubeConfigFlag adds the --kubeconfig flag to the given flagset
 	AddKubeConfigFlag = kubeadmoptions.AddKubeConfigFlag

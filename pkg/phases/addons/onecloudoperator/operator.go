@@ -18,10 +18,13 @@ type OperatorConfig struct {
 	Namespace string
 }
 
-func NewOperatorConfig(cfg *kubeadmapi.ClusterConfiguration) addons.Configer {
+func NewOperatorConfig(cfg *kubeadmapi.ClusterConfiguration, version string) addons.Configer {
 	repo := cfg.ImageRepository
+	if version == "" {
+		version = DefaultOperatorVersion
+	}
 	config := OperatorConfig{
-		Image:     images.GetGenericImage(repo, "onecloud-operator", DefaultOperatorVersion),
+		Image:     images.GetGenericImage(repo, "onecloud-operator", version),
 		Namespace: constants.OnecloudNamespace,
 	}
 	return config
