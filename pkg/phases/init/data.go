@@ -19,6 +19,7 @@ type InitData interface {
 	OnecloudAdminConfigPath() string
 	OnecloudCfg() *apiv1.InitConfiguration
 	OnecloudClientSession() (*mcclient.ClientSession, error)
+	OperatorVersion() string
 	KubectlClient() (*kubectl.Client, error)
 	EnabledHostAgent() bool
 	PrintAddonYaml() bool

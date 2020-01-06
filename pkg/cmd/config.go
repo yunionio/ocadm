@@ -48,7 +48,7 @@ func NewCmdConfigImages(out io.Writer) *cobra.Command {
 func NewCmdConfigImagesPull() *cobra.Command {
 	externalcfg := &apiv1.InitConfiguration{}
 	scheme.Scheme.Default(externalcfg)
-	var cfgPath, featureGatesString string
+	var cfgPath, featureGatesString, operatorVersion string
 	var err error
 
 	cmd := &cobra.Command{
@@ -61,11 +61,11 @@ func NewCmdConfigImagesPull() *cobra.Command {
 			kubeadmutil.CheckErr(err)
 			containerRuntime, err := utilruntime.NewContainerRuntime(utilsexec.New(), internalcfg.NodeRegistration.CRISocket)
 			kubeadmutil.CheckErr(err)
-			imagesPull := NewImagesPull(containerRuntime, images.GetAllImages(&internalcfg.ClusterConfiguration, &internalcfg.InitConfiguration.ClusterConfiguration))
+			imagesPull := NewImagesPull(containerRuntime, images.GetAllImages(&internalcfg.ClusterConfiguration, &internalcfg.InitConfiguration.ClusterConfiguration, operatorVersion))
 			kubeadmutil.CheckErr(imagesPull.PullAll())
 		},
 	}
-	AddImagesCommonConfigFlags(cmd.PersistentFlags(), externalcfg, &cfgPath, &featureGatesString)
+	AddImagesCommonConfigFlags(cmd.PersistentFlags(), externalcfg, &cfgPath, &featureGatesString, &operatorVersion)
 	cmdutil.AddCRISocketFlag(cmd.PersistentFlags(), &externalcfg.NodeRegistration.CRISocket)
 
 	return cmd
@@ -101,7 +101,7 @@ func (ip *ImagesPull) PullAll() error {
 func NewCmdConfigImagesList(out io.Writer, mockK8sVersion *string) *cobra.Command {
 	externalCfg := &apiv1.InitConfiguration{}
 	scheme.Scheme.Default(externalCfg)
-	var cfgPath, featureGatesString string
+	var cfgPath, featureGatesString, operatorVersion string
 
 	if mockK8sVersion != nil {
 		externalCfg.KubernetesVersion = *mockK8sVersion
@@ -113,32 +113,34 @@ func NewCmdConfigImagesList(out io.Writer, mockK8sVersion *string) *cobra.Comman
 		Run: func(_ *cobra.Command, _ []string) {
 			var err error
 			externalCfg.InitConfiguration.ClusterConfiguration.FeatureGates, err = features.NewFeatureGate(&features.InitFeatureGates, featureGatesString)
-			imagesList, err := NewImagesList(cfgPath, externalCfg)
+			imagesList, err := NewImagesList(cfgPath, externalCfg, operatorVersion)
 			kubeadmutil.CheckErr(err)
 			kubeadmutil.CheckErr(imagesList.Run(out))
 		},
 	}
-	AddImagesCommonConfigFlags(cmd.PersistentFlags(), externalCfg, &cfgPath, &featureGatesString)
+	AddImagesCommonConfigFlags(cmd.PersistentFlags(), externalCfg, &cfgPath, &featureGatesString, &operatorVersion)
 	return cmd
 }
 
-func NewImagesList(cfgPath string, cfg *apiv1.InitConfiguration) (*ImagesList, error) {
+func NewImagesList(cfgPath string, cfg *apiv1.InitConfiguration, operatorVersion string) (*ImagesList, error) {
 	// TODO: load configuration
 	initcfg, err := configutil.LoadOrDefaultInitConfiguration(cfgPath, cfg)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not convert cfg to an internal cfg")
 	}
 	return &ImagesList{
-		cfg: initcfg,
+		cfg:             initcfg,
+		operatorVersion: operatorVersion,
 	}, nil
 }
 
 type ImagesList struct {
-	cfg *apiv1.InitConfiguration
+	cfg             *apiv1.InitConfiguration
+	operatorVersion string
 }
 
 func (i *ImagesList) Run(out io.Writer) error {
-	imgs := images.GetAllImages(&i.cfg.ClusterConfiguration, &i.cfg.InitConfiguration.ClusterConfiguration)
+	imgs := images.GetAllImages(&i.cfg.ClusterConfiguration, &i.cfg.InitConfiguration.ClusterConfiguration, i.operatorVersion)
 	for _, img := range imgs {
 		fmt.Fprintln(out, img)
 	}
@@ -147,10 +149,11 @@ func (i *ImagesList) Run(out io.Writer) error {
 }
 
 // AddImagesCommonConfigFlags adds the flags that configure kubeadm (and affect the images kubeadm will use)
-func AddImagesCommonConfigFlags(flagSet *flag.FlagSet, cfg *apiv1.InitConfiguration, cfgPath *string, featureGatesString *string) {
+func AddImagesCommonConfigFlags(flagSet *flag.FlagSet, cfg *apiv1.InitConfiguration, cfgPath *string, featureGatesString *string, operatorVersion *string) {
 	options.AddKubernetesVersionFlag(flagSet, &cfg.KubernetesVersion)
 	options.AddOnecloudVersion(flagSet, &cfg.OnecloudVersion)
 	options.AddFeatureGatesStringFlag(flagSet, featureGatesString)
 	options.AddImageMetaFlags(flagSet, &cfg.ImageRepository)
 	options.AddKubeadmConfigFlag(flagSet, cfgPath)
+	options.AddOperatorVersionFlags(flagSet, operatorVersion)
 }

@@ -98,6 +98,7 @@ type initOptions struct {
 	certificateKey          string
 	skipCertificateKeyPrint bool
 	printAddonYaml          bool
+	operatorVersion         string
 }
 
 var _ initphases.InitData = &initData{}
@@ -122,6 +123,7 @@ type initData struct {
 	skipCertificateKeyPrint bool
 	enableHostAgent         bool
 	printAddonYaml          bool
+	operatorVersion         string
 }
 
 // NewCmdInit returns "deployer init" command
@@ -314,6 +316,7 @@ func AddInitOtherFlags(flagSet *flag.FlagSet, initOptions *initOptions) {
 		&initOptions.printAddonYaml, options.PrintAddonYaml, initOptions.printAddonYaml,
 		"Print addon yaml manifest",
 	)
+	options.AddOperatorVersionFlags(flagSet, &initOptions.operatorVersion)
 }
 
 // newInitOptions returns a struct ready for being used for creating cmd init flags.
@@ -447,6 +450,7 @@ func newInitData(cmd *cobra.Command, args []string, options *initOptions, out io
 		certificateKey:          options.certificateKey,
 		skipCertificateKeyPrint: options.skipCertificateKeyPrint,
 		printAddonYaml:          options.printAddonYaml,
+		operatorVersion:         options.operatorVersion,
 	}
 
 	return data, nil
@@ -624,6 +628,10 @@ func (d *initData) OnecloudClientSession() (*mcclient.ClientSession, error) {
 		return nil, err
 	}
 	return d.ocClient, nil
+}
+
+func (d *initData) OperatorVersion() string {
+	return d.operatorVersion
 }
 
 func printJoinCommand(out io.Writer, adminKubeConfigPath, token string, i *initData) error {

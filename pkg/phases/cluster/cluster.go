@@ -27,6 +27,7 @@ import (
 
 	"yunion.io/x/ocadm/pkg/apis/constants"
 	apiv1 "yunion.io/x/ocadm/pkg/apis/v1"
+	"yunion.io/x/ocadm/pkg/options"
 	configutil "yunion.io/x/ocadm/pkg/util/config"
 	"yunion.io/x/ocadm/pkg/util/kube"
 	ocutil "yunion.io/x/ocadm/pkg/util/onecloud"
@@ -287,7 +288,7 @@ func NewCmdUpdate(out io.Writer) *cobra.Command {
 
 func AddUpdateOptions(flagSet *flag.FlagSet, opt *updateOptions) {
 	flagSet.StringVar(&opt.version, "version", opt.version, "onecloud cluster version")
-	flagSet.StringVar(&opt.operatorVersion, "operator-version", opt.operatorVersion, "onecloud operator version")
+	flagSet.StringVar(&opt.operatorVersion, options.OperatorVersion, opt.operatorVersion, "onecloud operator version")
 	flagSet.StringVar(&opt.imageRepository, "image-repository", opt.imageRepository, "image registry repo")
 	flagSet.BoolVar(&opt.wait, "wait", opt.wait, "wait until workload updated")
 	flagSet.BoolVar(&opt.useEE, "use-ee", opt.useEE, "use enterprise edition onecloud")
