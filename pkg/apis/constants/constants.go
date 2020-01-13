@@ -66,39 +66,19 @@ const (
 
 const (
 	OnecloudNamespace               = "onecloud"
-	OnecloudConfigVolumeName        = "config"
-	OnecloudEtcKeystoneVolumeName   = "etc-yunion-keystone"
-	OnecloudOptVolumeName           = "opt-yunion"
-	OnecloudOptTmpVolumeName        = "opt-yunion-tmp"
-	OnecloudPKICertsVolumeName      = "pki-certs"
-	OnecloudGlanceImageVolumeName   = "glance-images"
-	OnecloudGlanceImageTorrentName  = "glance-torrents"
-	OnecloudQemuBinaryVolumeName    = "qemu"
-	OnecloudKernelVolumeName        = "kernel"
-	OnecloudBaremetalTFTPVolumeName = "tftp"
-	OnecloudBaremetalsVolumeName    = "bms"
 
 	OnecloudConfigDir              = "/etc/yunion"
 	OnecloudKeystoneConfigDir      = "/etc/yunion/keystone"
 	OnecloudConfigFileSuffix       = ".yaml"
 	OnecloudKeystoneConfigFileName = "keystone.conf"
-	OnecloudOptDir                 = "/opt/yunion"
-	OnecloudOptTmpDir              = "/opt/yunion/tmp"
 
 	OnecloudRegionConfigFileName = "region.conf"
 	OnecloudAdminConfigFileName  = "rc_admin"
 
 	OnecloudGlanceConfigDir       = "/etc/yunion/glance"
 	OnecloudGlanceConfigFileName  = "glance-api.conf"
-	OnecloudGlanceFileStoreDir    = "/opt/cloud/workspace/data/glance/images"
-	OnecloudGlanceTorrentStoreDir = "/opt/cloud/workspace/data/glance/torrents"
-
-	OnecloudQemuPath   = "/usr/local/qemu-2.12.1"
-	OnecloudKernelPath = "/lib/modules"
 
 	OnecloudBaremetalConfigFileName = "baremetal.conf"
-	OnecloudBaremetalsPath          = "/opt/cloud/workspace/baremetals"
-	OnecloudBaremetalTFTPRoot       = "/opt/cloud/yunion/baremetal"
 
 	OnecloudWebconsoleConfigFileName = "webconsole.conf"
 
@@ -133,33 +113,9 @@ const (
 
 	AdminKubeConfigFileName = kubeadmconstants.AdminKubeConfigFileName
 
-	// KeystoneCertAndKeyBaseName defines keystone server certificate and key base name
-	KeystoneCertAndKeyBaseName = "keystone"
-	// KeystoneCertName defines keystone server certificate name
-	KeystoneCertName = "keystone.crt"
-	// KeystoneKeyName defines keysotne server key name
-	KeystoneKeyName = "keystone.key"
-
 	ClimcClientCertAndKeyBaseName = "climc"
 	ClimcCertName                 = "climc.crt"
 	ClimcKeyName                  = "climc.key"
-
-	RegionCertAndKeyBaseName = "region"
-	RegionCertName           = "region.crt"
-	RegionKeyName            = "region.key"
-
-	GlanceCertAndKeyBaseName = "glance"
-	GlanceCertName           = "glance.crt"
-	GlanceKeyName            = "glance.key"
-
-	BaremetalCertName = "baremetal.crt"
-	BaremetalKeyName  = "baremetal.key"
-
-	WebconsoleCertName = "webconsole.crt"
-	WebconsoleKeyName  = "webconsole.key"
-
-	InfluxdbCertName = "influxdb.crt"
-	InfluxdbKeyName  = "influxdb.key"
 
 	OcadmCertsSecret = "ocadm-certs"
 )

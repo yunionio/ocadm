@@ -123,9 +123,7 @@ func NewCmdJoin(out io.Writer, joinOptions *joinOptions) *cobra.Command {
 			kubeadmutil.CheckErr(err)
 
 			err = onecloud.GenerateDefaultHostConfig(joinOptions.hostCfg)
-			if err != nil {
-				fmt.Printf("Generate host config error: %s", err)
-			}
+			kubeadmutil.CheckErr(err)
 
 			// if the node is hosting a new control plane instance
 			if data.cfg.ControlPlane != nil {

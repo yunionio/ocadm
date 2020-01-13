@@ -6,7 +6,9 @@ import (
 	"os"
 	"strings"
 
+	"github.com/pkg/errors"
 	nodeutil "k8s.io/kubernetes/pkg/util/node"
+
 	"yunion.io/x/jsonutils"
 	"yunion.io/x/onecloud-operator/pkg/manager/component"
 	"yunion.io/x/onecloud/pkg/hostman/options"
@@ -359,7 +361,7 @@ func GenerateDefaultHostConfig(cfg *HostCfg) error {
 		var err error
 		o.Hostname, err = nodeutil.GetHostname("")
 		if err != nil {
-			return err
+			return errors.Wrap(err, "get hostname")
 		}
 	}
 
@@ -381,10 +383,10 @@ func GenerateDefaultHostConfig(cfg *HostCfg) error {
 	o.DefaultQemuVersion = "2.12.1"
 	o.EnableRemoteExecutor = true
 	if err := os.MkdirAll("/opt/cloud", os.ModePerm); err != nil {
-		return err
+		return errors.Wrap(err, "mkdir /opt/cloud")
 	}
 	if err := os.MkdirAll("/etc/yunion", os.ModePerm); err != nil {
-		return err
+		return errors.Wrap(err, "mkdir /etc/yunion")
 	}
 	if _, err := os.Stat(HostConfFile); !os.IsNotExist(err) {
 		os.Rename(HostConfFile, HostConfFile+".backup")
