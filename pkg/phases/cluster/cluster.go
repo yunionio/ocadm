@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -347,7 +348,7 @@ func updateCluster(data *clusterData, opt *updateOptions) error {
 	if err != nil {
 		return errors.Wrap(err, "get onecloud operator")
 	}
-	reg, version, err := getOperatorVersion(operator)
+	reg, imgName, version, err := getOperatorVersion(operator)
 	if err != nil {
 		return errors.Wrap(err, "get operator version")
 	}
@@ -361,7 +362,7 @@ func updateCluster(data *clusterData, opt *updateOptions) error {
 			reg = opt.imageRepository
 		}
 	}
-	operator.Spec.Template.Spec.Containers[0].Image = fmt.Sprintf("%s:%s", reg, version)
+	operator.Spec.Template.Spec.Containers[0].Image = fmt.Sprintf("%s/%s:%s", reg, imgName, version)
 	if _, err := data.k8sClient.AppsV1().Deployments(constants.OnecloudNamespace).Update(operator); err != nil {
 		return errors.Wrap(err, "update operator")
 	}
@@ -379,16 +380,54 @@ func updateCluster(data *clusterData, opt *updateOptions) error {
 	return nil
 }
 
-func getOperatorVersion(operator *appv1.Deployment) (string, string, error) {
-	img := operator.Spec.Template.Spec.Containers[0].Image
-	parts := strings.Split(img, ":")
+func getRepoImageName(img string) (string, string, string) {
+	parts := strings.Split(img, "/")
+	var (
+		repo      string
+		imageName string
+		tag       string
+	)
+	getImageTag := func(img string) (string, string) {
+		parts := strings.Split(img, ":")
+		if len(parts) == 0 {
+			return "", ""
+		}
+		if len(parts) == 1 {
+			tag := "latest"
+			img := parts[0]
+			return img, tag
+		} else {
+			img = parts[0]
+			tag = parts[len(parts)-1]
+			return img, tag
+		}
+	}
+	getRepo := func(parts []string) string {
+		return filepath.Join(parts...)
+	}
 	if len(parts) == 0 {
-		return "", "", errors.Errorf("Invalid operator image: %s", img)
+		return "", "", ""
 	}
-	repo := parts[0]
-	tag := ""
-	if len(parts) == 2 {
-		tag = parts[1]
+	if len(parts) == 1 {
+		imageName, tag = getImageTag(parts[0])
+	} else {
+		imageName, tag = getImageTag(parts[len(parts)-1])
+		repo = getRepo(parts[0 : len(parts)-1])
 	}
-	return repo, tag, nil
+	return repo, imageName, tag
+}
+
+func getOperatorVersion(operator *appv1.Deployment) (string, string, string, error) {
+	img := operator.Spec.Template.Spec.Containers[0].Image
+	repo, imageName, tag := getRepoImageName(img)
+	if repo == "" {
+		return "", "", "", errors.Errorf("Failed to get %q repo", img)
+	}
+	if imageName == "" {
+		return "", "", "", errors.Errorf("Failed to get %q image name", img)
+	}
+	if tag == "" {
+		return "", "", "", errors.Errorf("Failed to get %q tag", img)
+	}
+	return repo, imageName, tag, nil
 }
