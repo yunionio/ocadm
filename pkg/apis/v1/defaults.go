@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	DefaultKubernetesVersion           = "v1.14.3"
+	DefaultKubernetesVersion           = "v1.15.8"
 	DefaultPodSubnetCIDR               = "10.40.0.0/16"
 	DefaultOnecloudVersion             = "latest"
 	DefaultOnecloudRegion              = "region0"
