@@ -45,6 +45,32 @@ metadata:
   name: traefik-ingress-controller
   namespace: kube-system
 ---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: traefik-ingress-lb
+  namespace: kube-system
+data:
+  traefik.toml: |
+    logLevel = "info"
+    insecureSkipVerify = true
+    defaultEntryPoints = ["http", "https"]
+
+    [api]
+      entryPoint = "traefik"
+      dashboard = true
+
+    [kubernetes]
+
+    [entryPoints]
+      [entryPoints.http]
+        address = ":80"
+        [entryPoints.http.redirect]
+        entryPoint = "https"
+      [entryPoints.https]
+        address = ":443"
+        [entryPoints.https.tls]
+---
 kind: DaemonSet
 apiVersion: extensions/v1beta1
 metadata:
@@ -67,6 +93,10 @@ spec:
         effect: NoSchedule
       - key: node-role.kubernetes.io/controlplane
         effect: NoSchedule
+      volumes:
+      - name: config
+        configMap:
+          name: traefik-ingress-lb
       containers:
       - image: {{.Image}}
         name: traefik-ingress-lb
@@ -75,6 +105,9 @@ spec:
           containerPort: 80
         - name: admin
           containerPort: 8580
+        volumeMounts:
+        - mountPath: /config
+          name: config
         securityContext:
           capabilities:
             drop:
@@ -82,12 +115,7 @@ spec:
             add:
             - NET_BIND_SERVICE
         args:
-        - --api
-        - --kubernetes
-        - --logLevel=INFO
-        - --defaultentrypoints=http,https
-        - --entrypoints=Name:https Address::443 TLS
-        - --entrypoints=Name:http Address::80 Redirect.EntryPoint:https
+        - --configfile=/config/traefik.toml
 ---
 kind: Service
 apiVersion: v1
