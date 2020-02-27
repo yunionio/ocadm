@@ -297,6 +297,40 @@ func AddUpdateOptions(flagSet *flag.FlagSet, opt *updateOptions) {
 }
 
 func updateCluster(data *clusterData, opt *updateOptions) error {
+	operator, err := data.GetOperator()
+	if err != nil {
+		return errors.Wrap(err, "get onecloud operator")
+	}
+	reg, imgName, version, err := getOperatorVersion(operator)
+	if err != nil {
+		return errors.Wrap(err, "get operator version")
+	}
+	if opt.operatorVersion != "" {
+		if opt.operatorVersion != version {
+			version = opt.operatorVersion
+		}
+	}
+	if opt.imageRepository != "" {
+		if opt.imageRepository != reg {
+			reg = opt.imageRepository
+		}
+	}
+	operator.Spec.Template.Spec.Containers[0].Image = fmt.Sprintf("%s/%s:%s", reg, imgName, version)
+	if _, err := data.k8sClient.AppsV1().Deployments(constants.OnecloudNamespace).Update(operator); err != nil {
+		return errors.Wrap(err, "update operator")
+	}
+	if opt.wait {
+		rollout, err := data.kubeClient.Rollout()
+		if err != nil {
+			return errors.Wrap(err, "get rollout cmd")
+		}
+		if err := rollout.Status(0).
+			SetNamespace(constants.OnecloudNamespace).
+			RunDeployment(operator.GetName()); err != nil {
+			return err
+		}
+	}
+
 	oc, err := data.GetDefaultCluster()
 	if err != nil {
 		return errors.Wrap(err, "get default onecloud cluster")
@@ -342,39 +376,6 @@ func updateCluster(data *clusterData, opt *updateOptions) error {
 				RunDeployment(fmt.Sprintf("%s-web", oc.GetName())); err != nil {
 				return err
 			}
-		}
-	}
-	operator, err := data.GetOperator()
-	if err != nil {
-		return errors.Wrap(err, "get onecloud operator")
-	}
-	reg, imgName, version, err := getOperatorVersion(operator)
-	if err != nil {
-		return errors.Wrap(err, "get operator version")
-	}
-	if opt.operatorVersion != "" {
-		if opt.operatorVersion != version {
-			version = opt.operatorVersion
-		}
-	}
-	if opt.imageRepository != "" {
-		if opt.imageRepository != reg {
-			reg = opt.imageRepository
-		}
-	}
-	operator.Spec.Template.Spec.Containers[0].Image = fmt.Sprintf("%s/%s:%s", reg, imgName, version)
-	if _, err := data.k8sClient.AppsV1().Deployments(constants.OnecloudNamespace).Update(operator); err != nil {
-		return errors.Wrap(err, "update operator")
-	}
-	if opt.wait {
-		rollout, err := data.kubeClient.Rollout()
-		if err != nil {
-			return errors.Wrap(err, "get rollout cmd")
-		}
-		if err := rollout.Status(0).
-			SetNamespace(constants.OnecloudNamespace).
-			RunDeployment(operator.GetName()); err != nil {
-			return err
 		}
 	}
 	return nil
