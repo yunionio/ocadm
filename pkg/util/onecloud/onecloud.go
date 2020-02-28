@@ -1,6 +1,7 @@
 package onecloud
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -10,6 +11,7 @@ import (
 	nodeutil "k8s.io/kubernetes/pkg/util/node"
 
 	"yunion.io/x/jsonutils"
+	"yunion.io/x/onecloud-operator/pkg/apis/constants"
 	"yunion.io/x/onecloud-operator/pkg/manager/component"
 	"yunion.io/x/onecloud/pkg/hostman/options"
 	"yunion.io/x/onecloud/pkg/mcclient"
@@ -382,6 +384,7 @@ func GenerateDefaultHostConfig(cfg *HostCfg) error {
 	o.EnableTemplateBacking = true
 	o.DefaultQemuVersion = "2.12.1"
 	o.EnableRemoteExecutor = true
+	o.OvnSouthDatabase = fmt.Sprintf("tcp:default-ovn-north:%d", constants.OvnSouthDbPort)
 	if err := os.MkdirAll("/opt/cloud", os.ModePerm); err != nil {
 		return errors.Wrap(err, "mkdir /opt/cloud")
 	}

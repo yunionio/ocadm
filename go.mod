@@ -6,25 +6,31 @@ require (
 	github.com/MakeNowJust/heredoc v0.0.0-20171113091838-e9091a26100e // indirect
 	github.com/Microsoft/go-winio v0.4.12 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
-	github.com/Sirupsen/logrus v1.4.2 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
-	github.com/docker/docker v1.13.1 // indirect
+	github.com/docker/docker v1.4.2-0.20200204220554-5f6d6f3f2203 // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
+	github.com/docker/libnetwork v0.8.0-dev.2.0.20200102182716-9fd385be8302 // indirect
 	github.com/evanphx/json-patch v4.5.0+incompatible // indirect
+	github.com/fatih/color v1.9.0 // indirect
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-logr/logr v0.1.0 // indirect
 	github.com/go-logr/zapr v0.1.1 // indirect
 	github.com/go-sql-driver/mysql v1.4.1
+	github.com/kr/pretty v0.2.0 // indirect
 	github.com/lithammer/dedent v1.1.0
+	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mholt/caddy v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.3
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
+	golang.org/x/sys v0.0.0-20200124204421-9fbb57f87de9 // indirect
+	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/square/go-jose.v2 v2.3.1 // indirect
+	gopkg.in/yaml.v2 v2.2.8 // indirect
 	k8s.io/api v0.15.8
 	k8s.io/apiextensions-apiserver v0.0.0
 	k8s.io/apimachinery v0.15.8
@@ -38,15 +44,14 @@ require (
 	sigs.k8s.io/cluster-api v0.1.4
 	sigs.k8s.io/controller-runtime v0.1.11 // indirect
 	sigs.k8s.io/testing_frameworks v0.1.1 // indirect
-	yunion.io/x/jsonutils v0.0.0-20191220095028-7fef3b75f64d
+	yunion.io/x/jsonutils v0.0.0-20200113074440-9297fd00ba07
 	yunion.io/x/log v0.0.0-20190629062853-9f6483a7103d
-	yunion.io/x/onecloud v0.0.0-20200103135122-6dc2ccee6033
-	yunion.io/x/onecloud-operator v0.0.1-alpha3.0.20200106080034-4545a8013213
-	yunion.io/x/pkg v0.0.0-20191221094533-5097f12f41ac
+	yunion.io/x/onecloud v0.0.0-20200224063707-28249f615c31
+	yunion.io/x/onecloud-operator v0.0.2-0.20200228034250-4bb645af7bb5
+	yunion.io/x/pkg v0.0.0-20200221023330-f129027c3b04
 )
 
 replace (
-	github.com/Sirupsen/logrus v1.4.2 => github.com/sirupsen/logrus v1.4.2
 	github.com/ugorji/go => github.com/ugorji/go v0.0.0-20181204163529-d75b2dcb6bc8
 	k8s.io/api => k8s.io/api v0.15.8
 	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.15.8
