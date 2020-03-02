@@ -8,7 +8,7 @@ require (
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
-	github.com/docker/docker v1.4.2-0.20200204220554-5f6d6f3f2203 // indirect
+	github.com/docker/docker v1.4.2-0.20190109173153-a79fabbfe841 // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/docker/libnetwork v0.8.0-dev.2.0.20200102182716-9fd385be8302 // indirect
