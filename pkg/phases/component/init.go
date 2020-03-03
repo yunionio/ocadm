@@ -13,7 +13,6 @@ func registerComponentCmds() {
 	components := []IComponent{
 		CloudMonComponent,
 		CloudWatcherComponent,
-		MeterAlertComponent,
 		ItsmComponent,
 	}
 	addSubCmds(components...)

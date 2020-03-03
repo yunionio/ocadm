@@ -6,14 +6,12 @@ import (
 	kubeadmscheme "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/scheme"
 	kubeadmapiv1beta2 "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta2"
 	kubeproxyconfig "k8s.io/kubernetes/pkg/proxy/apis/config"
-
 	"yunion.io/x/ocadm/pkg/apis/constants"
 )
 
 const (
 	DefaultKubernetesVersion           = "v1.15.8"
 	DefaultPodSubnetCIDR               = "10.40.0.0/16"
-	DefaultOnecloudVersion             = "latest"
 	DefaultOnecloudRegion              = "region0"
 	DefaultOnecloudZone                = "zone0"
 	DefaultOnecloudAdminWire           = "badm"
@@ -33,7 +31,11 @@ const (
 	// DefaultImageRepository defines dfault image registry
 	// DefaultImageRepository = "registry.hub.docker.com/yunion"
 	DefaultImageRepository = "registry.cn-beijing.aliyuncs.com/yunionio"
+)
+
+var (
 	DefaultOperatorVersion = constants.DefaultOperatorVersion
+	DefaultOnecloudVersion = constants.DefaultOnecloudVersion
 )
 
 func addDefaultingFuncs(scheme *runtime.Scheme) error {

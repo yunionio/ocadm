@@ -9,7 +9,7 @@ import (
 	"yunion.io/x/ocadm/pkg/phases/addons"
 )
 
-const (
+var (
 	DefaultOperatorVersion = constants.DefaultOperatorVersion
 )
 
