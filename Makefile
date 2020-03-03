@@ -1,4 +1,5 @@
 export GO111MODULE:=on
+export GOPROXY:=direct
 
 VERSION_PKG := yunion.io/x/pkg/util/version
 
@@ -18,12 +19,20 @@ LDFLAGS := "-w \
         -X $(VERSION_PKG).gitMinor=0"
 
 build:
-	go build -ldflags $(LDFLAGS) -o ./_output/bin/ocadm cmd/main.go
+	go build -mod vendor -ldflags $(LDFLAGS) -o ./_output/bin/ocadm cmd/main.go
 
 generate:
 	./hack/codegen.sh
 
 clean:
 	rm -rf ./_output
+
+RELEASE_BRANCH:=release/3.0
+mod:
+	go get yunion.io/x/onecloud@$(RELEASE_BRANCH)
+	go get yunion.io/x/onecloud-operator@$(RELEASE_BRANCH)
+	go get $(patsubst %,%@master,$(shell GO111MODULE=on go mod edit -print | sed -n -e 's|.*\(yunion.io/x/[a-z].*\) v.*|\1|p' | grep -v '/onecloud$$' | grep -v '/onecloud-operator$$'))
+	go mod tidy
+	go mod vendor -v
 
 .PHONY: generate

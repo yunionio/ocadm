@@ -5,11 +5,11 @@ go 1.12
 require (
 	github.com/MakeNowJust/heredoc v0.0.0-20171113091838-e9091a26100e // indirect
 	github.com/Microsoft/go-winio v0.4.12 // indirect
+	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
-	github.com/Sirupsen/logrus v1.4.2 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
-	github.com/docker/docker v1.13.1 // indirect
+	github.com/docker/docker v1.4.2-0.20190109173153-a79fabbfe841 // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/evanphx/json-patch v4.5.0+incompatible // indirect
@@ -38,15 +38,14 @@ require (
 	sigs.k8s.io/cluster-api v0.1.4
 	sigs.k8s.io/controller-runtime v0.1.11 // indirect
 	sigs.k8s.io/testing_frameworks v0.1.1 // indirect
-	yunion.io/x/jsonutils v0.0.0-20191220095028-7fef3b75f64d
+	yunion.io/x/jsonutils v0.0.0-20200303051356-aa609aba0cda
 	yunion.io/x/log v0.0.0-20190629062853-9f6483a7103d
-	yunion.io/x/onecloud v0.0.0-20200103135122-6dc2ccee6033
-	yunion.io/x/onecloud-operator v0.0.1-alpha3.0.20200106080034-4545a8013213
-	yunion.io/x/pkg v0.0.0-20191221094533-5097f12f41ac
+	yunion.io/x/onecloud v0.0.0-20200303051423-cc0377dafb67
+	yunion.io/x/onecloud-operator v0.0.2-0.20200303080230-f0e57d395a33
+	yunion.io/x/pkg v0.0.0-20200302034534-fdf44d54b070
 )
 
 replace (
-	github.com/Sirupsen/logrus v1.4.2 => github.com/sirupsen/logrus v1.4.2
 	github.com/ugorji/go => github.com/ugorji/go v0.0.0-20181204163529-d75b2dcb6bc8
 	k8s.io/api => k8s.io/api v0.15.8
 	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.15.8
