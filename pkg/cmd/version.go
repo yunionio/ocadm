@@ -15,7 +15,7 @@ import (
 // NewCmdVersion provides the version information of ocadm.
 func NewCmdVersion(out io.Writer) *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "version",
+		Use:   "version",
 		Short: "Print the version of ocadm",
 		Run: func(cmd *cobra.Command, args []string) {
 			err := RunVersion(out, cmd)

@@ -77,6 +77,16 @@ func NewDeployment(
 					Labels: labels.Labels(),
 				},
 				Spec: corev1.PodSpec{
+					Tolerations: []corev1.Toleration{
+						{
+							Key:    "node-role.kubernetes.io/master",
+							Effect: corev1.TaintEffectNoSchedule,
+						},
+						{
+							Key:    "node-role.kubernetes.io/controlplane",
+							Effect: corev1.TaintEffectNoSchedule,
+						},
+					},
 					Containers:    containersF(volMounts),
 					RestartPolicy: corev1.RestartPolicyAlways,
 					Volumes:       vols,
