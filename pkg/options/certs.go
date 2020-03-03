@@ -1,6 +1,5 @@
 package options
 
-
 import kubeadmoptions "k8s.io/kubernetes/cmd/kubeadm/app/cmd/options"
 
 var (
@@ -11,5 +10,5 @@ var (
 	AddCSRFlag = kubeadmoptions.AddCSRFlag
 
 	// AddCSRDirFlag adds the --csr-dir flag to the given flagset
-	AddCSRDirFlag  = kubeadmoptions.AddCSRDirFlag
+	AddCSRDirFlag = kubeadmoptions.AddCSRDirFlag
 )
