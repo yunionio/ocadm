@@ -16,14 +16,14 @@ type Client struct {
 
 	KubeConfig  string
 	KubeContext string
-	Factory cmdutil.Factory
+	Factory     cmdutil.Factory
 }
 
 func NewClient(kubeConfig string, namespace string, kubeContext string) (*Client, error) {
 	c := &Client{
-		namespace: namespace,
-		configOnce: sync.Once{},
-		KubeConfig: kubeConfig,
+		namespace:   namespace,
+		configOnce:  sync.Once{},
+		KubeConfig:  kubeConfig,
 		KubeContext: kubeContext,
 	}
 	getter := c.RESTClientGetter()
