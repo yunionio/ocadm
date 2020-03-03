@@ -2,6 +2,13 @@ package constants
 
 import (
 	kubeadmconstants "k8s.io/kubernetes/cmd/kubeadm/app/constants"
+
+	"yunion.io/x/pkg/util/version"
+)
+
+var (
+	DefaultOperatorVersion = version.Get().GitVersion
+	DefaultOnecloudVersion = DefaultOperatorVersion
 )
 
 const (
@@ -27,7 +34,6 @@ const (
 	// mirror of kiwigrid/k8s-sidecar:0.1.20
 	K8sSidecar               = "k8s-sidecar"
 	DefaultK8sSidecarVersion = "0.1.20"
-	DefaultOperatorVersion   = "v0.0.1"
 
 	EndpointTypeInternal = "internal"
 	EndpointTypePublic   = "public"
@@ -65,7 +71,7 @@ const (
 )
 
 const (
-	OnecloudNamespace               = "onecloud"
+	OnecloudNamespace = "onecloud"
 
 	OnecloudConfigDir              = "/etc/yunion"
 	OnecloudKeystoneConfigDir      = "/etc/yunion/keystone"
@@ -75,8 +81,8 @@ const (
 	OnecloudRegionConfigFileName = "region.conf"
 	OnecloudAdminConfigFileName  = "rc_admin"
 
-	OnecloudGlanceConfigDir       = "/etc/yunion/glance"
-	OnecloudGlanceConfigFileName  = "glance-api.conf"
+	OnecloudGlanceConfigDir      = "/etc/yunion/glance"
+	OnecloudGlanceConfigFileName = "glance-api.conf"
 
 	OnecloudBaremetalConfigFileName = "baremetal.conf"
 
