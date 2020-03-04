@@ -12,6 +12,7 @@ require (
 	github.com/docker/docker v1.4.2-0.20190109173153-a79fabbfe841 // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
+	github.com/docker/libnetwork v0.8.0-dev.2.0.20200102182716-9fd385be8302 // indirect
 	github.com/evanphx/json-patch v4.5.0+incompatible // indirect
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-logr/logr v0.1.0 // indirect
