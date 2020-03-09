@@ -5,7 +5,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -25,6 +24,7 @@ import (
 	"yunion.io/x/onecloud-operator/pkg/apis/onecloud/v1alpha1"
 	"yunion.io/x/onecloud-operator/pkg/client/clientset/versioned"
 	occonfig "yunion.io/x/onecloud-operator/pkg/manager/config"
+	"yunion.io/x/onecloud-operator/pkg/util/image"
 
 	"yunion.io/x/ocadm/pkg/apis/constants"
 	apiv1 "yunion.io/x/ocadm/pkg/apis/v1"
@@ -381,46 +381,20 @@ func updateCluster(data *clusterData, opt *updateOptions) error {
 	return nil
 }
 
-func getRepoImageName(img string) (string, string, string) {
-	parts := strings.Split(img, "/")
-	var (
-		repo      string
-		imageName string
-		tag       string
-	)
-	getImageTag := func(img string) (string, string) {
-		parts := strings.Split(img, ":")
-		if len(parts) == 0 {
-			return "", ""
-		}
-		if len(parts) == 1 {
-			tag := "latest"
-			img := parts[0]
-			return img, tag
-		} else {
-			img = parts[0]
-			tag = parts[len(parts)-1]
-			return img, tag
-		}
+func getRepoImageName(img string) (string, string, string, error) {
+	ret, err := image.ParseImageReference(img)
+	if err != nil {
+		return "", "", "", err
 	}
-	getRepo := func(parts []string) string {
-		return filepath.Join(parts...)
-	}
-	if len(parts) == 0 {
-		return "", "", ""
-	}
-	if len(parts) == 1 {
-		imageName, tag = getImageTag(parts[0])
-	} else {
-		imageName, tag = getImageTag(parts[len(parts)-1])
-		repo = getRepo(parts[0 : len(parts)-1])
-	}
-	return repo, imageName, tag
+	return ret.Repository, ret.Image, ret.Tag, nil
 }
 
 func getOperatorVersion(operator *appv1.Deployment) (string, string, string, error) {
 	img := operator.Spec.Template.Spec.Containers[0].Image
-	repo, imageName, tag := getRepoImageName(img)
+	repo, imageName, tag, err := getRepoImageName(img)
+	if err != nil {
+		return "", "", "", err
+	}
 	if repo == "" {
 		return "", "", "", errors.Errorf("Failed to get %q repo", img)
 	}
