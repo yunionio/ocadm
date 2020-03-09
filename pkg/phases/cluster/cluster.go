@@ -397,11 +397,15 @@ func getRepoImageName(img string) (string, string, string) {
 			tag := "latest"
 			img := parts[0]
 			return img, tag
-		} else {
-			img = parts[0]
-			tag = parts[len(parts)-1]
-			return img, tag
 		}
+		img = parts[0]
+		tag = parts[len(parts)-1]
+		if strings.HasSuffix(img, "@sha256") {
+			rets := strings.Split(img, "@sha256")
+			img = rets[0]
+			tag = fmt.Sprintf("@sha256:%s", tag)
+		}
+		return img, tag
 	}
 	getRepo := func(parts []string) string {
 		return filepath.Join(parts...)
