@@ -47,9 +47,9 @@ require (
 	sigs.k8s.io/testing_frameworks v0.1.1 // indirect
 	yunion.io/x/jsonutils v0.0.0-20200303051356-aa609aba0cda
 	yunion.io/x/log v0.0.0-20190629062853-9f6483a7103d
-	yunion.io/x/onecloud v0.0.0-20200303051418-112eb0d7ae22
-	yunion.io/x/onecloud-operator v0.0.2-0.20200302130241-cb99d44a51a5
-	yunion.io/x/pkg v0.0.0-20200302034534-fdf44d54b070
+	yunion.io/x/onecloud v0.0.0-20200309043639-7b0ceddd6b80
+	yunion.io/x/onecloud-operator v0.0.2-0.20200309080407-e89871b996c7
+	yunion.io/x/pkg v0.0.0-20200304112442-9dae9351325e
 )
 
 replace (
