@@ -119,8 +119,15 @@ var SpecsStatus []SpecStatusPair = []SpecStatusPair{
 	},
 }
 
-func IsClusterUpdated(oc *onecloud.OnecloudCluster) (bool, string) {
-	for _, ss := range SpecsStatus {
+func IsClusterUpdated(oc *onecloud.OnecloudCluster, checkStatus []SpecStatusPair) (bool, string) {
+	ss := make([]SpecStatusPair, len(SpecsStatus))
+	for idx, s := range SpecsStatus {
+		ss[idx] = s
+	}
+	if checkStatus != nil {
+		ss = append(ss, checkStatus...)
+	}
+	for _, ss := range ss {
 		curSpec, curStatus := ss.Getter(oc)
 		if updated, reason := IsDeploymentUpdated(oc.Spec.ImageRepository, oc.Spec.Version, &curSpec, &curStatus); !updated {
 			return false, fmt.Sprintf("%s: %s", ss.Name, reason)
@@ -134,13 +141,14 @@ func WaitOnecloudDeploymentUpdated(
 	name string,
 	namespace string,
 	timeout time.Duration,
+	ss []SpecStatusPair,
 ) error {
 	return wait.PollImmediate(10*time.Second, timeout, func() (bool, error) {
 		oc, err := cli.OnecloudV1alpha1().OnecloudClusters(namespace).Get(name, metav1.GetOptions{})
 		if err != nil {
 			return false, err
 		}
-		ok, reason := IsClusterUpdated(oc)
+		ok, reason := IsClusterUpdated(oc, ss)
 		if ok {
 			return true, nil
 		}
