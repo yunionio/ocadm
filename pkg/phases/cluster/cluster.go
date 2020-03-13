@@ -169,7 +169,7 @@ func CreateCluster(data *clusterData, opt *createOptions) (*v1alpha1.OnecloudClu
 		return nil, errors.Wrap(err, "create cluster")
 	}
 	if opt.wait {
-		if err := ocutil.WaitOnecloudDeploymentUpdated(data.client, oc.GetName(), oc.GetNamespace(), 30*time.Minute); err != nil {
+		if err := ocutil.WaitOnecloudDeploymentUpdated(data.client, oc.GetName(), oc.GetNamespace(), 30*time.Minute, nil); err != nil {
 			return oc, errors.Wrap(err, "wait onecloud cluster services running")
 		}
 	}
@@ -364,7 +364,7 @@ func updateCluster(data *clusterData, opt *updateOptions) error {
 			return errors.Wrap(err, "update default onecloud cluster")
 		}
 		if opt.wait {
-			if err := ocutil.WaitOnecloudDeploymentUpdated(data.client, oc.GetName(), oc.GetNamespace(), 5*time.Minute); err != nil {
+			if err := ocutil.WaitOnecloudDeploymentUpdated(data.client, oc.GetName(), oc.GetNamespace(), 30*time.Minute, nil); err != nil {
 				return errors.Wrap(err, "wait onecloud cluster updated")
 			}
 			rollout, err := data.kubeClient.Rollout()
