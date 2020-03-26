@@ -11,8 +11,6 @@ func init() {
 
 func registerComponentCmds() {
 	components := []IComponent{
-		CloudMonComponent,
-		CloudWatcherComponent,
 		ItsmComponent,
 	}
 	addSubCmds(components...)
