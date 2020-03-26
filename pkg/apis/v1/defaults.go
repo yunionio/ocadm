@@ -101,11 +101,21 @@ func setDefaults_kubeadmInitConfiguration(obj *kubeadmapi.InitConfiguration) {
 
 	obj.KubernetesVersion = DefaultKubernetesVersion
 	obj.Networking.PodSubnet = DefaultPodSubnetCIDR
+
+	// adjust extra args
 	if obj.APIServer.ExtraArgs == nil {
 		obj.APIServer.ExtraArgs = make(map[string]string)
 	}
+	obj.APIServer.ExtraArgs["default-not-ready-toleration-seconds"] = "10"
+	obj.APIServer.ExtraArgs["default-unreachable-toleration-seconds"] = "10"
 	// obj.APIServer.ExtraArgs["service-node-port-range"] = "5000-35357"
 	// obj.APIServer.ExtraArgs["service-node-port-range"] = "30000-32767"
+	if obj.ControllerManager.ExtraArgs == nil {
+		obj.ControllerManager.ExtraArgs = make(map[string]string)
+	}
+	obj.ControllerManager.ExtraArgs["node-monitor-grace-period"] = "16s"
+	obj.ControllerManager.ExtraArgs["node-monitor-period"] = "2s"
+
 	if obj.ImageRepository == "" {
 		obj.ImageRepository = DefaultImageRepository
 	}

@@ -8,11 +8,13 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/lithammer/dedent"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/sets"
 	clientset "k8s.io/client-go/kubernetes"
 	kubeadmapi "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm"
@@ -381,10 +383,12 @@ func newInitData(cmd *cobra.Command, args []string, options *initOptions, out io
 	if options.externalCfg.NodeRegistration.CRISocket != "" {
 		cfg.NodeRegistration.CRISocket = options.externalCfg.NodeRegistration.CRISocket
 	}
+	cfg.ComponentConfigs.Kubelet.NodeStatusUpdateFrequency = metav1.Duration{
+		Duration: time.Second * 4,
+	}
 
 	// init node always as onecloud controller
-	cfg.NodeRegistration.KubeletExtraArgs =
-		customizeKubeletExtarArgs(options.hostCfg.EnableHost, true)
+	cfg.NodeRegistration.KubeletExtraArgs = customizeKubeletExtarArgs(options.hostCfg.EnableHost, true)
 
 	if err := configutil.VerifyAPIServerBindAddress(cfg.LocalAPIEndpoint.AdvertiseAddress); err != nil {
 		return nil, err
