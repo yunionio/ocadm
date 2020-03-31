@@ -8,8 +8,7 @@ declare -r REPO_ROOT
 OUTPUT_DIR="$REPO_ROOT/_output"
 PKG_DIR="$OUTPUT_DIR/pkg"
 YUNION_BIN="$PKG_DIR/opt/yunion/bin"
-TAG="$(git describe --tags --abbrev=0)"
-
+TAG="${TAG:-$(git describe --tags --abbrev=0)}"
 cd "${REPO_ROOT}"
 
 make
