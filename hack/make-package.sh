@@ -11,7 +11,7 @@ YUNION_BIN="$PKG_DIR/opt/yunion/bin"
 TAG="${TAG:-$(git describe --tags --abbrev=0)}"
 cd "${REPO_ROOT}"
 
-make
+GIT_VERSION=$TAG GIT_BRANCH=tags/$TAG make
 
 mkdir -p $YUNION_BIN
 
