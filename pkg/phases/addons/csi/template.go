@@ -86,6 +86,8 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+        - name: HELPER_IMAGE
+          value: {{.HelperImage}}
       volumes:
         - name: config-volume
           configMap:
