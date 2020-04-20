@@ -9,13 +9,15 @@ import (
 )
 
 type LocalPathProvisionerConfig struct {
-	Image string
+	Image       string
+	HelperImage string
 }
 
 func NewLocalPathProvisionerConfig(cfg *kubeadmapi.ClusterConfiguration) addons.Configer {
 	repo := cfg.ImageRepository
 	config := LocalPathProvisionerConfig{
-		Image: images.GetGenericImage(repo, constants.RancherLocalPathProvisioner, constants.DefaultLocalProvisionerVersion),
+		Image:       images.GetGenericImage(repo, constants.RancherLocalPathProvisioner, constants.DefaultLocalProvisionerVersion),
+		HelperImage: images.GetGenericImage(repo, constants.Busybox, constants.BusyboxVersion),
 	}
 	return config
 }
