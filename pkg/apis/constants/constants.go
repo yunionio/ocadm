@@ -34,6 +34,8 @@ const (
 	// mirror of kiwigrid/k8s-sidecar:0.1.20
 	K8sSidecar               = "k8s-sidecar"
 	DefaultK8sSidecarVersion = "0.1.20"
+	Busybox                  = "busybox"
+	BusyboxVersion           = "1.28.0-glibc"
 
 	EndpointTypeInternal = "internal"
 	EndpointTypePublic   = "public"
