@@ -172,17 +172,16 @@ func getAddonPhaseFlags(name string) []string {
 		options.KubeconfigPath,
 		options.KubernetesVersion,
 		options.ImageRepository,
+		options.PrintAddonYaml,
 	}
 	if name == "all" || name == "calico" {
 		flags = append(flags,
 			options.NetworkingPodSubnet,
-			options.PrintAddonYaml,
 			options.OperatorVersion,
 		)
 	}
 	if name == "onecloud-operator" {
 		flags = append(flags,
-			options.PrintAddonYaml,
 			options.OperatorVersion,
 		)
 	}
