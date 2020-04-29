@@ -27,6 +27,7 @@ const (
 	AsOnecloudController = "as-onecloud-controller"
 	PrintAddonYaml       = "print-addon-yaml"
 	OperatorVersion      = "operator-version"
+	NodeIP               = "node-ip"
 )
 
 const (

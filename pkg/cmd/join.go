@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"io"
+
 	"os"
 	"text/template"
 
@@ -76,6 +77,7 @@ type joinOptions struct {
 	hostCfg               *onecloud.HostCfg
 	certificateKey        string
 	asOnecloudController  bool
+	nodeIP                string
 }
 
 // compile-time assert that the local data object satisfies the phases data interface.
@@ -94,6 +96,7 @@ type joinData struct {
 	certificateKey        string
 	enableHostAgent       bool
 	asOnecloudController  bool
+	nodeIP                string
 }
 
 // NewCmdJoin returns "ocadm join" command
@@ -176,6 +179,7 @@ func NewCmdJoin(out io.Writer, joinOptions *joinOptions) *cobra.Command {
 
 // addJoinConfigFlags adds join flags bound to the config to the specified flagset
 func addJoinConfigFlags(flagSet *flag.FlagSet, cfg *apiv1.JoinConfiguration) {
+
 	flagSet.StringVar(
 		&cfg.NodeRegistration.Name, options.NodeName, cfg.NodeRegistration.Name,
 		`Specify the node name.`,
@@ -239,6 +243,10 @@ func addJoinOtherFlags(flagSet *flag.FlagSet, joinOptions *joinOptions) {
 	flagSet.BoolVar(
 		&joinOptions.asOnecloudController, options.AsOnecloudController, joinOptions.asOnecloudController,
 		"Join node and set node as onecloud controller",
+	)
+	flagSet.StringVar(
+		&joinOptions.nodeIP, options.NodeIP, joinOptions.nodeIP,
+		"Join node IP",
 	)
 }
 
@@ -369,6 +377,7 @@ func newJoinData(cmd *cobra.Command, args []string, opt *joinOptions, out io.Wri
 		ignorePreflightErrors: ignorePreflightErrorsSet,
 		outputWriter:          out,
 		certificateKey:        opt.certificateKey,
+		nodeIP:                opt.nodeIP,
 	}, nil
 }
 
@@ -416,12 +425,12 @@ func (j *joinData) OnecloudInitCfg() (*apiv1.InitConfiguration, error) {
 		return nil, err
 	}
 	initCfg.NodeRegistration.KubeletExtraArgs =
-		customizeKubeletExtarArgs(j.enableHostAgent, j.asOnecloudController)
+		customizeKubeletExtarArgs(j.enableHostAgent, j.asOnecloudController, j.nodeIP)
 	j.initCfg = initCfg
 	return j.initCfg, nil
 }
 
-func customizeKubeletExtarArgs(enableHostAgent, asOnecloudController bool) map[string]string {
+func customizeKubeletExtarArgs(enableHostAgent, asOnecloudController bool, nodeIP string) map[string]string {
 	if !enableHostAgent && !asOnecloudController {
 		return nil
 	}
@@ -441,6 +450,11 @@ func customizeKubeletExtarArgs(enableHostAgent, asOnecloudController bool) map[s
 		}
 		ret["node-labels"] = labelStr
 	}
+
+	if len(nodeIP) > 0 {
+		ret["node-ip"] = nodeIP
+	}
+
 	return ret
 }
 
