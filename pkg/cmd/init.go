@@ -101,6 +101,7 @@ type initOptions struct {
 	skipCertificateKeyPrint bool
 	printAddonYaml          bool
 	operatorVersion         string
+	nodeIP                  string
 }
 
 var _ initphases.InitData = &initData{}
@@ -126,6 +127,7 @@ type initData struct {
 	enableHostAgent         bool
 	printAddonYaml          bool
 	operatorVersion         string
+	nodeIP                  string
 }
 
 // NewCmdInit returns "deployer init" command
@@ -310,6 +312,10 @@ func AddInitOtherFlags(flagSet *flag.FlagSet, initOptions *initOptions) {
 		&initOptions.ignorePreflightErrors, options.IgnorePreflightErrors, initOptions.ignorePreflightErrors,
 		"A list of checks whose errors will be shown as warnings. Example: 'IsPrivilegedUser,Swap'. Value 'all' ignores errors from all checks.",
 	)
+	flagSet.StringVar(
+		&initOptions.nodeIP, options.NodeIP, initOptions.nodeIP,
+		"Init Node IP",
+	)
 	flagSet.BoolVar(
 		&initOptions.dryRun, options.DryRun, initOptions.dryRun,
 		"Don't apply any changes; just output what would be done.",
@@ -388,7 +394,7 @@ func newInitData(cmd *cobra.Command, args []string, options *initOptions, out io
 	}
 
 	// init node always as onecloud controller
-	cfg.NodeRegistration.KubeletExtraArgs = customizeKubeletExtarArgs(options.hostCfg.EnableHost, true)
+	cfg.NodeRegistration.KubeletExtraArgs = customizeKubeletExtarArgs(options.hostCfg.EnableHost, true, options.nodeIP)
 
 	if err := configutil.VerifyAPIServerBindAddress(cfg.LocalAPIEndpoint.AdvertiseAddress); err != nil {
 		return nil, err
