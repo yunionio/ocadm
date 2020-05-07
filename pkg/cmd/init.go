@@ -103,6 +103,9 @@ type initOptions struct {
 	operatorVersion                  string
 	nodeIP                           string
 	addonCalicoIpAutodetectionMethod string
+	glanceNode                       bool
+	baremetalNode                    bool
+	esxiNode                         bool
 }
 
 var _ initphases.InitData = &initData{}
@@ -331,6 +334,7 @@ func AddInitOtherFlags(flagSet *flag.FlagSet, initOptions *initOptions) {
 		"Print addon yaml manifest",
 	)
 	options.AddOperatorVersionFlags(flagSet, &initOptions.operatorVersion)
+	options.AddGlanceNodeLabelFlag(flagSet, &initOptions.glanceNode, &initOptions.baremetalNode, &initOptions.esxiNode)
 }
 
 // newInitOptions returns a struct ready for being used for creating cmd init flags.
@@ -400,7 +404,8 @@ func newInitData(cmd *cobra.Command, args []string, options *initOptions, out io
 	}
 
 	// init node always as onecloud controller
-	cfg.NodeRegistration.KubeletExtraArgs = customizeKubeletExtarArgs(options.hostCfg.EnableHost, true, options.nodeIP)
+	cfg.NodeRegistration.KubeletExtraArgs = customizeKubeletExtarArgs(
+		options.hostCfg.EnableHost, options.glanceNode, options.baremetalNode, options.esxiNode, true, options.nodeIP)
 
 	if err := configutil.VerifyAPIServerBindAddress(cfg.LocalAPIEndpoint.AdvertiseAddress); err != nil {
 		return nil, err

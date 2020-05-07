@@ -4,7 +4,7 @@ import (
 	"github.com/spf13/pflag"
 	kubeadmoptions "k8s.io/kubernetes/cmd/kubeadm/app/cmd/options"
 
-	"yunion.io/x/ocadm/pkg/apis/v1"
+	v1 "yunion.io/x/ocadm/pkg/apis/v1"
 )
 
 // AddConfigFlag adds the --config flag to the given flagset
@@ -32,6 +32,12 @@ func AddImageMetaFlags(fs *pflag.FlagSet, imageRepository *string) {
 
 func AddOperatorVersionFlags(fs *pflag.FlagSet, version *string) {
 	fs.StringVar(version, OperatorVersion, v1.DefaultOperatorVersion, "Choose onecloud operator version")
+}
+
+func AddGlanceNodeLabelFlag(fs *pflag.FlagSet, glanceNode, baremetalNode, esxiNode *bool) {
+	fs.BoolVar(glanceNode, "glance-node", false, "as glance node on upgrade from onecloud version 2.x")
+	fs.BoolVar(baremetalNode, "baremetal-node", false, "as baremetal node on upgrade from onecloud version 2.x")
+	fs.BoolVar(esxiNode, "esxi-node", false, "as esxi node on upgrade from onecloud version 2.x")
 }
 
 var (

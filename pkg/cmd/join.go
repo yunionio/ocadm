@@ -78,6 +78,9 @@ type joinOptions struct {
 	certificateKey        string
 	asOnecloudController  bool
 	nodeIP                string
+	glanceNode            bool
+	baremetalNode         bool
+	esxiNode              bool
 }
 
 // compile-time assert that the local data object satisfies the phases data interface.
@@ -97,6 +100,9 @@ type joinData struct {
 	enableHostAgent       bool
 	asOnecloudController  bool
 	nodeIP                string
+	glanceNode            bool
+	baremetalNode         bool
+	esxiNode              bool
 }
 
 // NewCmdJoin returns "ocadm join" command
@@ -118,6 +124,9 @@ func NewCmdJoin(out io.Writer, joinOptions *joinOptions) *cobra.Command {
 
 			data := c.(*joinData)
 			data.enableHostAgent = joinOptions.hostCfg.EnableHost
+			data.glanceNode = joinOptions.glanceNode
+			data.esxiNode = joinOptions.esxiNode
+			data.baremetalNode = joinOptions.baremetalNode
 			// by default, control plane node as onecloud controller
 			if joinOptions.asOnecloudController {
 				data.asOnecloudController = true
@@ -248,6 +257,7 @@ func addJoinOtherFlags(flagSet *flag.FlagSet, joinOptions *joinOptions) {
 		&joinOptions.nodeIP, options.NodeIP, joinOptions.nodeIP,
 		"Join node IP",
 	)
+	options.AddGlanceNodeLabelFlag(flagSet, &joinOptions.glanceNode, &joinOptions.baremetalNode, &joinOptions.esxiNode)
 }
 
 // newJoinOptions returns a struct ready for being used for creating cmd join flags.
@@ -424,13 +434,15 @@ func (j *joinData) OnecloudInitCfg() (*apiv1.InitConfiguration, error) {
 	if err != nil {
 		return nil, err
 	}
-	initCfg.NodeRegistration.KubeletExtraArgs =
-		customizeKubeletExtarArgs(j.enableHostAgent, j.asOnecloudController, j.nodeIP)
+	initCfg.NodeRegistration.KubeletExtraArgs = customizeKubeletExtarArgs(
+		j.enableHostAgent, j.glanceNode, j.baremetalNode, j.esxiNode, j.asOnecloudController, j.nodeIP)
 	j.initCfg = initCfg
 	return j.initCfg, nil
 }
 
-func customizeKubeletExtarArgs(enableHostAgent, asOnecloudController bool, nodeIP string) map[string]string {
+func customizeKubeletExtarArgs(
+	enableHostAgent, glanceNode, baremetalNode, esxiNode, asOnecloudController bool, nodeIP string,
+) map[string]string {
 	if !enableHostAgent && !asOnecloudController {
 		return nil
 	}
@@ -438,6 +450,33 @@ func customizeKubeletExtarArgs(enableHostAgent, asOnecloudController bool, nodeI
 	if enableHostAgent {
 		klog.V(1).Infoln("[preflight] Enable host agent")
 		lableStr := fmt.Sprintf("%s=enable", operatorconstants.OnecloudEnableHostLabelKey)
+		ret["node-labels"] = lableStr
+	}
+	if glanceNode {
+		klog.V(1).Infoln("[preflight] As glance node")
+		lableStr := ret["node-labels"]
+		if len(lableStr) > 0 {
+			lableStr += ","
+		}
+		lableStr += "onecloud.yunion.io/glance=enable"
+		ret["node-labels"] = lableStr
+	}
+	if baremetalNode {
+		klog.V(1).Infoln("[preflight] As baremetal node")
+		lableStr := ret["node-labels"]
+		if len(lableStr) > 0 {
+			lableStr += ","
+		}
+		lableStr += "onecloud.yunion.io/baremetal=enable"
+		ret["node-labels"] = lableStr
+	}
+	if esxiNode {
+		klog.V(1).Infoln("[preflight] As esxi node")
+		lableStr := ret["node-labels"]
+		if len(lableStr) > 0 {
+			lableStr += ","
+		}
+		lableStr += "onecloud.yunion.io/esxi=enable"
 		ret["node-labels"] = lableStr
 	}
 	if asOnecloudController {
