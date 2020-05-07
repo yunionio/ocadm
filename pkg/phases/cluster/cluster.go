@@ -5,14 +5,18 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 	appv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
@@ -27,6 +31,7 @@ import (
 	"yunion.io/x/onecloud-operator/pkg/util/image"
 
 	"yunion.io/x/ocadm/pkg/apis/constants"
+	"yunion.io/x/ocadm/pkg/apis/scheme"
 	apiv1 "yunion.io/x/ocadm/pkg/apis/v1"
 	"yunion.io/x/ocadm/pkg/options"
 	configutil "yunion.io/x/ocadm/pkg/util/config"
@@ -104,6 +109,9 @@ type createOptions struct {
 	useEE   bool
 	version string
 	wait    bool
+
+	// cluster upgrade from onecloud 2.x
+	upgradeFromV2 bool
 }
 
 func newCreateOptions() *createOptions {
@@ -134,6 +142,7 @@ func AddCreateOptions(flagSet *flag.FlagSet, opt *createOptions) {
 	flagSet.BoolVar(&opt.useEE, "use-ee", opt.useEE, "Use EE edition")
 	flagSet.StringVar(&opt.version, "version", opt.version, "onecloud cluster version")
 	flagSet.BoolVar(&opt.wait, "wait", opt.wait, "wait until workload created")
+	flagSet.BoolVar(&opt.upgradeFromV2, "upgrade-from-v2", opt.upgradeFromV2, "cluster upgrade from onecloud 2.x")
 }
 
 func NewCmdConfig() *cobra.Command {
@@ -159,12 +168,21 @@ func CreateCluster(data *clusterData, opt *createOptions) (*v1alpha1.OnecloudClu
 	cfg := data.cfg
 	ret, err := cli.OnecloudV1alpha1().OnecloudClusters(constants.OnecloudNamespace).List(metav1.ListOptions{})
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "list onecloud cluster")
 	}
 	if len(ret.Items) != 0 {
 		return nil, errors.Errorf("Cluster already create")
 	}
-	oc, err := cli.OnecloudV1alpha1().OnecloudClusters(constants.OnecloudNamespace).Create(newCluster(cfg, opt))
+	var cluster *v1alpha1.OnecloudCluster
+	if opt.upgradeFromV2 {
+		cluster, err = newClusterConfig(data.k8sClient, cfg, opt)
+		if err != nil {
+			return nil, errors.Wrap(err, "take out cluster config")
+		}
+	} else {
+		cluster = newCluster(cfg, opt)
+	}
+	oc, err := cli.OnecloudV1alpha1().OnecloudClusters(constants.OnecloudNamespace).Create(cluster)
 	if err != nil {
 		return nil, errors.Wrap(err, "create cluster")
 	}
@@ -211,6 +229,234 @@ func newCluster(cfg *apiv1.InitConfiguration, opt *createOptions) *v1alpha1.Onec
 		ocutil.SetOCUseCE(oc)
 	}
 	return oc
+}
+
+func newCluster2(env map[string]string, cfg *apiv1.InitConfiguration, opt *createOptions) (*v1alpha1.OnecloudCluster, error) {
+	mysqlPort, err := strconv.Atoi(env["MYSQL_PORT"])
+	if err != nil {
+		return nil, errors.Wrap(err, "parse mysql port")
+	}
+	oc := &v1alpha1.OnecloudCluster{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "OnecloudCluster",
+			APIVersion: "onecloud.yunion.io/v1alpha1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Namespace: constants.OnecloudNamespace,
+			Name:      DefaultClusterName,
+		},
+		Spec: v1alpha1.OnecloudClusterSpec{
+			Mysql: v1alpha1.Mysql{
+				Host:     env["MYSQL_HOST"],
+				Port:     int32(mysqlPort),
+				Username: "root",
+				Password: env["MYSQL_ROOT_PASSWORD"],
+			},
+			LoadBalancerEndpoint: env["MANAGEMENT_IP"],
+			ImageRepository:      cfg.ImageRepository,
+			Version:              cfg.OnecloudVersion,
+			Region:               env["REGION"],
+			Zone:                 env["ZONE"],
+			Keystone: v1alpha1.KeystoneSpec{
+				BootstrapPassword: env["SYSADMIN_PASSWORD"],
+			},
+			Glance: v1alpha1.StatefulDeploymentSpec{
+				DeploymentSpec: v1alpha1.DeploymentSpec{
+					NodeSelector: map[string]string{
+						"onecloud.yunion.io/glance": "enable",
+					},
+				},
+			},
+			BaremetalAgent: v1alpha1.StatefulDeploymentSpec{
+				DeploymentSpec: v1alpha1.DeploymentSpec{
+					NodeSelector: map[string]string{
+						"onecloud.yunion.io/baremetal": "enable",
+					},
+				},
+			},
+			EsxiAgent: v1alpha1.StatefulDeploymentSpec{
+				DeploymentSpec: v1alpha1.DeploymentSpec{
+					NodeSelector: map[string]string{
+						"onecloud.yunion.io/esxi": "enable",
+					},
+				},
+			},
+		},
+	}
+
+	if opt.version != "" {
+		oc.Spec.Version = opt.version
+	}
+	if opt.useEE {
+		ocutil.SetOCUseEE(oc)
+	} else {
+		ocutil.SetOCUseCE(oc)
+	}
+	return oc, nil
+}
+
+func newClusterConfig(cli kubernetes.Interface, cfg *apiv1.InitConfiguration, opt *createOptions) (*v1alpha1.OnecloudCluster, error) {
+	env, err := godotenv.Read("/opt/cloud/workspace/globalrc", "/opt/yunionsetup/vars")
+	if err != nil {
+		return nil, errors.Wrap(err, "failed load onecloud config")
+	}
+	defaultClusterConfigmap := generateClusterConfigmap(env)
+	cfgMap := new(corev1.ConfigMap)
+	err = runtime.DecodeInto(scheme.Codecs.UniversalDecoder(), []byte(defaultClusterConfigmap), cfgMap)
+	if err != nil {
+		return nil, errors.Wrap(err, "decode configmap")
+	}
+	_, err = cli.CoreV1().ConfigMaps(cfgMap.Namespace).Create(cfgMap)
+	if err != nil {
+		return nil, errors.Wrap(err, "create configmap")
+	}
+	return newCluster2(env, cfg, opt)
+}
+
+func generateClusterConfigmap(cfg map[string]string) string {
+	return fmt.Sprintf(`
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: default-cluster-config
+  namespace: onecloud
+data:
+  OnecloudClusterConfig: |
+    apiVersion: onecloud.yunion.io/v1alpha1
+    kind: OnecloudClusterConfig
+    apiGateway:
+      username: %s
+      password: %s
+    glance:
+      db:
+        database: %s
+        username: %s
+        password: %s
+      username: %s
+      password: %s
+    keystone:
+      db:
+        database: %s
+        username: %s
+        password: %s
+    kubeserver:
+      db:
+        database: %s
+        username: %s
+        password: %s
+      username: %s
+      password: %s
+    logger:
+      db:
+        database: %s
+        username: %s
+        password: %s
+      username: %s
+      password: %s
+    notify:
+      db:
+        database: %s
+        username: %s
+        password: %s
+      username: %s
+      password: %s
+    region:
+      db:
+        database: %s
+        username: %s
+        password: %s
+      username: %s
+      password: %s
+    webconsole:
+      username: %s
+      password: %s
+    yunionagent:
+      db:
+        database: %s
+        username: %s
+        password: %s
+      username: %s
+      password: %s
+    yunionconf:
+      db:
+        database: %s
+        username: %s
+        password: %s
+      username: %s
+      password: %s
+    ansibleserver:
+      db:
+        database: %s
+        username: %s
+        password: %s
+      username: %s
+      password: %s
+    cloudevent:
+      db:
+        database: %s
+        username: %s
+        password: %s
+      username: %s
+      password: %s
+    cloudnet:
+      db:
+        database: %s
+        username: %s
+        password: %s
+      username: %s
+      password: %s
+    meter:
+      db:
+        database: %s
+        username: %s
+        password: %s
+      username: %s
+      password: %s
+    baremetal:
+      username: %s
+      password: %s
+    esxiagent:
+      username: %s
+      password: %s
+    host:
+      username: %s
+      password: %s
+`,
+		// yunionapi
+		cfg["YUNIONAPI_ADMIN_USER"], cfg["YUNIONAPI_ADMIN_PASS"],
+		// glance
+		cfg["MYSQL_DB_GLANCE"], cfg["MYSQL_USER_GLANCE"], cfg["MYSQL_PASS_GLANCE"], cfg["GLANCE_ADMIN_USER"], cfg["GLANCE_ADMIN_PASS"],
+		// keystone
+		cfg["MYSQL_DB_KEYSTONE"], cfg["MYSQL_USER_KEYSTONE"], cfg["MYSQL_PASS_KEYSTONE"],
+		// kube server
+		cfg["MYSQL_DB_KUBE"], cfg["MYSQL_USER_KUBE"], cfg["MYSQL_PASS_KUBE"], cfg["YUNION_KUBE_SERVER_ADMIN_USER"], cfg["YUNION_KUBE_SERVER_ADMIN_PASS"],
+		// logger
+		cfg["MYSQL_DB_LOGGER"], cfg["MYSQL_USER_LOGGER"], cfg["MYSQL_PASS_LOGGER"], cfg["LOGGER_ADMIN_USER"], cfg["LOGGER_ADMIN_PASS"],
+		// notify
+		cfg["MYSQL_DB_NOTIFY"], cfg["MYSQL_USER_NOTIFY"], cfg["MYSQL_PASS_NOTIFY"], cfg["YUNION_NOTIFY_DOCKER_USER"], cfg["YUNION_NOTIFY_DOCKER_PSWD"],
+		// region
+		cfg["MYSQL_DB_REGION"], cfg["MYSQL_USER_REGION"], cfg["MYSQL_PASS_REGION"], cfg["REGION_ADMIN_USER"], cfg["REGION_ADMIN_PASS"],
+		// webconsole
+		cfg["YUNION_WEBCONSOLE_ADMIN_USER"], cfg["YUNION_WEBCONSOLE_ADMIN_PASS"],
+		// yunionagent
+		cfg["MYSQL_DB_YUNIONAGENT"], cfg["MYSQL_USER_YUNIONAGENT"], cfg["MYSQL_PASS_YUNIONAGENT"], cfg["YUNIONAGENT_ADMIN_USER"], cfg["YUNIONAGENT_ADMIN_PASS"],
+		// yunionconf
+		cfg["MYSQL_DB_YUNIONCONF"], cfg["MYSQL_USER_YUNIONCONF"], cfg["MYSQL_PASS_YUNIONCONF"], cfg["YUNIONCONF_ADMIN_USER"], cfg["YUNIONCONF_ADMIN_PASS"],
+		// ansibleserver
+		cfg["MYSQL_DB_ANSIBLESERVER"], cfg["MYSQL_USER_ANSIBLESERVER"], cfg["MYSQL_PASS_ANSIBLESERVER"], cfg["ANSIBLESERVER_ADMIN_USER"], cfg["ANSIBLESERVER_ADMIN_PASS"],
+		// cloudevent
+		cfg["MYSQL_DB_CLOUDEVENT"], cfg["MYSQL_USER_CLOUDEVENT"], cfg["MYSQL_PASS_CLOUDEVENT"], cfg["CLOUDEVENT_ADMIN_USER"], cfg["CLOUDEVENT_ADMIN_PASS"],
+		// cloudnet
+		cfg["MYSQL_DB_CLOUDNET"], cfg["MYSQL_USER_CLOUDNET"], cfg["MYSQL_PASS_CLOUDNET"], cfg["CLOUDNET_ADMIN_USER"], cfg["CLOUDNET_ADMIN_PASS"],
+		// meter
+		cfg["MYSQL_DB_METER"], cfg["MYSQL_USER_METER"], cfg["MYSQL_PASS_METER"], cfg["YUNION_METER_DOCKER_USER"], cfg["YUNION_METER_DOCKER_PSWD"],
+		// baremetal
+		cfg["BAREMETAL_ADMIN_USER"], cfg["BAREMETAL_ADMIN_PASS"],
+		// esxiagent
+		cfg["ESXIAGENT_ADMIN_USER"], cfg["ESXIAGENT_ADMIN_PASS"],
+		// host
+		cfg["HOST_ADMIN_USER"], cfg["HOST_ADMIN_PASS"],
+	)
 }
 
 func GetClusterRCAdmin(data *clusterData) (string, error) {
