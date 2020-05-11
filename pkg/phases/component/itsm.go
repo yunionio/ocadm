@@ -44,9 +44,9 @@ server.tomcat.accesslog.rotate=true
 # ----------------------------------------
 
 # DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
-spring.datasource.url=jdbc:mysql://{{.DBHost}}:{{.DBPort}}/{{.DB}}?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&createDatabaseIfNotExist=true
-spring.datasource.username={{.DBUser}}
-spring.datasource.password={{.DBPassowrd}}
+datasource.primary.jdbc-url=jdbc:mysql://{{.DBHost}}:{{.DBPort}}/{{.DB}}?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&createDatabaseIfNotExist=true
+datasource.primary.username={{.DBUser}}
+datasource.primary.password={{.DBPassowrd}}
 datasource.primary.driver-class-name=com.mysql.cj.jdbc.Driver
 datasource.primary.initialize=false
 datasource.primary.continue-on-error=false
