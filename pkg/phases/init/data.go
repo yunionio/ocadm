@@ -23,4 +23,5 @@ type InitData interface {
 	KubectlClient() (*kubectl.Client, error)
 	EnabledHostAgent() bool
 	PrintAddonYaml() bool
+	AddonCalicoIpAutodetectionMethod() string
 }
