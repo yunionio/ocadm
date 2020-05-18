@@ -103,9 +103,9 @@ func NewOCAddonPhase() workflow.Phase {
 			newAddonPhase("csi", runCSIAddon),
 			newAddonPhase("traefik", runTraefikAddon),
 			newAddonPhase("onecloud-operator", runOCOperatorAddon),
-			newAddonPhase("grafana", runGrafanaAddon),
-			newAddonPhase("loki", runLokiAddon),
-			newAddonPhase("promtail", runPromtailAddon),
+			//newAddonPhase("grafana", runGrafanaAddon),
+			//newAddonPhase("loki", runLokiAddon),
+			//newAddonPhase("promtail", runPromtailAddon),
 		},
 	}
 }
