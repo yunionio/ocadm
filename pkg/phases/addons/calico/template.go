@@ -576,6 +576,8 @@ spec:
           image: {{.NodeImage}}
           env:
             # Use Kubernetes API as the backing datastore.
+            - name: IP_AUTODETECTION_METHOD
+              value: "{{.IPAutodetectionMethod}}"
             - name: DATASTORE_TYPE
               value: "kubernetes"
             # Wait for the datastore.
