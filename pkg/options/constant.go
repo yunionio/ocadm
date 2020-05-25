@@ -13,21 +13,22 @@ const (
 )
 
 const (
-	MysqlAddress         = "mysql-host"
-	MysqlUser            = "mysql-user"
-	MysqlPassword        = "mysql-password"
-	MysqlPort            = "mysql-port"
-	Region               = "region"
-	Zone                 = "zone"
-	OnecloudVersion      = "onecloud-version"
-	ControlPlaneEndpoint = "control-plane-endpoint"
-	HostLocalImagePath   = "host-local-image-path"
-	Hostname             = "host-name"
-	HostNetworks         = "host-networks"
-	AsOnecloudController = "as-onecloud-controller"
-	PrintAddonYaml       = "print-addon-yaml"
-	OperatorVersion      = "operator-version"
-	NodeIP               = "node-ip"
+	MysqlAddress                     = "mysql-host"
+	MysqlUser                        = "mysql-user"
+	MysqlPassword                    = "mysql-password"
+	MysqlPort                        = "mysql-port"
+	Region                           = "region"
+	Zone                             = "zone"
+	OnecloudVersion                  = "onecloud-version"
+	ControlPlaneEndpoint             = "control-plane-endpoint"
+	HostLocalImagePath               = "host-local-image-path"
+	Hostname                         = "host-name"
+	HostNetworks                     = "host-networks"
+	AsOnecloudController             = "as-onecloud-controller"
+	PrintAddonYaml                   = "print-addon-yaml"
+	OperatorVersion                  = "operator-version"
+	NodeIP                           = "node-ip"
+	AddonCalicoIpAutodetectionMethod = "addon-calico-ip-autodetection-method"
 )
 
 const (
