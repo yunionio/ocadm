@@ -31,6 +31,9 @@ const (
 	// DefaultImageRepository defines dfault image registry
 	// DefaultImageRepository = "registry.hub.docker.com/yunion"
 	DefaultImageRepository = "registry.cn-beijing.aliyuncs.com/yunionio"
+
+	// default etcd version
+	DefaultEtcdVersion = "3.4.6"
 )
 
 var (
@@ -123,6 +126,9 @@ func setDefaults_kubeadmInitConfiguration(obj *kubeadmapi.InitConfiguration) {
 		obj.ComponentConfigs.KubeProxy = &kubeproxyconfig.KubeProxyConfiguration{
 			Mode: kubeproxyconfig.ProxyModeIPVS,
 		}
+	}
+	if obj.Etcd.Local != nil {
+		obj.Etcd.Local.ImageTag = "3.4.6"
 	}
 }
 
