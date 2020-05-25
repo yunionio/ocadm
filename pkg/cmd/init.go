@@ -86,48 +86,50 @@ var (
 // Please note that this structure includes the public kubeadm config API, but only a subset of the options
 // supported by this api will exposed as a flag
 type initOptions struct {
-	cfgPath                 string
-	skipTokenPrint          bool
-	dryRun                  bool
-	kubeconfigDir           string
-	kubeconfigPath          string
-	featureGatesString      string
-	ignorePreflightErrors   []string
-	bto                     *options.BootstrapTokenOptions
-	externalCfg             *v1.InitConfiguration
-	hostCfg                 *onecloud.HostCfg
-	uploadCerts             bool
-	certificateKey          string
-	skipCertificateKeyPrint bool
-	printAddonYaml          bool
-	operatorVersion         string
-	nodeIP                  string
+	cfgPath                          string
+	skipTokenPrint                   bool
+	dryRun                           bool
+	kubeconfigDir                    string
+	kubeconfigPath                   string
+	featureGatesString               string
+	ignorePreflightErrors            []string
+	bto                              *options.BootstrapTokenOptions
+	externalCfg                      *v1.InitConfiguration
+	hostCfg                          *onecloud.HostCfg
+	uploadCerts                      bool
+	certificateKey                   string
+	skipCertificateKeyPrint          bool
+	printAddonYaml                   bool
+	operatorVersion                  string
+	nodeIP                           string
+	addonCalicoIpAutodetectionMethod string
 }
 
 var _ initphases.InitData = &initData{}
 
 type initData struct {
-	cfg                     *v1.InitConfiguration
-	skipTokenPrint          bool
-	dryRun                  bool
-	kubeconfigDir           string
-	kubeconfigPath          string
-	ignorePreflightErrors   sets.String
-	certificatesDir         string
-	dryRunDir               string
-	externalCA              bool
-	client                  clientset.Interface
-	kubectlClient           *kubectl.Client
-	ocClient                *mcclient.ClientSession
-	waiter                  apiclient.Waiter
-	outputWriter            io.Writer
-	uploadCerts             bool
-	certificateKey          string
-	skipCertificateKeyPrint bool
-	enableHostAgent         bool
-	printAddonYaml          bool
-	operatorVersion         string
-	nodeIP                  string
+	cfg                              *v1.InitConfiguration
+	skipTokenPrint                   bool
+	dryRun                           bool
+	kubeconfigDir                    string
+	kubeconfigPath                   string
+	ignorePreflightErrors            sets.String
+	certificatesDir                  string
+	dryRunDir                        string
+	externalCA                       bool
+	client                           clientset.Interface
+	kubectlClient                    *kubectl.Client
+	ocClient                         *mcclient.ClientSession
+	waiter                           apiclient.Waiter
+	outputWriter                     io.Writer
+	uploadCerts                      bool
+	certificateKey                   string
+	skipCertificateKeyPrint          bool
+	enableHostAgent                  bool
+	printAddonYaml                   bool
+	operatorVersion                  string
+	nodeIP                           string
+	addonCalicoIpAutodetectionMethod string
 }
 
 // NewCmdInit returns "deployer init" command
@@ -316,6 +318,10 @@ func AddInitOtherFlags(flagSet *flag.FlagSet, initOptions *initOptions) {
 		&initOptions.nodeIP, options.NodeIP, initOptions.nodeIP,
 		"Init Node IP",
 	)
+	flagSet.StringVar(
+		&initOptions.addonCalicoIpAutodetectionMethod, options.AddonCalicoIpAutodetectionMethod, initOptions.addonCalicoIpAutodetectionMethod,
+		"Calico IP Autodetection Method",
+	)
 	flagSet.BoolVar(
 		&initOptions.dryRun, options.DryRun, initOptions.dryRun,
 		"Don't apply any changes; just output what would be done.",
@@ -446,23 +452,23 @@ func newInitData(cmd *cobra.Command, args []string, options *initOptions, out io
 	}
 
 	data := &initData{
-		cfg:                     cfg,
-		certificatesDir:         cfg.CertificatesDir,
-		skipTokenPrint:          options.skipTokenPrint,
-		dryRun:                  options.dryRun,
-		dryRunDir:               dryRunDir,
-		kubeconfigDir:           options.kubeconfigDir,
-		kubeconfigPath:          options.kubeconfigPath,
-		ignorePreflightErrors:   ignorePreflightErrorsSet,
-		externalCA:              externalCA,
-		outputWriter:            out,
-		uploadCerts:             options.uploadCerts,
-		certificateKey:          options.certificateKey,
-		skipCertificateKeyPrint: options.skipCertificateKeyPrint,
-		printAddonYaml:          options.printAddonYaml,
-		operatorVersion:         options.operatorVersion,
+		cfg:                              cfg,
+		certificatesDir:                  cfg.CertificatesDir,
+		skipTokenPrint:                   options.skipTokenPrint,
+		dryRun:                           options.dryRun,
+		dryRunDir:                        dryRunDir,
+		kubeconfigDir:                    options.kubeconfigDir,
+		kubeconfigPath:                   options.kubeconfigPath,
+		ignorePreflightErrors:            ignorePreflightErrorsSet,
+		externalCA:                       externalCA,
+		outputWriter:                     out,
+		uploadCerts:                      options.uploadCerts,
+		certificateKey:                   options.certificateKey,
+		skipCertificateKeyPrint:          options.skipCertificateKeyPrint,
+		printAddonYaml:                   options.printAddonYaml,
+		operatorVersion:                  options.operatorVersion,
+		addonCalicoIpAutodetectionMethod: options.addonCalicoIpAutodetectionMethod,
 	}
-
 	return data, nil
 }
 
@@ -474,6 +480,10 @@ func (d *initData) EnabledHostAgent() bool {
 // PrintAddonYaml only print onecloud addon yaml manifest
 func (d *initData) PrintAddonYaml() bool {
 	return d.printAddonYaml
+}
+
+func (d *initData) AddonCalicoIpAutodetectionMethod() string {
+	return d.addonCalicoIpAutodetectionMethod
 }
 
 // UploadCerts returns Uploadcerts flag.
