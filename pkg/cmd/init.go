@@ -445,6 +445,10 @@ func newInitData(cmd *cobra.Command, args []string, options *initOptions, out io
 		return nil, errors.New("can't use upload-certs with an external CA or an external front-proxy CA")
 	}
 
+	if cfg.ControlPlaneEndpoint == "" {
+		cfg.ControlPlaneEndpoint = fmt.Sprintf("%s:%d", cfg.LocalAPIEndpoint.AdvertiseAddress, cfg.LocalAPIEndpoint.BindPort)
+	}
+
 	data := &initData{
 		cfg:                     cfg,
 		certificatesDir:         cfg.CertificatesDir,
