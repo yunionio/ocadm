@@ -11,8 +11,6 @@ import (
 	"k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/workflow"
 	"k8s.io/kubernetes/pkg/util/normalizer"
 
-	"yunion.io/x/onecloud-operator/pkg/apis/constants"
-
 	apiv1 "yunion.io/x/ocadm/pkg/apis/v1"
 	"yunion.io/x/ocadm/pkg/options"
 	"yunion.io/x/ocadm/pkg/phases/addons"
@@ -23,6 +21,7 @@ import (
 	ocaddon "yunion.io/x/ocadm/pkg/phases/addons/onecloudoperator"
 	traefikaddon "yunion.io/x/ocadm/pkg/phases/addons/traefik"
 	"yunion.io/x/ocadm/pkg/util/kubectl"
+	"yunion.io/x/onecloud-operator/pkg/apis/constants"
 )
 
 var (
@@ -90,6 +89,7 @@ func NewOCAddonPhase() workflow.Phase {
 		Short: "Installs onecloud required addons to kubernetes cluster",
 		InheritFlags: []string{
 			options.PrintAddonYaml,
+			options.AddonCalicoIpAutodetectionMethod,
 			options.OperatorVersion,
 		},
 		Phases: []workflow.Phase{
@@ -103,9 +103,9 @@ func NewOCAddonPhase() workflow.Phase {
 			newAddonPhase("csi", runCSIAddon),
 			newAddonPhase("traefik", runTraefikAddon),
 			newAddonPhase("onecloud-operator", runOCOperatorAddon),
-			newAddonPhase("grafana", runGrafanaAddon),
-			newAddonPhase("loki", runLokiAddon),
-			newAddonPhase("promtail", runPromtailAddon),
+			//newAddonPhase("grafana", runGrafanaAddon),
+			//newAddonPhase("loki", runLokiAddon),
+			//newAddonPhase("promtail", runPromtailAddon),
 		},
 	}
 }
@@ -137,7 +137,9 @@ func kubectlApplyAddon(c workflow.RunData, newF func(*kubeadmapi.ClusterConfigur
 }
 
 func runCalicoAddon(c workflow.RunData) error {
-	return kubectlApplyAddon(c, calicoaddon.NewCalicoConfig)
+	return kubectlApplyAddon(c, func(cfg *kubeadmapi.ClusterConfiguration) addons.Configer {
+		return calicoaddon.NewCalicoConfig(cfg, c.(InitData).AddonCalicoIpAutodetectionMethod())
+	})
 }
 
 func runOCOperatorAddon(c workflow.RunData) error {
@@ -178,6 +180,7 @@ func getAddonPhaseFlags(name string) []string {
 		flags = append(flags,
 			options.NetworkingPodSubnet,
 			options.OperatorVersion,
+			options.AddonCalicoIpAutodetectionMethod,
 		)
 	}
 	if name == "onecloud-operator" {

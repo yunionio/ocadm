@@ -36,6 +36,9 @@ const (
 	// DefaultImageRepository defines dfault image registry
 	// DefaultImageRepository = "registry.hub.docker.com/yunion"
 	DefaultImageRepository = "registry.cn-beijing.aliyuncs.com/yunionio"
+
+	// default etcd version
+	DefaultEtcdVersion = "3.4.6"
 )
 
 var (
