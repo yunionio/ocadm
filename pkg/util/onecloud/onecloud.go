@@ -360,10 +360,12 @@ func GenerateDefaultHostConfig(cfg *HostCfg) error {
 	if len(cfg.Hostname) > 0 {
 		o.Hostname = cfg.Hostname
 	} else {
-		var err error
-		o.Hostname, err = nodeutil.GetHostname("")
+		hostname, err := nodeutil.GetHostname("")
 		if err != nil {
 			return errors.Wrap(err, "get hostname")
+		} else if strings.Contains(hostname, ".") {
+			hostname = strings.Split(hostname, ".")[0]
+			o.Hostname = hostname
 		}
 	}
 
