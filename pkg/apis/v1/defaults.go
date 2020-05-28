@@ -1,11 +1,16 @@
 package v1
 
 import (
+	"strings"
+
 	"k8s.io/apimachinery/pkg/runtime"
 	kubeadmapi "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm"
 	kubeadmscheme "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/scheme"
 	kubeadmapiv1beta2 "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta2"
 	kubeproxyconfig "k8s.io/kubernetes/pkg/proxy/apis/config"
+	"k8s.io/kubernetes/pkg/util/node"
+
+	"yunion.io/x/log"
 	"yunion.io/x/ocadm/pkg/apis/constants"
 )
 
@@ -85,6 +90,13 @@ func setDefaults_kubeadmJoinConfiguration(obj *kubeadmapi.JoinConfiguration) {
 	kubeadmscheme.Scheme.Convert(obj, defaultversionedcfg, nil)
 	kubeadmscheme.Scheme.Default(defaultversionedcfg)
 	kubeadmscheme.Scheme.Convert(defaultversionedcfg, obj, nil)
+
+	if hostname, err := node.GetHostname(""); err != nil {
+		log.Errorf("get hostname failed %s", err)
+	} else if strings.Contains(hostname, ".") {
+		hostname = strings.Split(hostname, ".")[0]
+		obj.NodeRegistration.Name = hostname
+	}
 }
 
 func setDefaults_kubeadmInitConfiguration(obj *kubeadmapi.InitConfiguration) {
@@ -129,6 +141,12 @@ func setDefaults_kubeadmInitConfiguration(obj *kubeadmapi.InitConfiguration) {
 	}
 	if obj.Etcd.Local != nil {
 		obj.Etcd.Local.ImageTag = "3.4.6"
+	}
+	if hostname, err := node.GetHostname(""); err != nil {
+		log.Errorf("get hostname failed %s", err)
+	} else if strings.Contains(hostname, ".") {
+		hostname = strings.Split(hostname, ".")[0]
+		obj.NodeRegistration.Name = hostname
 	}
 }
 
