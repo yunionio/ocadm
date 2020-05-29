@@ -121,8 +121,7 @@ func (m Itsm) NewDeployment(oc *onecloud.OnecloudCluster) (*apps.Deployment, err
 		return []corev1.Container{
 			{
 				Name: "itsm",
-				//Image: GetImage(oc, m.GetComponentType(), ""),
-				Image: GetJavaAppImage(oc, ""),
+				Image: GetImage(oc, m.GetComponentType(), ""),
 				Env: []corev1.EnvVar{
 					{
 						Name:  JAVA_APP_JAR,
