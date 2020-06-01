@@ -26,6 +26,14 @@ metadata:
   namespace: {{.Namespace}}
   name: onecloud-operator
 ---
+apiVersion: scheduling.k8s.io/v1beta1
+kind: PriorityClass
+metadata:
+  name: onecloud-operator-critical
+value: 1000000000
+globalDefault: false
+description: "This priority class should be used for onecloud operator service pods only."
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -46,6 +54,7 @@ spec:
         k8s-app: onecloud-operator
     spec:
       serviceAccount: onecloud-operator
+      priorityClassName: onecloud-operator-critical
       tolerations:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
