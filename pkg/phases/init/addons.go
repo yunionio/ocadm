@@ -17,6 +17,7 @@ import (
 	calicoaddon "yunion.io/x/ocadm/pkg/phases/addons/calico"
 	csiaddon "yunion.io/x/ocadm/pkg/phases/addons/csi"
 	grafanaaddon "yunion.io/x/ocadm/pkg/phases/addons/grafana"
+	keepalivedaddon "yunion.io/x/ocadm/pkg/phases/addons/keepalived"
 	lokiaddon "yunion.io/x/ocadm/pkg/phases/addons/loki"
 	ocaddon "yunion.io/x/ocadm/pkg/phases/addons/onecloudoperator"
 	traefikaddon "yunion.io/x/ocadm/pkg/phases/addons/traefik"
@@ -99,6 +100,7 @@ func NewOCAddonPhase() workflow.Phase {
 				InheritFlags:   getAddonPhaseFlags("all"),
 				RunAllSiblings: true,
 			},
+			newAddonPhase("keepalived", runKeepalivedAddon),
 			newAddonPhase("calico", runCalicoAddon),
 			newAddonPhase("csi", runCSIAddon),
 			newAddonPhase("traefik", runTraefikAddon),
@@ -140,6 +142,11 @@ func runCalicoAddon(c workflow.RunData) error {
 	return kubectlApplyAddon(c, func(cfg *kubeadmapi.ClusterConfiguration) addons.Configer {
 		return calicoaddon.NewCalicoConfig(cfg, c.(InitData).AddonCalicoIpAutodetectionMethod())
 	})
+}
+
+func runKeepalivedAddon(c workflow.RunData) error {
+	fmt.Printf("runKeepalivedAddon.")
+	return kubectlApplyAddon(c, keepalivedaddon.NewKeepalivedConfig)
 }
 
 func runOCOperatorAddon(c workflow.RunData) error {
