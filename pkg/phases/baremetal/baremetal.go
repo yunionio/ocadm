@@ -53,8 +53,7 @@ func NodesDisableBaremetalAgent() workflow.Phase {
 	}
 }
 
-func getData(
-	c workflow.RunData) ([]string, string, clientset.Interface, versioned.Interface, error) {
+func getData(c workflow.RunData) ([]string, string, clientset.Interface, versioned.Interface, error) {
 	data, ok := c.(baremetalEnableData)
 	if !ok {
 		return nil, "", nil, nil, errors.New("host enable phase invoked with an invalid data struct")
