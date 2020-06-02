@@ -17,6 +17,7 @@ limitations under the License.
 package etcd
 
 import (
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -25,7 +26,7 @@ import (
 	"github.com/pkg/errors"
 	"k8s.io/klog"
 
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	clientset "k8s.io/client-go/kubernetes"
 	kubeadmapi "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm"
 	kubeadmconstants "k8s.io/kubernetes/cmd/kubeadm/app/constants"
@@ -153,12 +154,23 @@ func CreateStackedEtcdStaticPodManifestFile(client clientset.Interface, manifest
 // GetEtcdPodSpec returns the etcd static Pod actualized to the context of the current configuration
 // NB. GetEtcdPodSpec methods holds the information about how kubeadm creates etcd static pod manifests.
 func GetEtcdPodSpec(cfg *kubeadmapi.ClusterConfiguration, endpoint *kubeadmapi.APIEndpoint, nodeName string, initialCluster []etcdutil.Member) v1.Pod {
+	fmt.Println("[rex-debug] cfg:", cfg)
+	fmt.Println("[rex-debug] endpoint:", endpoint)
+	fmt.Println("[rex-debug] nodeName:", nodeName)
+	fmt.Println("[rex-debug] initialCluster:", initialCluster)
+
 	pathType := v1.HostPathDirectoryOrCreate
 	etcdMounts := map[string]v1.Volume{
 		etcdVolumeName:  staticpodutil.NewVolume(etcdVolumeName, cfg.Etcd.Local.DataDir, &pathType),
 		certsVolumeName: staticpodutil.NewVolume(certsVolumeName, cfg.CertificatesDir+"/etcd", &pathType),
 	}
-	return staticpodutil.ComponentPod(v1.Container{
+	fmt.Println("[rex-debug] pathType:", pathType)
+	fmt.Println("[rex-debug] etcdMounts:", etcdMounts)
+	cmd:= getEtcdCommand(cfg, endpoint, nodeName, initialCluster)
+	fmt.Println("[rex-debug] cmd:", cmd)
+	fmt.Println("[rex-debug] images.GetEtcdImage(cfg):", images.GetEtcdImage(cfg))
+
+	ret := staticpodutil.ComponentPod(v1.Container{
 		Name:            kubeadmconstants.Etcd,
 		Command:         getEtcdCommand(cfg, endpoint, nodeName, initialCluster),
 		Image:           images.GetEtcdImage(cfg),
@@ -173,6 +185,13 @@ func GetEtcdPodSpec(cfg *kubeadmapi.ClusterConfiguration, endpoint *kubeadmapi.A
 			kubeadmconstants.EtcdCACertName, kubeadmconstants.EtcdHealthcheckClientCertName, kubeadmconstants.EtcdHealthcheckClientKeyName,
 		),
 	}, etcdMounts)
+	b, err := json.MarshalIndent(ret, "", "  ")
+	if err != nil {
+		fmt.Println("error:", err)
+	}
+	fmt.Print(string(b))
+	fmt.Println("[rex-debug] ret:", ret)
+	return ret
 }
 
 // getEtcdCommand builds the right etcd command from the given config object

@@ -35,6 +35,7 @@ import (
 	occmdutil "yunion.io/x/ocadm/pkg/cmd/util"
 	"yunion.io/x/ocadm/pkg/occonfig"
 	"yunion.io/x/ocadm/pkg/options"
+	keepalivedaddon "yunion.io/x/ocadm/pkg/phases/addons/keepalived"
 	initphases "yunion.io/x/ocadm/pkg/phases/init"
 	configutil "yunion.io/x/ocadm/pkg/util/config"
 	"yunion.io/x/ocadm/pkg/util/kubectl"
@@ -191,6 +192,7 @@ func NewCmdInit(out io.Writer, initOptions *initOptions) *cobra.Command {
 	})
 
 	initRunner.AppendPhase(initphases.NewPreflightPhase())
+	initRunner.AppendPhase(keepalivedaddon.NewKeepalivedPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewKubeletStartPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewCertsPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewKubeConfigPhase())
