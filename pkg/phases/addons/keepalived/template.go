@@ -1,3 +1,0 @@
-package keepalived
-
-const KeepalivedTemplate = ``

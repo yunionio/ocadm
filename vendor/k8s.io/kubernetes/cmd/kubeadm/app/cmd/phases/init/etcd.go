@@ -19,6 +19,7 @@ package phases
 import (
 	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/pkg/errors"
 	"k8s.io/klog"
@@ -40,6 +41,13 @@ var (
 		kubeadm init phase etcd local --config config.yaml
 		`)
 )
+func Trace(msg string) {
+	pc := make([]uintptr, 15)
+	n := runtime.Callers(2, pc)
+	frames := runtime.CallersFrames(pc[:n])
+	frame, _ := frames.Next()
+	fmt.Printf("[ zhasm %s ] %s:%d %s\n", msg, frame.File, frame.Line, frame.Function)
+}
 
 // NewEtcdPhase creates a kubeadm workflow phase that implements handling of etcd.
 func NewEtcdPhase() workflow.Phase {
@@ -76,12 +84,13 @@ func getEtcdPhaseFlags() []string {
 
 func runEtcdPhaseLocal() func(c workflow.RunData) error {
 	return func(c workflow.RunData) error {
+		Trace("runEtcdPhaseLocal rex")
 		data, ok := c.(InitData)
 		if !ok {
 			return errors.New("etcd phase invoked with an invalid data struct")
 		}
 		cfg := data.Cfg()
-
+		fmt.Printf("[[runEtcdPhaseLocal]] cfg.Etcd.Local: %+v\n", cfg.Etcd.Local)
 		// Add etcd static pod spec only if external etcd is not configured
 		if cfg.Etcd.External == nil {
 			// creates target folder if doesn't exist already
