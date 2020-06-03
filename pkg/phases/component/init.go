@@ -11,7 +11,7 @@ func init() {
 
 func registerComponentCmds() {
 	components := []IComponent{
-		ItsmComponent,
+		//ItsmComponent,
 	}
 	addSubCmds(components...)
 }
