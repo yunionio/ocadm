@@ -1,0 +1,3256 @@
+ansible-playbook -e ANSIBLE_HOST_KEY_CHECKING=False -i /opt/yunionboot/onecloud/zz_generated.hosts /opt/yunionboot/onecloud/zz_generated.site.yml -vvvv
+[0;34mansible-playbook 2.9.1[0m
+[0;34m  config file = /etc/ansible/ansible.cfg[0m
+[0;34m  configured module search path = [u'/root/.ansible/plugins/modules', u'/usr/share/ansible/plugins/modules'][0m
+[0;34m  ansible python module location = /usr/lib/python2.7/site-packages/ansible[0m
+[0;34m  executable location = /bin/ansible-playbook[0m
+[0;34m  python version = 2.7.5 (default, Aug  7 2019, 00:51:29) [GCC 4.8.5 20150623 (Red Hat 4.8.5-39)][0m
+[0;34mUsing /etc/ansible/ansible.cfg as config file[0m
+[0;34msetting up inventory plugins[0m
+[0;34mhost_list declined parsing /opt/yunionboot/onecloud/zz_generated.hosts as it did not pass its verify_file() method[0m
+[0;34mscript declined parsing /opt/yunionboot/onecloud/zz_generated.hosts as it did not pass its verify_file() method[0m
+[0;34mauto declined parsing /opt/yunionboot/onecloud/zz_generated.hosts as it did not pass its verify_file() method[0m
+[0;34myaml declined parsing /opt/yunionboot/onecloud/zz_generated.hosts as it did not pass its verify_file() method[0m
+[0;34mSet default localhost to 127.0.0.1[0m
+[0;34mParsed /opt/yunionboot/onecloud/zz_generated.hosts inventory source with ini plugin[0m
+[0;34mLoading callback plugin default of type stdout, v2.0 from /usr/lib/python2.7/site-packages/ansible/plugins/callback/default.pyc[0m
+
+PLAYBOOK: zz_generated.site.yml **************************************************************************************************************************************************************************************************************************************************************************************
+[0;34mPositional arguments: /opt/yunionboot/onecloud/zz_generated.site.yml[0m
+[0;34mbecome_method: sudo[0m
+[0;34minventory: (u'/opt/yunionboot/onecloud/zz_generated.hosts',)[0m
+[0;34mforks: 5[0m
+[0;34mtags: (u'all',)[0m
+[0;34mextra_vars: (u'ANSIBLE_HOST_KEY_CHECKING=False',)[0m
+[0;34mverbosity: 4[0m
+[0;34mconnection: smart[0m
+[0;34mtimeout: 10[0m
+[0;34m3 plays in /opt/yunionboot/onecloud/zz_generated.site.yml[0m
+
+PLAY [mariadb_node] **************************************************************************************************************************************************************************************************************************************************************************************************
+
+TASK [Gathering Facts] ***********************************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/zz_generated.site.yml:1[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679106.6-263277490587893 `" && echo ansible-tmp-1590679106.6-263277490587893="` echo /root/.ansible/tmp/ansible-tmp-1590679106.6-263277490587893 `" ) && sleep 0'[0m
+[0;34m<127.0.0.1> Attempting python interpreter discovery[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo PLATFORM; uname; echo FOUND; command -v '"'"'/usr/bin/python'"'"'; command -v '"'"'python3.7'"'"'; command -v '"'"'python3.6'"'"'; command -v '"'"'python3.5'"'"'; command -v '"'"'python2.7'"'"'; command -v '"'"'python2.6'"'"'; command -v '"'"'/usr/libexec/platform-python'"'"'; command -v '"'"'/usr/bin/python3'"'"'; command -v '"'"'python'"'"'; echo ENDFOUND && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/system/setup.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpM3IfMJ TO /root/.ansible/tmp/ansible-tmp-1590679106.6-263277490587893/AnsiballZ_setup.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679106.6-263277490587893/ /root/.ansible/tmp/ansible-tmp-1590679106.6-263277490587893/AnsiballZ_setup.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679106.6-263277490587893/AnsiballZ_setup.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679106.6-263277490587893/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1][0m
+[0;34mMETA: ran handlers[0m
+
+TASK [mariadb : Install mariadb] *************************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/mariadb/tasks/main.yml:1[0m
+[0;34mRunning yum as the backend for the yum action plugin[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679107.53-251517989102307 `" && echo ansible-tmp-1590679107.53-251517989102307="` echo /root/.ansible/tmp/ansible-tmp-1590679107.53-251517989102307 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/packaging/os/yum.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpeLWHYl TO /root/.ansible/tmp/ansible-tmp-1590679107.53-251517989102307/AnsiballZ_yum.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679107.53-251517989102307/ /root/.ansible/tmp/ansible-tmp-1590679107.53-251517989102307/AnsiballZ_yum.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679107.53-251517989102307/AnsiballZ_yum.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679107.53-251517989102307/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "changed": false, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "allow_downgrade": false, [0m
+[0;32m            "autoremove": false, [0m
+[0;32m            "bugfix": false, [0m
+[0;32m            "conf_file": null, [0m
+[0;32m            "disable_excludes": null, [0m
+[0;32m            "disable_gpg_check": false, [0m
+[0;32m            "disable_plugin": [], [0m
+[0;32m            "disablerepo": [], [0m
+[0;32m            "download_dir": null, [0m
+[0;32m            "download_only": false, [0m
+[0;32m            "enable_plugin": [], [0m
+[0;32m            "enablerepo": [], [0m
+[0;32m            "exclude": [], [0m
+[0;32m            "install_repoquery": true, [0m
+[0;32m            "install_weak_deps": true, [0m
+[0;32m            "installroot": "/", [0m
+[0;32m            "list": null, [0m
+[0;32m            "lock_timeout": 30, [0m
+[0;32m            "name": [[0m
+[0;32m                "mariadb-server"[0m
+[0;32m            ], [0m
+[0;32m            "releasever": null, [0m
+[0;32m            "security": false, [0m
+[0;32m            "skip_broken": false, [0m
+[0;32m            "state": "installed", [0m
+[0;32m            "update_cache": false, [0m
+[0;32m            "update_only": false, [0m
+[0;32m            "use_backend": "auto", [0m
+[0;32m            "validate_certs": true[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "msg": "", [0m
+[0;32m    "rc": 0, [0m
+[0;32m    "results": [[0m
+[0;32m        "1:mariadb-server-5.5.64-1.el7.x86_64 providing mariadb-server is already installed"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [mariadb : Install MySQL-python] ********************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/mariadb/tasks/main.yml:6[0m
+[0;34mRunning yum[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679108.03-132720659822463 `" && echo ansible-tmp-1590679108.03-132720659822463="` echo /root/.ansible/tmp/ansible-tmp-1590679108.03-132720659822463 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/packaging/os/yum.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpsJ8tRT TO /root/.ansible/tmp/ansible-tmp-1590679108.03-132720659822463/AnsiballZ_yum.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679108.03-132720659822463/ /root/.ansible/tmp/ansible-tmp-1590679108.03-132720659822463/AnsiballZ_yum.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679108.03-132720659822463/AnsiballZ_yum.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679108.03-132720659822463/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "changed": false, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "allow_downgrade": false, [0m
+[0;32m            "autoremove": false, [0m
+[0;32m            "bugfix": false, [0m
+[0;32m            "conf_file": null, [0m
+[0;32m            "disable_excludes": null, [0m
+[0;32m            "disable_gpg_check": false, [0m
+[0;32m            "disable_plugin": [], [0m
+[0;32m            "disablerepo": [], [0m
+[0;32m            "download_dir": null, [0m
+[0;32m            "download_only": false, [0m
+[0;32m            "enable_plugin": [], [0m
+[0;32m            "enablerepo": [], [0m
+[0;32m            "exclude": [], [0m
+[0;32m            "install_repoquery": true, [0m
+[0;32m            "install_weak_deps": true, [0m
+[0;32m            "installroot": "/", [0m
+[0;32m            "list": null, [0m
+[0;32m            "lock_timeout": 30, [0m
+[0;32m            "name": [[0m
+[0;32m                "MySQL-python"[0m
+[0;32m            ], [0m
+[0;32m            "releasever": null, [0m
+[0;32m            "security": false, [0m
+[0;32m            "skip_broken": false, [0m
+[0;32m            "state": "installed", [0m
+[0;32m            "update_cache": false, [0m
+[0;32m            "update_only": false, [0m
+[0;32m            "use_backend": "auto", [0m
+[0;32m            "validate_certs": true[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "msg": "", [0m
+[0;32m    "rc": 0, [0m
+[0;32m    "results": [[0m
+[0;32m        "MySQL-python-1.2.5-1.el7.x86_64 providing MySQL-python is already installed"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [mariadb : Copy my.cnf] *****************************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/mariadb/tasks/main.yml:11[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679108.3-95797969810033 `" && echo ansible-tmp-1590679108.3-95797969810033="` echo /root/.ansible/tmp/ansible-tmp-1590679108.3-95797969810033 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/files/stat.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpXk8eR4 TO /root/.ansible/tmp/ansible-tmp-1590679108.3-95797969810033/AnsiballZ_stat.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679108.3-95797969810033/ /root/.ansible/tmp/ansible-tmp-1590679108.3-95797969810033/AnsiballZ_stat.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679108.3-95797969810033/AnsiballZ_stat.py && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/files/file.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpVaYH9C TO /root/.ansible/tmp/ansible-tmp-1590679108.3-95797969810033/AnsiballZ_file.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679108.3-95797969810033/ /root/.ansible/tmp/ansible-tmp-1590679108.3-95797969810033/AnsiballZ_file.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679108.3-95797969810033/AnsiballZ_file.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679108.3-95797969810033/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "changed": false, [0m
+[0;32m    "checksum": "e079b173a071cae24cec85746edacb4983f3b1d0", [0m
+[0;32m    "dest": "/etc/my.cnf", [0m
+[0;32m    "diff": {[0m
+[0;32m        "after": {[0m
+[0;32m            "path": "/etc/my.cnf"[0m
+[0;32m        }, [0m
+[0;32m        "before": {[0m
+[0;32m            "path": "/etc/my.cnf"[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "gid": 0, [0m
+[0;32m    "group": "root", [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "_diff_peek": null, [0m
+[0;32m            "_original_basename": "my.cnf", [0m
+[0;32m            "access_time": null, [0m
+[0;32m            "access_time_format": "%Y%m%d%H%M.%S", [0m
+[0;32m            "attributes": null, [0m
+[0;32m            "backup": null, [0m
+[0;32m            "content": null, [0m
+[0;32m            "delimiter": null, [0m
+[0;32m            "dest": "/etc/my.cnf", [0m
+[0;32m            "directory_mode": null, [0m
+[0;32m            "follow": true, [0m
+[0;32m            "force": false, [0m
+[0;32m            "group": null, [0m
+[0;32m            "mode": null, [0m
+[0;32m            "modification_time": null, [0m
+[0;32m            "modification_time_format": "%Y%m%d%H%M.%S", [0m
+[0;32m            "owner": null, [0m
+[0;32m            "path": "/etc/my.cnf", [0m
+[0;32m            "recurse": false, [0m
+[0;32m            "regexp": null, [0m
+[0;32m            "remote_src": null, [0m
+[0;32m            "selevel": null, [0m
+[0;32m            "serole": null, [0m
+[0;32m            "setype": null, [0m
+[0;32m            "seuser": null, [0m
+[0;32m            "src": null, [0m
+[0;32m            "state": "file", [0m
+[0;32m            "unsafe_writes": null[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "mode": "0644", [0m
+[0;32m    "owner": "root", [0m
+[0;32m    "path": "/etc/my.cnf", [0m
+[0;32m    "size": 674, [0m
+[0;32m    "state": "file", [0m
+[0;32m    "uid": 0[0m
+[0;32m}[0m
+
+TASK [mariadb : Enable mariadb] **************************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/mariadb/tasks/main.yml:16[0m
+[0;34mRunning systemd[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679108.9-269911855048889 `" && echo ansible-tmp-1590679108.9-269911855048889="` echo /root/.ansible/tmp/ansible-tmp-1590679108.9-269911855048889 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/system/systemd.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpvfqNUD TO /root/.ansible/tmp/ansible-tmp-1590679108.9-269911855048889/AnsiballZ_systemd.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679108.9-269911855048889/ /root/.ansible/tmp/ansible-tmp-1590679108.9-269911855048889/AnsiballZ_systemd.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679108.9-269911855048889/AnsiballZ_systemd.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679108.9-269911855048889/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "changed": false, [0m
+[0;32m    "enabled": true, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "daemon_reexec": false, [0m
+[0;32m            "daemon_reload": false, [0m
+[0;32m            "enabled": true, [0m
+[0;32m            "force": null, [0m
+[0;32m            "masked": null, [0m
+[0;32m            "name": "mariadb", [0m
+[0;32m            "no_block": false, [0m
+[0;32m            "scope": null, [0m
+[0;32m            "state": "started", [0m
+[0;32m            "user": null[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "name": "mariadb", [0m
+[0;32m    "state": "started", [0m
+[0;32m    "status": {[0m
+[0;32m        "ActiveEnterTimestamp": "Fri 2020-05-22 05:18:24 EDT", [0m
+[0;32m        "ActiveEnterTimestampMonotonic": "236954599", [0m
+[0;32m        "ActiveExitTimestampMonotonic": "0", [0m
+[0;32m        "ActiveState": "active", [0m
+[0;32m        "After": "tmp.mount -.mount systemd-journald.socket system.slice syslog.target network.target basic.target", [0m
+[0;32m        "AllowIsolate": "no", [0m
+[0;32m        "AmbientCapabilities": "0", [0m
+[0;32m        "AssertResult": "yes", [0m
+[0;32m        "AssertTimestamp": "Fri 2020-05-22 05:18:21 EDT", [0m
+[0;32m        "AssertTimestampMonotonic": "233722112", [0m
+[0;32m        "Before": "multi-user.target shutdown.target", [0m
+[0;32m        "BlockIOAccounting": "no", [0m
+[0;32m        "BlockIOWeight": "18446744073709551615", [0m
+[0;32m        "CPUAccounting": "no", [0m
+[0;32m        "CPUQuotaPerSecUSec": "infinity", [0m
+[0;32m        "CPUSchedulingPolicy": "0", [0m
+[0;32m        "CPUSchedulingPriority": "0", [0m
+[0;32m        "CPUSchedulingResetOnFork": "no", [0m
+[0;32m        "CPUShares": "18446744073709551615", [0m
+[0;32m        "CanIsolate": "no", [0m
+[0;32m        "CanReload": "no", [0m
+[0;32m        "CanStart": "yes", [0m
+[0;32m        "CanStop": "yes", [0m
+[0;32m        "CapabilityBoundingSet": "18446744073709551615", [0m
+[0;32m        "ConditionResult": "yes", [0m
+[0;32m        "ConditionTimestamp": "Fri 2020-05-22 05:18:21 EDT", [0m
+[0;32m        "ConditionTimestampMonotonic": "233722112", [0m
+[0;32m        "Conflicts": "shutdown.target", [0m
+[0;32m        "ControlGroup": "/system.slice/mariadb.service", [0m
+[0;32m        "ControlPID": "0", [0m
+[0;32m        "DefaultDependencies": "yes", [0m
+[0;32m        "Delegate": "no", [0m
+[0;32m        "Description": "MariaDB database server", [0m
+[0;32m        "DevicePolicy": "auto", [0m
+[0;32m        "ExecMainCode": "0", [0m
+[0;32m        "ExecMainExitTimestampMonotonic": "0", [0m
+[0;32m        "ExecMainPID": "13548", [0m
+[0;32m        "ExecMainStartTimestamp": "Fri 2020-05-22 05:18:22 EDT", [0m
+[0;32m        "ExecMainStartTimestampMonotonic": "234916658", [0m
+[0;32m        "ExecMainStatus": "0", [0m
+[0;32m        "ExecStart": "{ path=/usr/bin/mysqld_safe ; argv[]=/usr/bin/mysqld_safe --basedir=/usr ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }", [0m
+[0;32m        "ExecStartPost": "{ path=/usr/libexec/mariadb-wait-ready ; argv[]=/usr/libexec/mariadb-wait-ready $MAINPID ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }", [0m
+[0;32m        "ExecStartPre": "{ path=/usr/libexec/mariadb-prepare-db-dir ; argv[]=/usr/libexec/mariadb-prepare-db-dir %n ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }", [0m
+[0;32m        "FailureAction": "none", [0m
+[0;32m        "FileDescriptorStoreMax": "0", [0m
+[0;32m        "FragmentPath": "/usr/lib/systemd/system/mariadb.service", [0m
+[0;32m        "Group": "mysql", [0m
+[0;32m        "GuessMainPID": "yes", [0m
+[0;32m        "IOScheduling": "0", [0m
+[0;32m        "Id": "mariadb.service", [0m
+[0;32m        "IgnoreOnIsolate": "no", [0m
+[0;32m        "IgnoreOnSnapshot": "no", [0m
+[0;32m        "IgnoreSIGPIPE": "yes", [0m
+[0;32m        "InactiveEnterTimestampMonotonic": "0", [0m
+[0;32m        "InactiveExitTimestamp": "Fri 2020-05-22 05:18:21 EDT", [0m
+[0;32m        "InactiveExitTimestampMonotonic": "233729952", [0m
+[0;32m        "JobTimeoutAction": "none", [0m
+[0;32m        "JobTimeoutUSec": "0", [0m
+[0;32m        "KillMode": "control-group", [0m
+[0;32m        "KillSignal": "15", [0m
+[0;32m        "LimitAS": "18446744073709551615", [0m
+[0;32m        "LimitCORE": "18446744073709551615", [0m
+[0;32m        "LimitCPU": "18446744073709551615", [0m
+[0;32m        "LimitDATA": "18446744073709551615", [0m
+[0;32m        "LimitFSIZE": "18446744073709551615", [0m
+[0;32m        "LimitLOCKS": "18446744073709551615", [0m
+[0;32m        "LimitMEMLOCK": "65536", [0m
+[0;32m        "LimitMSGQUEUE": "819200", [0m
+[0;32m        "LimitNICE": "0", [0m
+[0;32m        "LimitNOFILE": "4096", [0m
+[0;32m        "LimitNPROC": "30454", [0m
+[0;32m        "LimitRSS": "18446744073709551615", [0m
+[0;32m        "LimitRTPRIO": "0", [0m
+[0;32m        "LimitRTTIME": "18446744073709551615", [0m
+[0;32m        "LimitSIGPENDING": "30454", [0m
+[0;32m        "LimitSTACK": "18446744073709551615", [0m
+[0;32m        "LoadState": "loaded", [0m
+[0;32m        "MainPID": "13548", [0m
+[0;32m        "MemoryAccounting": "no", [0m
+[0;32m        "MemoryCurrent": "389476352", [0m
+[0;32m        "MemoryLimit": "18446744073709551615", [0m
+[0;32m        "MountFlags": "0", [0m
+[0;32m        "Names": "mariadb.service", [0m
+[0;32m        "NeedDaemonReload": "no", [0m
+[0;32m        "Nice": "0", [0m
+[0;32m        "NoNewPrivileges": "no", [0m
+[0;32m        "NonBlocking": "no", [0m
+[0;32m        "NotifyAccess": "none", [0m
+[0;32m        "OOMScoreAdjust": "0", [0m
+[0;32m        "OnFailureJobMode": "replace", [0m
+[0;32m        "PermissionsStartOnly": "no", [0m
+[0;32m        "PrivateDevices": "no", [0m
+[0;32m        "PrivateNetwork": "no", [0m
+[0;32m        "PrivateTmp": "yes", [0m
+[0;32m        "ProtectHome": "no", [0m
+[0;32m        "ProtectSystem": "no", [0m
+[0;32m        "RefuseManualStart": "no", [0m
+[0;32m        "RefuseManualStop": "no", [0m
+[0;32m        "RemainAfterExit": "no", [0m
+[0;32m        "Requires": "basic.target system.slice -.mount", [0m
+[0;32m        "RequiresMountsFor": "/var/tmp", [0m
+[0;32m        "Restart": "no", [0m
+[0;32m        "RestartUSec": "100ms", [0m
+[0;32m        "Result": "success", [0m
+[0;32m        "RootDirectoryStartOnly": "no", [0m
+[0;32m        "RuntimeDirectoryMode": "0755", [0m
+[0;32m        "SameProcessGroup": "no", [0m
+[0;32m        "SecureBits": "0", [0m
+[0;32m        "SendSIGHUP": "no", [0m
+[0;32m        "SendSIGKILL": "yes", [0m
+[0;32m        "Slice": "system.slice", [0m
+[0;32m        "StandardError": "inherit", [0m
+[0;32m        "StandardInput": "null", [0m
+[0;32m        "StandardOutput": "journal", [0m
+[0;32m        "StartLimitAction": "none", [0m
+[0;32m        "StartLimitBurst": "5", [0m
+[0;32m        "StartLimitInterval": "10000000", [0m
+[0;32m        "StartupBlockIOWeight": "18446744073709551615", [0m
+[0;32m        "StartupCPUShares": "18446744073709551615", [0m
+[0;32m        "StatusErrno": "0", [0m
+[0;32m        "StopWhenUnneeded": "no", [0m
+[0;32m        "SubState": "running", [0m
+[0;32m        "SyslogLevelPrefix": "yes", [0m
+[0;32m        "SyslogPriority": "30", [0m
+[0;32m        "SystemCallErrorNumber": "0", [0m
+[0;32m        "TTYReset": "no", [0m
+[0;32m        "TTYVHangup": "no", [0m
+[0;32m        "TTYVTDisallocate": "no", [0m
+[0;32m        "TasksAccounting": "no", [0m
+[0;32m        "TasksCurrent": "20", [0m
+[0;32m        "TasksMax": "18446744073709551615", [0m
+[0;32m        "TimeoutStartUSec": "5min", [0m
+[0;32m        "TimeoutStopUSec": "5min", [0m
+[0;32m        "TimerSlackNSec": "50000", [0m
+[0;32m        "Transient": "no", [0m
+[0;32m        "Type": "simple", [0m
+[0;32m        "UMask": "0022", [0m
+[0;32m        "UnitFilePreset": "disabled", [0m
+[0;32m        "UnitFileState": "enabled", [0m
+[0;32m        "User": "mysql", [0m
+[0;32m        "WantedBy": "multi-user.target", [0m
+[0;32m        "WatchdogTimestamp": "Fri 2020-05-22 05:18:22 EDT", [0m
+[0;32m        "WatchdogTimestampMonotonic": "234916689", [0m
+[0;32m        "WatchdogUSec": "0"[0m
+[0;32m    }[0m
+[0;32m}[0m
+
+TASK [mariadb : Change root password] ********************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/mariadb/tasks/main.yml:22[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679109.37-24320415188178 `" && echo ansible-tmp-1590679109.37-24320415188178="` echo /root/.ansible/tmp/ansible-tmp-1590679109.37-24320415188178 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/database/mysql/mysql_user.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpK0jwNI TO /root/.ansible/tmp/ansible-tmp-1590679109.37-24320415188178/AnsiballZ_mysql_user.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679109.37-24320415188178/ /root/.ansible/tmp/ansible-tmp-1590679109.37-24320415188178/AnsiballZ_mysql_user.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679109.37-24320415188178/AnsiballZ_mysql_user.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679109.37-24320415188178/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "changed": false, [0m
+[0;32m    "failed_when_result": false, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "append_privs": false, [0m
+[0;32m            "ca_cert": null, [0m
+[0;32m            "check_implicit_admin": false, [0m
+[0;32m            "client_cert": null, [0m
+[0;32m            "client_key": null, [0m
+[0;32m            "config_file": "/root/.my.cnf", [0m
+[0;32m            "connect_timeout": 30, [0m
+[0;32m            "encrypted": false, [0m
+[0;32m            "host": "localhost", [0m
+[0;32m            "host_all": false, [0m
+[0;32m            "login_host": "localhost", [0m
+[0;32m            "login_password": null, [0m
+[0;32m            "login_port": 3306, [0m
+[0;32m            "login_unix_socket": null, [0m
+[0;32m            "login_user": null, [0m
+[0;32m            "name": "root", [0m
+[0;32m            "password": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER", [0m
+[0;32m            "priv": null, [0m
+[0;32m            "sql_log_bin": true, [0m
+[0;32m            "state": "present", [0m
+[0;32m            "update_password": "always", [0m
+[0;32m            "user": "root"[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "msg": "unable to connect to database: (1045, \"Access denied for user 'root'@'localhost' (using password: NO)\")"[0m
+[0;32m}[0m
+
+TASK [mariadb : Allow remote root access with grant priv] ************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/mariadb/tasks/main.yml:30[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679109.69-76301696748410 `" && echo ansible-tmp-1590679109.69-76301696748410="` echo /root/.ansible/tmp/ansible-tmp-1590679109.69-76301696748410 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/database/mysql/mysql_user.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpWKgOcw TO /root/.ansible/tmp/ansible-tmp-1590679109.69-76301696748410/AnsiballZ_mysql_user.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679109.69-76301696748410/ /root/.ansible/tmp/ansible-tmp-1590679109.69-76301696748410/AnsiballZ_mysql_user.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679109.69-76301696748410/AnsiballZ_mysql_user.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679109.69-76301696748410/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "changed": false, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "append_privs": false, [0m
+[0;32m            "ca_cert": null, [0m
+[0;32m            "check_implicit_admin": false, [0m
+[0;32m            "client_cert": null, [0m
+[0;32m            "client_key": null, [0m
+[0;32m            "config_file": "/root/.my.cnf", [0m
+[0;32m            "connect_timeout": 30, [0m
+[0;32m            "encrypted": false, [0m
+[0;32m            "host": "%", [0m
+[0;32m            "host_all": false, [0m
+[0;32m            "login_host": "localhost", [0m
+[0;32m            "login_password": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER", [0m
+[0;32m            "login_port": 3306, [0m
+[0;32m            "login_unix_socket": null, [0m
+[0;32m            "login_user": "root", [0m
+[0;32m            "name": "root", [0m
+[0;32m            "password": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER", [0m
+[0;32m            "priv": "*.*:ALL,GRANT", [0m
+[0;32m            "sql_log_bin": true, [0m
+[0;32m            "state": "present", [0m
+[0;32m            "update_password": "always", [0m
+[0;32m            "user": "root"[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "msg": "User unchanged", [0m
+[0;32m    "user": "root"[0m
+[0;32m}[0m
+
+TASK [mariadb : Remove all anonymous user accounts] ******************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/mariadb/tasks/main.yml:40[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679109.94-68913114850928 `" && echo ansible-tmp-1590679109.94-68913114850928="` echo /root/.ansible/tmp/ansible-tmp-1590679109.94-68913114850928 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/database/mysql/mysql_user.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpO93uk6 TO /root/.ansible/tmp/ansible-tmp-1590679109.94-68913114850928/AnsiballZ_mysql_user.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679109.94-68913114850928/ /root/.ansible/tmp/ansible-tmp-1590679109.94-68913114850928/AnsiballZ_mysql_user.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679109.94-68913114850928/AnsiballZ_mysql_user.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679109.94-68913114850928/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "changed": false, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "append_privs": false, [0m
+[0;32m            "ca_cert": null, [0m
+[0;32m            "check_implicit_admin": false, [0m
+[0;32m            "client_cert": null, [0m
+[0;32m            "client_key": null, [0m
+[0;32m            "config_file": "/root/.my.cnf", [0m
+[0;32m            "connect_timeout": 30, [0m
+[0;32m            "encrypted": false, [0m
+[0;32m            "host": "localhost", [0m
+[0;32m            "host_all": true, [0m
+[0;32m            "login_host": "localhost", [0m
+[0;32m            "login_password": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER", [0m
+[0;32m            "login_port": 3306, [0m
+[0;32m            "login_unix_socket": null, [0m
+[0;32m            "login_user": "root", [0m
+[0;32m            "name": "", [0m
+[0;32m            "password": null, [0m
+[0;32m            "priv": null, [0m
+[0;32m            "sql_log_bin": true, [0m
+[0;32m            "state": "absent", [0m
+[0;32m            "update_password": "always", [0m
+[0;32m            "user": ""[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "msg": "User doesn't exist", [0m
+[0;32m    "user": ""[0m
+[0;32m}[0m
+
+TASK [mariadb : Remove test database] ********************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/mariadb/tasks/main.yml:48[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679110.16-17880580372728 `" && echo ansible-tmp-1590679110.16-17880580372728="` echo /root/.ansible/tmp/ansible-tmp-1590679110.16-17880580372728 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/database/mysql/mysql_db.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpNKZ5XU TO /root/.ansible/tmp/ansible-tmp-1590679110.16-17880580372728/AnsiballZ_mysql_db.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679110.16-17880580372728/ /root/.ansible/tmp/ansible-tmp-1590679110.16-17880580372728/AnsiballZ_mysql_db.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679110.16-17880580372728/AnsiballZ_mysql_db.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679110.16-17880580372728/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "changed": false, [0m
+[0;32m    "db": "test", [0m
+[0;32m    "db_list": [[0m
+[0;32m        "test"[0m
+[0;32m    ], [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "ca_cert": null, [0m
+[0;32m            "client_cert": null, [0m
+[0;32m            "client_key": null, [0m
+[0;32m            "collation": "", [0m
+[0;32m            "config_file": "/root/.my.cnf", [0m
+[0;32m            "connect_timeout": 30, [0m
+[0;32m            "encoding": "", [0m
+[0;32m            "ignore_tables": [], [0m
+[0;32m            "login_host": "localhost", [0m
+[0;32m            "login_password": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER", [0m
+[0;32m            "login_port": 3306, [0m
+[0;32m            "login_unix_socket": null, [0m
+[0;32m            "login_user": "root", [0m
+[0;32m            "name": [[0m
+[0;32m                "test"[0m
+[0;32m            ], [0m
+[0;32m            "quick": true, [0m
+[0;32m            "single_transaction": false, [0m
+[0;32m            "state": "absent", [0m
+[0;32m            "target": null[0m
+[0;32m        }[0m
+[0;32m    }[0m
+[0;32m}[0m
+[0;34mMETA: ran handlers[0m
+[0;34mMETA: ran handlers[0m
+
+PLAY [registry_node] *************************************************************************************************************************************************************************************************************************************************************************************************
+
+TASK [Gathering Facts] ***********************************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/zz_generated.site.yml:4[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679110.46-25976639641876 `" && echo ansible-tmp-1590679110.46-25976639641876="` echo /root/.ansible/tmp/ansible-tmp-1590679110.46-25976639641876 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/system/setup.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmp2KqxtJ TO /root/.ansible/tmp/ansible-tmp-1590679110.46-25976639641876/AnsiballZ_setup.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679110.46-25976639641876/ /root/.ansible/tmp/ansible-tmp-1590679110.46-25976639641876/AnsiballZ_setup.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679110.46-25976639641876/AnsiballZ_setup.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679110.46-25976639641876/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1][0m
+[0;34mMETA: ran handlers[0m
+
+TASK [registry : Install registry] ***********************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/registry/tasks/main.yml:1[0m
+[0;35m[DEPRECATION WARNING]: Invoking "yum" only once while using a loop via squash_actions is deprecated. Instead of using a loop to supply multiple items and specifying `name: "{{ item }}"`, please use `name: ['yunion-registry']` and remove the loop. This feature will be removed in version 2.11. Deprecation [0m
+[0;35mwarnings can be disabled by setting deprecation_warnings=False in ansible.cfg.[0m
+[0;34mRunning yum as the backend for the yum action plugin[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679111.13-817535915605 `" && echo ansible-tmp-1590679111.13-817535915605="` echo /root/.ansible/tmp/ansible-tmp-1590679111.13-817535915605 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/packaging/os/yum.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpK_J2_w TO /root/.ansible/tmp/ansible-tmp-1590679111.13-817535915605/AnsiballZ_yum.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679111.13-817535915605/ /root/.ansible/tmp/ansible-tmp-1590679111.13-817535915605/AnsiballZ_yum.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679111.13-817535915605/AnsiballZ_yum.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679111.13-817535915605/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => (item=[u'yunion-registry']) => {[0m
+[0;32m    "ansible_loop_var": "item", [0m
+[0;32m    "changed": false, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "allow_downgrade": false, [0m
+[0;32m            "autoremove": false, [0m
+[0;32m            "bugfix": false, [0m
+[0;32m            "conf_file": null, [0m
+[0;32m            "disable_excludes": null, [0m
+[0;32m            "disable_gpg_check": false, [0m
+[0;32m            "disable_plugin": [], [0m
+[0;32m            "disablerepo": [], [0m
+[0;32m            "download_dir": null, [0m
+[0;32m            "download_only": false, [0m
+[0;32m            "enable_plugin": [], [0m
+[0;32m            "enablerepo": [], [0m
+[0;32m            "exclude": [], [0m
+[0;32m            "install_repoquery": true, [0m
+[0;32m            "install_weak_deps": true, [0m
+[0;32m            "installroot": "/", [0m
+[0;32m            "list": null, [0m
+[0;32m            "lock_timeout": 30, [0m
+[0;32m            "name": [[0m
+[0;32m                "yunion-registry"[0m
+[0;32m            ], [0m
+[0;32m            "releasever": null, [0m
+[0;32m            "security": false, [0m
+[0;32m            "skip_broken": false, [0m
+[0;32m            "state": "present", [0m
+[0;32m            "update_cache": false, [0m
+[0;32m            "update_only": false, [0m
+[0;32m            "use_backend": "auto", [0m
+[0;32m            "validate_certs": true[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "item": [[0m
+[0;32m        "yunion-registry"[0m
+[0;32m    ], [0m
+[0;32m    "msg": "", [0m
+[0;32m    "rc": 0, [0m
+[0;32m    "results": [[0m
+[0;32m        "yunion-registry-2.7.1-1.x86_64 providing yunion-registry is already installed"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [registry : Config registry] ************************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/registry/tasks/main.yml:6[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679111.42-234377507524508 `" && echo ansible-tmp-1590679111.42-234377507524508="` echo /root/.ansible/tmp/ansible-tmp-1590679111.42-234377507524508 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/files/stat.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpW_Yomj TO /root/.ansible/tmp/ansible-tmp-1590679111.42-234377507524508/AnsiballZ_stat.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679111.42-234377507524508/ /root/.ansible/tmp/ansible-tmp-1590679111.42-234377507524508/AnsiballZ_stat.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679111.42-234377507524508/AnsiballZ_stat.py && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/files/file.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmp1y7xvm TO /root/.ansible/tmp/ansible-tmp-1590679111.42-234377507524508/AnsiballZ_file.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679111.42-234377507524508/ /root/.ansible/tmp/ansible-tmp-1590679111.42-234377507524508/AnsiballZ_file.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679111.42-234377507524508/AnsiballZ_file.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679111.42-234377507524508/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "changed": false, [0m
+[0;32m    "checksum": "5de55650964219ca8f6e34925ba490c97da02702", [0m
+[0;32m    "dest": "/etc/yunion/registry.yml", [0m
+[0;32m    "diff": {[0m
+[0;32m        "after": {[0m
+[0;32m            "path": "/etc/yunion/registry.yml"[0m
+[0;32m        }, [0m
+[0;32m        "before": {[0m
+[0;32m            "path": "/etc/yunion/registry.yml"[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "gid": 0, [0m
+[0;32m    "group": "root", [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "_diff_peek": null, [0m
+[0;32m            "_original_basename": "registry.yml", [0m
+[0;32m            "access_time": null, [0m
+[0;32m            "access_time_format": "%Y%m%d%H%M.%S", [0m
+[0;32m            "attributes": null, [0m
+[0;32m            "backup": null, [0m
+[0;32m            "content": null, [0m
+[0;32m            "delimiter": null, [0m
+[0;32m            "dest": "/etc/yunion/registry.yml", [0m
+[0;32m            "directory_mode": null, [0m
+[0;32m            "follow": false, [0m
+[0;32m            "force": false, [0m
+[0;32m            "group": null, [0m
+[0;32m            "mode": null, [0m
+[0;32m            "modification_time": null, [0m
+[0;32m            "modification_time_format": "%Y%m%d%H%M.%S", [0m
+[0;32m            "owner": null, [0m
+[0;32m            "path": "/etc/yunion/registry.yml", [0m
+[0;32m            "recurse": false, [0m
+[0;32m            "regexp": null, [0m
+[0;32m            "remote_src": null, [0m
+[0;32m            "selevel": null, [0m
+[0;32m            "serole": null, [0m
+[0;32m            "setype": null, [0m
+[0;32m            "seuser": null, [0m
+[0;32m            "src": null, [0m
+[0;32m            "state": "file", [0m
+[0;32m            "unsafe_writes": null[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "mode": "0644", [0m
+[0;32m    "owner": "root", [0m
+[0;32m    "path": "/etc/yunion/registry.yml", [0m
+[0;32m    "size": 291, [0m
+[0;32m    "state": "file", [0m
+[0;32m    "uid": 0[0m
+[0;32m}[0m
+
+TASK [registry : Start registry service] *****************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/registry/tasks/main.yml:10[0m
+[0;34mRunning systemd[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679111.76-184154060310319 `" && echo ansible-tmp-1590679111.76-184154060310319="` echo /root/.ansible/tmp/ansible-tmp-1590679111.76-184154060310319 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/system/systemd.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpwYpZGP TO /root/.ansible/tmp/ansible-tmp-1590679111.76-184154060310319/AnsiballZ_systemd.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679111.76-184154060310319/ /root/.ansible/tmp/ansible-tmp-1590679111.76-184154060310319/AnsiballZ_systemd.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679111.76-184154060310319/AnsiballZ_systemd.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679111.76-184154060310319/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "changed": false, [0m
+[0;32m    "enabled": true, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "daemon_reexec": false, [0m
+[0;32m            "daemon_reload": false, [0m
+[0;32m            "enabled": true, [0m
+[0;32m            "force": null, [0m
+[0;32m            "masked": null, [0m
+[0;32m            "name": "yunion-registry", [0m
+[0;32m            "no_block": false, [0m
+[0;32m            "scope": null, [0m
+[0;32m            "state": "started", [0m
+[0;32m            "user": null[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "name": "yunion-registry", [0m
+[0;32m    "state": "started", [0m
+[0;32m    "status": {[0m
+[0;32m        "ActiveEnterTimestamp": "Fri 2020-05-22 05:15:04 EDT", [0m
+[0;32m        "ActiveEnterTimestampMonotonic": "37078833", [0m
+[0;32m        "ActiveExitTimestamp": "Fri 2020-05-22 05:15:04 EDT", [0m
+[0;32m        "ActiveExitTimestampMonotonic": "36970341", [0m
+[0;32m        "ActiveState": "active", [0m
+[0;32m        "After": "systemd-journald.socket basic.target system.slice", [0m
+[0;32m        "AllowIsolate": "no", [0m
+[0;32m        "AmbientCapabilities": "0", [0m
+[0;32m        "AssertResult": "yes", [0m
+[0;32m        "AssertTimestamp": "Fri 2020-05-22 05:15:04 EDT", [0m
+[0;32m        "AssertTimestampMonotonic": "37069228", [0m
+[0;32m        "Before": "multi-user.target shutdown.target", [0m
+[0;32m        "BlockIOAccounting": "no", [0m
+[0;32m        "BlockIOWeight": "18446744073709551615", [0m
+[0;32m        "CPUAccounting": "no", [0m
+[0;32m        "CPUQuotaPerSecUSec": "infinity", [0m
+[0;32m        "CPUSchedulingPolicy": "0", [0m
+[0;32m        "CPUSchedulingPriority": "0", [0m
+[0;32m        "CPUSchedulingResetOnFork": "no", [0m
+[0;32m        "CPUShares": "18446744073709551615", [0m
+[0;32m        "CanIsolate": "no", [0m
+[0;32m        "CanReload": "no", [0m
+[0;32m        "CanStart": "yes", [0m
+[0;32m        "CanStop": "yes", [0m
+[0;32m        "CapabilityBoundingSet": "18446744073709551615", [0m
+[0;32m        "ConditionResult": "yes", [0m
+[0;32m        "ConditionTimestamp": "Fri 2020-05-22 05:15:04 EDT", [0m
+[0;32m        "ConditionTimestampMonotonic": "37069227", [0m
+[0;32m        "Conflicts": "shutdown.target", [0m
+[0;32m        "ControlGroup": "/system.slice/yunion-registry.service", [0m
+[0;32m        "ControlPID": "0", [0m
+[0;32m        "DefaultDependencies": "yes", [0m
+[0;32m        "Delegate": "no", [0m
+[0;32m        "Description": "registry: The Docker Registry", [0m
+[0;32m        "DevicePolicy": "auto", [0m
+[0;32m        "Documentation": "https://github.com/docker/distribution", [0m
+[0;32m        "ExecMainCode": "0", [0m
+[0;32m        "ExecMainExitTimestampMonotonic": "0", [0m
+[0;32m        "ExecMainPID": "10302", [0m
+[0;32m        "ExecMainStartTimestamp": "Fri 2020-05-22 05:15:04 EDT", [0m
+[0;32m        "ExecMainStartTimestampMonotonic": "37078778", [0m
+[0;32m        "ExecMainStatus": "0", [0m
+[0;32m        "ExecStart": "{ path=/opt/yunion/bin/registry ; argv[]=/opt/yunion/bin/registry serve /etc/yunion/registry.yml ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }", [0m
+[0;32m        "FailureAction": "none", [0m
+[0;32m        "FileDescriptorStoreMax": "0", [0m
+[0;32m        "FragmentPath": "/usr/lib/systemd/system/yunion-registry.service", [0m
+[0;32m        "GuessMainPID": "yes", [0m
+[0;32m        "IOScheduling": "0", [0m
+[0;32m        "Id": "yunion-registry.service", [0m
+[0;32m        "IgnoreOnIsolate": "no", [0m
+[0;32m        "IgnoreOnSnapshot": "no", [0m
+[0;32m        "IgnoreSIGPIPE": "yes", [0m
+[0;32m        "InactiveEnterTimestamp": "Fri 2020-05-22 05:15:04 EDT", [0m
+[0;32m        "InactiveEnterTimestampMonotonic": "36971986", [0m
+[0;32m        "InactiveExitTimestamp": "Fri 2020-05-22 05:15:04 EDT", [0m
+[0;32m        "InactiveExitTimestampMonotonic": "37078833", [0m
+[0;32m        "JobTimeoutAction": "none", [0m
+[0;32m        "JobTimeoutUSec": "0", [0m
+[0;32m        "KillMode": "control-group", [0m
+[0;32m        "KillSignal": "15", [0m
+[0;32m        "LimitAS": "18446744073709551615", [0m
+[0;32m        "LimitCORE": "18446744073709551615", [0m
+[0;32m        "LimitCPU": "18446744073709551615", [0m
+[0;32m        "LimitDATA": "18446744073709551615", [0m
+[0;32m        "LimitFSIZE": "18446744073709551615", [0m
+[0;32m        "LimitLOCKS": "18446744073709551615", [0m
+[0;32m        "LimitMEMLOCK": "65536", [0m
+[0;32m        "LimitMSGQUEUE": "819200", [0m
+[0;32m        "LimitNICE": "0", [0m
+[0;32m        "LimitNOFILE": "4096", [0m
+[0;32m        "LimitNPROC": "30454", [0m
+[0;32m        "LimitRSS": "18446744073709551615", [0m
+[0;32m        "LimitRTPRIO": "0", [0m
+[0;32m        "LimitRTTIME": "18446744073709551615", [0m
+[0;32m        "LimitSIGPENDING": "30454", [0m
+[0;32m        "LimitSTACK": "18446744073709551615", [0m
+[0;32m        "LoadState": "loaded", [0m
+[0;32m        "MainPID": "10302", [0m
+[0;32m        "MemoryAccounting": "no", [0m
+[0;32m        "MemoryCurrent": "28000256", [0m
+[0;32m        "MemoryLimit": "18446744073709551615", [0m
+[0;32m        "MountFlags": "0", [0m
+[0;32m        "Names": "yunion-registry.service", [0m
+[0;32m        "NeedDaemonReload": "no", [0m
+[0;32m        "Nice": "0", [0m
+[0;32m        "NoNewPrivileges": "no", [0m
+[0;32m        "NonBlocking": "no", [0m
+[0;32m        "NotifyAccess": "none", [0m
+[0;32m        "OOMScoreAdjust": "0", [0m
+[0;32m        "OnFailureJobMode": "replace", [0m
+[0;32m        "PermissionsStartOnly": "no", [0m
+[0;32m        "PrivateDevices": "no", [0m
+[0;32m        "PrivateNetwork": "no", [0m
+[0;32m        "PrivateTmp": "no", [0m
+[0;32m        "ProtectHome": "no", [0m
+[0;32m        "ProtectSystem": "no", [0m
+[0;32m        "RefuseManualStart": "no", [0m
+[0;32m        "RefuseManualStop": "no", [0m
+[0;32m        "RemainAfterExit": "no", [0m
+[0;32m        "Requires": "basic.target system.slice", [0m
+[0;32m        "Restart": "always", [0m
+[0;32m        "RestartUSec": "10s", [0m
+[0;32m        "Result": "success", [0m
+[0;32m        "RootDirectoryStartOnly": "no", [0m
+[0;32m        "RuntimeDirectoryMode": "0755", [0m
+[0;32m        "SameProcessGroup": "no", [0m
+[0;32m        "SecureBits": "0", [0m
+[0;32m        "SendSIGHUP": "no", [0m
+[0;32m        "SendSIGKILL": "yes", [0m
+[0;32m        "Slice": "system.slice", [0m
+[0;32m        "StandardError": "inherit", [0m
+[0;32m        "StandardInput": "null", [0m
+[0;32m        "StandardOutput": "journal", [0m
+[0;32m        "StartLimitAction": "none", [0m
+[0;32m        "StartLimitBurst": "5", [0m
+[0;32m        "StartLimitInterval": "0", [0m
+[0;32m        "StartupBlockIOWeight": "18446744073709551615", [0m
+[0;32m        "StartupCPUShares": "18446744073709551615", [0m
+[0;32m        "StatusErrno": "0", [0m
+[0;32m        "StopWhenUnneeded": "no", [0m
+[0;32m        "SubState": "running", [0m
+[0;32m        "SyslogLevelPrefix": "yes", [0m
+[0;32m        "SyslogPriority": "30", [0m
+[0;32m        "SystemCallErrorNumber": "0", [0m
+[0;32m        "TTYReset": "no", [0m
+[0;32m        "TTYVHangup": "no", [0m
+[0;32m        "TTYVTDisallocate": "no", [0m
+[0;32m        "TasksAccounting": "no", [0m
+[0;32m        "TasksCurrent": "17", [0m
+[0;32m        "TasksMax": "18446744073709551615", [0m
+[0;32m        "TimeoutStartUSec": "1min 30s", [0m
+[0;32m        "TimeoutStopUSec": "1min 30s", [0m
+[0;32m        "TimerSlackNSec": "50000", [0m
+[0;32m        "Transient": "no", [0m
+[0;32m        "Type": "simple", [0m
+[0;32m        "UMask": "0022", [0m
+[0;32m        "UnitFilePreset": "disabled", [0m
+[0;32m        "UnitFileState": "enabled", [0m
+[0;32m        "WantedBy": "multi-user.target", [0m
+[0;32m        "WatchdogTimestamp": "Fri 2020-05-22 05:15:04 EDT", [0m
+[0;32m        "WatchdogTimestampMonotonic": "37078819", [0m
+[0;32m        "WatchdogUSec": "0"[0m
+[0;32m    }[0m
+[0;32m}[0m
+[0;34mMETA: ran handlers[0m
+[0;34mMETA: ran handlers[0m
+
+PLAY [primary_master_node] *******************************************************************************************************************************************************************************************************************************************************************************************
+
+TASK [Gathering Facts] ***********************************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/zz_generated.site.yml:7[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679112.0-30024734772704 `" && echo ansible-tmp-1590679112.0-30024734772704="` echo /root/.ansible/tmp/ansible-tmp-1590679112.0-30024734772704 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/system/setup.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpi3eD9T TO /root/.ansible/tmp/ansible-tmp-1590679112.0-30024734772704/AnsiballZ_setup.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679112.0-30024734772704/ /root/.ansible/tmp/ansible-tmp-1590679112.0-30024734772704/AnsiballZ_setup.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679112.0-30024734772704/AnsiballZ_setup.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679112.0-30024734772704/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1][0m
+[0;34mMETA: ran handlers[0m
+
+TASK [Do common setup] ***********************************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/primary-master-node/tasks/main.yml:1[0m
+
+TASK [common : Turn off selinux] *************************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:10[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679112.72-80631803257251 `" && echo ansible-tmp-1590679112.72-80631803257251="` echo /root/.ansible/tmp/ansible-tmp-1590679112.72-80631803257251 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/system/selinux.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpkTB4CK TO /root/.ansible/tmp/ansible-tmp-1590679112.72-80631803257251/AnsiballZ_selinux.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679112.72-80631803257251/ /root/.ansible/tmp/ansible-tmp-1590679112.72-80631803257251/AnsiballZ_selinux.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679112.72-80631803257251/AnsiballZ_selinux.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679112.72-80631803257251/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "changed": false, [0m
+[0;32m    "configfile": "/etc/selinux/config", [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "configfile": "/etc/selinux/config", [0m
+[0;32m            "policy": null, [0m
+[0;32m            "state": "disabled"[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "msg": "", [0m
+[0;32m    "policy": "targeted", [0m
+[0;32m    "reboot_required": false, [0m
+[0;32m    "state": "disabled"[0m
+[0;32m}[0m
+
+TASK [common : Gather service facts] *********************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:14[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679113.22-202440586938733 `" && echo ansible-tmp-1590679113.22-202440586938733="` echo /root/.ansible/tmp/ansible-tmp-1590679113.22-202440586938733 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/system/service_facts.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmp7l7uKS TO /root/.ansible/tmp/ansible-tmp-1590679113.22-202440586938733/AnsiballZ_service_facts.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679113.22-202440586938733/ /root/.ansible/tmp/ansible-tmp-1590679113.22-202440586938733/AnsiballZ_service_facts.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679113.22-202440586938733/AnsiballZ_service_facts.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679113.22-202440586938733/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "ansible_facts": {[0m
+[0;32m        "services": {[0m
+[0;32m            "NetworkManager-dispatcher.service": {[0m
+[0;32m                "name": "NetworkManager-dispatcher.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "NetworkManager-wait-online.service": {[0m
+[0;32m                "name": "NetworkManager-wait-online.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "NetworkManager.service": {[0m
+[0;32m                "name": "NetworkManager.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "arp-ethers.service": {[0m
+[0;32m                "name": "arp-ethers.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "auditd.service": {[0m
+[0;32m                "name": "auditd.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "autovt@.service": {[0m
+[0;32m                "name": "autovt@.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "blk-availability.service": {[0m
+[0;32m                "name": "blk-availability.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "brandbot.service": {[0m
+[0;32m                "name": "brandbot.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "chrony-dnssrv@.service": {[0m
+[0;32m                "name": "chrony-dnssrv@.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "chrony-wait.service": {[0m
+[0;32m                "name": "chrony-wait.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "chronyd.service": {[0m
+[0;32m                "name": "chronyd.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "conntrackd.service": {[0m
+[0;32m                "name": "conntrackd.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "console-getty.service": {[0m
+[0;32m                "name": "console-getty.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "console-shell.service": {[0m
+[0;32m                "name": "console-shell.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "container-getty@.service": {[0m
+[0;32m                "name": "container-getty@.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "containerd.service": {[0m
+[0;32m                "name": "containerd.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "cpupower.service": {[0m
+[0;32m                "name": "cpupower.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "crond.service": {[0m
+[0;32m                "name": "crond.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "dbus-org.freedesktop.hostname1.service": {[0m
+[0;32m                "name": "dbus-org.freedesktop.hostname1.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "dbus-org.freedesktop.import1.service": {[0m
+[0;32m                "name": "dbus-org.freedesktop.import1.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "dbus-org.freedesktop.locale1.service": {[0m
+[0;32m                "name": "dbus-org.freedesktop.locale1.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "dbus-org.freedesktop.login1.service": {[0m
+[0;32m                "name": "dbus-org.freedesktop.login1.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "dbus-org.freedesktop.machine1.service": {[0m
+[0;32m                "name": "dbus-org.freedesktop.machine1.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "dbus-org.freedesktop.timedate1.service": {[0m
+[0;32m                "name": "dbus-org.freedesktop.timedate1.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "dbus.service": {[0m
+[0;32m                "name": "dbus.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "debug-shell.service": {[0m
+[0;32m                "name": "debug-shell.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "dm-event.service": {[0m
+[0;32m                "name": "dm-event.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "docker.service": {[0m
+[0;32m                "name": "docker.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "dracut-cmdline.service": {[0m
+[0;32m                "name": "dracut-cmdline.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "dracut-initqueue.service": {[0m
+[0;32m                "name": "dracut-initqueue.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "dracut-mount.service": {[0m
+[0;32m                "name": "dracut-mount.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "dracut-pre-mount.service": {[0m
+[0;32m                "name": "dracut-pre-mount.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "dracut-pre-pivot.service": {[0m
+[0;32m                "name": "dracut-pre-pivot.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "dracut-pre-trigger.service": {[0m
+[0;32m                "name": "dracut-pre-trigger.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "dracut-pre-udev.service": {[0m
+[0;32m                "name": "dracut-pre-udev.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "dracut-shutdown.service": {[0m
+[0;32m                "name": "dracut-shutdown.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "ebtables.service": {[0m
+[0;32m                "name": "ebtables.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "emergency.service": {[0m
+[0;32m                "name": "emergency.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "firewalld.service": {[0m
+[0;32m                "name": "firewalld.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "fstrim.service": {[0m
+[0;32m                "name": "fstrim.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "getty@.service": {[0m
+[0;32m                "name": "getty@.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "getty@tty1.service": {[0m
+[0;32m                "name": "getty@tty1.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "unknown"[0m
+[0;32m            }, [0m
+[0;32m            "halt-local.service": {[0m
+[0;32m                "name": "halt-local.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "initrd-cleanup.service": {[0m
+[0;32m                "name": "initrd-cleanup.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "initrd-parse-etc.service": {[0m
+[0;32m                "name": "initrd-parse-etc.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "initrd-switch-root.service": {[0m
+[0;32m                "name": "initrd-switch-root.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "initrd-udevadm-cleanup-db.service": {[0m
+[0;32m                "name": "initrd-udevadm-cleanup-db.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "iprdump.service": {[0m
+[0;32m                "name": "iprdump.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "iprinit.service": {[0m
+[0;32m                "name": "iprinit.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "iprupdate.service": {[0m
+[0;32m                "name": "iprupdate.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "ipvsadm.service": {[0m
+[0;32m                "name": "ipvsadm.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "irqbalance.service": {[0m
+[0;32m                "name": "irqbalance.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "kdump.service": {[0m
+[0;32m                "name": "kdump.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "kmod-static-nodes.service": {[0m
+[0;32m                "name": "kmod-static-nodes.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "kubelet.service": {[0m
+[0;32m                "name": "kubelet.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "lvm2-lvmetad.service": {[0m
+[0;32m                "name": "lvm2-lvmetad.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "lvm2-lvmpolld.service": {[0m
+[0;32m                "name": "lvm2-lvmpolld.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "lvm2-monitor.service": {[0m
+[0;32m                "name": "lvm2-monitor.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "lvm2-pvscan@.service": {[0m
+[0;32m                "name": "lvm2-pvscan@.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "lvm2-pvscan@8:2.service": {[0m
+[0;32m                "name": "lvm2-pvscan@8:2.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "unknown"[0m
+[0;32m            }, [0m
+[0;32m            "mariadb.service": {[0m
+[0;32m                "name": "mariadb.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "messagebus.service": {[0m
+[0;32m                "name": "messagebus.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "microcode.service": {[0m
+[0;32m                "name": "microcode.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "netconsole": {[0m
+[0;32m                "name": "netconsole", [0m
+[0;32m                "source": "sysv", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "network": {[0m
+[0;32m                "name": "network", [0m
+[0;32m                "source": "sysv", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "network.service": {[0m
+[0;32m                "name": "network.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "unknown"[0m
+[0;32m            }, [0m
+[0;32m            "ntpd.service": {[0m
+[0;32m                "name": "ntpd.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "ntpdate.service": {[0m
+[0;32m                "name": "ntpdate.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "openvswitch.service": {[0m
+[0;32m                "name": "openvswitch.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "ovs-delete-transient-ports.service": {[0m
+[0;32m                "name": "ovs-delete-transient-ports.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "ovs-vswitchd.service": {[0m
+[0;32m                "name": "ovs-vswitchd.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "ovsdb-server.service": {[0m
+[0;32m                "name": "ovsdb-server.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "plymouth-halt.service": {[0m
+[0;32m                "name": "plymouth-halt.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "plymouth-kexec.service": {[0m
+[0;32m                "name": "plymouth-kexec.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "plymouth-poweroff.service": {[0m
+[0;32m                "name": "plymouth-poweroff.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "plymouth-quit-wait.service": {[0m
+[0;32m                "name": "plymouth-quit-wait.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "plymouth-quit.service": {[0m
+[0;32m                "name": "plymouth-quit.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "plymouth-read-write.service": {[0m
+[0;32m                "name": "plymouth-read-write.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "plymouth-reboot.service": {[0m
+[0;32m                "name": "plymouth-reboot.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "plymouth-start.service": {[0m
+[0;32m                "name": "plymouth-start.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "plymouth-switch-root.service": {[0m
+[0;32m                "name": "plymouth-switch-root.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "polkit.service": {[0m
+[0;32m                "name": "polkit.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "postfix.service": {[0m
+[0;32m                "name": "postfix.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "quotaon.service": {[0m
+[0;32m                "name": "quotaon.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "rc-local.service": {[0m
+[0;32m                "name": "rc-local.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "rdisc.service": {[0m
+[0;32m                "name": "rdisc.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "rescue.service": {[0m
+[0;32m                "name": "rescue.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "rhel-autorelabel-mark.service": {[0m
+[0;32m                "name": "rhel-autorelabel-mark.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "rhel-autorelabel.service": {[0m
+[0;32m                "name": "rhel-autorelabel.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "rhel-configure.service": {[0m
+[0;32m                "name": "rhel-configure.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "rhel-dmesg.service": {[0m
+[0;32m                "name": "rhel-dmesg.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "rhel-domainname.service": {[0m
+[0;32m                "name": "rhel-domainname.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "rhel-import-state.service": {[0m
+[0;32m                "name": "rhel-import-state.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "rhel-loadmodules.service": {[0m
+[0;32m                "name": "rhel-loadmodules.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "rhel-readonly.service": {[0m
+[0;32m                "name": "rhel-readonly.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "rsyncd.service": {[0m
+[0;32m                "name": "rsyncd.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "rsyncd@.service": {[0m
+[0;32m                "name": "rsyncd@.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "rsyslog.service": {[0m
+[0;32m                "name": "rsyslog.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "selinux-policy-migrate-local-changes@.service": {[0m
+[0;32m                "name": "selinux-policy-migrate-local-changes@.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "selinux-policy-migrate-local-changes@targeted.service": {[0m
+[0;32m                "name": "selinux-policy-migrate-local-changes@targeted.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "unknown"[0m
+[0;32m            }, [0m
+[0;32m            "serial-getty@.service": {[0m
+[0;32m                "name": "serial-getty@.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "sshd-keygen.service": {[0m
+[0;32m                "name": "sshd-keygen.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "sshd.service": {[0m
+[0;32m                "name": "sshd.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "sshd@.service": {[0m
+[0;32m                "name": "sshd@.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "sysstat.service": {[0m
+[0;32m                "name": "sysstat.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-ask-password-console.service": {[0m
+[0;32m                "name": "systemd-ask-password-console.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-ask-password-plymouth.service": {[0m
+[0;32m                "name": "systemd-ask-password-plymouth.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-ask-password-wall.service": {[0m
+[0;32m                "name": "systemd-ask-password-wall.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-backlight@.service": {[0m
+[0;32m                "name": "systemd-backlight@.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-binfmt.service": {[0m
+[0;32m                "name": "systemd-binfmt.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-bootchart.service": {[0m
+[0;32m                "name": "systemd-bootchart.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-firstboot.service": {[0m
+[0;32m                "name": "systemd-firstboot.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-fsck-root.service": {[0m
+[0;32m                "name": "systemd-fsck-root.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-fsck@.service": {[0m
+[0;32m                "name": "systemd-fsck@.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-halt.service": {[0m
+[0;32m                "name": "systemd-halt.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-hibernate-resume@.service": {[0m
+[0;32m                "name": "systemd-hibernate-resume@.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-hibernate.service": {[0m
+[0;32m                "name": "systemd-hibernate.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-hostnamed.service": {[0m
+[0;32m                "name": "systemd-hostnamed.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-hwdb-update.service": {[0m
+[0;32m                "name": "systemd-hwdb-update.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-hybrid-sleep.service": {[0m
+[0;32m                "name": "systemd-hybrid-sleep.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-importd.service": {[0m
+[0;32m                "name": "systemd-importd.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-initctl.service": {[0m
+[0;32m                "name": "systemd-initctl.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-journal-catalog-update.service": {[0m
+[0;32m                "name": "systemd-journal-catalog-update.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-journal-flush.service": {[0m
+[0;32m                "name": "systemd-journal-flush.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-journald.service": {[0m
+[0;32m                "name": "systemd-journald.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-kexec.service": {[0m
+[0;32m                "name": "systemd-kexec.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-localed.service": {[0m
+[0;32m                "name": "systemd-localed.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-logind.service": {[0m
+[0;32m                "name": "systemd-logind.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-machine-id-commit.service": {[0m
+[0;32m                "name": "systemd-machine-id-commit.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-machined.service": {[0m
+[0;32m                "name": "systemd-machined.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-modules-load.service": {[0m
+[0;32m                "name": "systemd-modules-load.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-nspawn@.service": {[0m
+[0;32m                "name": "systemd-nspawn@.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-poweroff.service": {[0m
+[0;32m                "name": "systemd-poweroff.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-quotacheck.service": {[0m
+[0;32m                "name": "systemd-quotacheck.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-random-seed.service": {[0m
+[0;32m                "name": "systemd-random-seed.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-readahead-collect.service": {[0m
+[0;32m                "name": "systemd-readahead-collect.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-readahead-done.service": {[0m
+[0;32m                "name": "systemd-readahead-done.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "indirect"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-readahead-drop.service": {[0m
+[0;32m                "name": "systemd-readahead-drop.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-readahead-replay.service": {[0m
+[0;32m                "name": "systemd-readahead-replay.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-reboot.service": {[0m
+[0;32m                "name": "systemd-reboot.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-remount-fs.service": {[0m
+[0;32m                "name": "systemd-remount-fs.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-rfkill@.service": {[0m
+[0;32m                "name": "systemd-rfkill@.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-rfkill@rfkill9.service": {[0m
+[0;32m                "name": "systemd-rfkill@rfkill9.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "unknown"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-shutdownd.service": {[0m
+[0;32m                "name": "systemd-shutdownd.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-suspend.service": {[0m
+[0;32m                "name": "systemd-suspend.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-sysctl.service": {[0m
+[0;32m                "name": "systemd-sysctl.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-timedated.service": {[0m
+[0;32m                "name": "systemd-timedated.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-tmpfiles-clean.service": {[0m
+[0;32m                "name": "systemd-tmpfiles-clean.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-tmpfiles-setup-dev.service": {[0m
+[0;32m                "name": "systemd-tmpfiles-setup-dev.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-tmpfiles-setup.service": {[0m
+[0;32m                "name": "systemd-tmpfiles-setup.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-udev-settle.service": {[0m
+[0;32m                "name": "systemd-udev-settle.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-udev-trigger.service": {[0m
+[0;32m                "name": "systemd-udev-trigger.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-udevd.service": {[0m
+[0;32m                "name": "systemd-udevd.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-update-done.service": {[0m
+[0;32m                "name": "systemd-update-done.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-update-utmp-runlevel.service": {[0m
+[0;32m                "name": "systemd-update-utmp-runlevel.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-update-utmp.service": {[0m
+[0;32m                "name": "systemd-update-utmp.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-user-sessions.service": {[0m
+[0;32m                "name": "systemd-user-sessions.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "systemd-vconsole-setup.service": {[0m
+[0;32m                "name": "systemd-vconsole-setup.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "teamd@.service": {[0m
+[0;32m                "name": "teamd@.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "static"[0m
+[0;32m            }, [0m
+[0;32m            "telegraf.service": {[0m
+[0;32m                "name": "telegraf.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "stopped", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "tuned.service": {[0m
+[0;32m                "name": "tuned.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "wpa_supplicant.service": {[0m
+[0;32m                "name": "wpa_supplicant.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "yunion-executor.service": {[0m
+[0;32m                "name": "yunion-executor.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }, [0m
+[0;32m            "yunion-host-image.service": {[0m
+[0;32m                "name": "yunion-host-image.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "unknown", [0m
+[0;32m                "status": "disabled"[0m
+[0;32m            }, [0m
+[0;32m            "yunion-registry.service": {[0m
+[0;32m                "name": "yunion-registry.service", [0m
+[0;32m                "source": "systemd", [0m
+[0;32m                "state": "running", [0m
+[0;32m                "status": "enabled"[0m
+[0;32m            }[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "changed": false, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {}[0m
+[0;32m    }[0m
+[0;32m}[0m
+
+TASK [common : Disable systemd services] *****************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:17[0m
+[0;34mRunning systemd[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679113.85-147449247017845 `" && echo ansible-tmp-1590679113.85-147449247017845="` echo /root/.ansible/tmp/ansible-tmp-1590679113.85-147449247017845 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/system/systemd.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpIRlgqg TO /root/.ansible/tmp/ansible-tmp-1590679113.85-147449247017845/AnsiballZ_systemd.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679113.85-147449247017845/ /root/.ansible/tmp/ansible-tmp-1590679113.85-147449247017845/AnsiballZ_systemd.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679113.85-147449247017845/AnsiballZ_systemd.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679113.85-147449247017845/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => (item=firewalld) => {[0m
+[0;32m    "ansible_loop_var": "item", [0m
+[0;32m    "changed": false, [0m
+[0;32m    "enabled": false, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "daemon_reexec": false, [0m
+[0;32m            "daemon_reload": false, [0m
+[0;32m            "enabled": false, [0m
+[0;32m            "force": null, [0m
+[0;32m            "masked": null, [0m
+[0;32m            "name": "firewalld", [0m
+[0;32m            "no_block": false, [0m
+[0;32m            "scope": null, [0m
+[0;32m            "state": "stopped", [0m
+[0;32m            "user": null[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "item": "firewalld", [0m
+[0;32m    "name": "firewalld", [0m
+[0;32m    "state": "stopped", [0m
+[0;32m    "status": {[0m
+[0;32m        "ActiveEnterTimestampMonotonic": "0", [0m
+[0;32m        "ActiveExitTimestampMonotonic": "0", [0m
+[0;32m        "ActiveState": "inactive", [0m
+[0;32m        "After": "polkit.service basic.target dbus.service system.slice", [0m
+[0;32m        "AllowIsolate": "no", [0m
+[0;32m        "AmbientCapabilities": "0", [0m
+[0;32m        "AssertResult": "no", [0m
+[0;32m        "AssertTimestampMonotonic": "0", [0m
+[0;32m        "Before": "shutdown.target network-pre.target docker.service", [0m
+[0;32m        "BlockIOAccounting": "no", [0m
+[0;32m        "BlockIOWeight": "18446744073709551615", [0m
+[0;32m        "BusName": "org.fedoraproject.FirewallD1", [0m
+[0;32m        "CPUAccounting": "no", [0m
+[0;32m        "CPUQuotaPerSecUSec": "infinity", [0m
+[0;32m        "CPUSchedulingPolicy": "0", [0m
+[0;32m        "CPUSchedulingPriority": "0", [0m
+[0;32m        "CPUSchedulingResetOnFork": "no", [0m
+[0;32m        "CPUShares": "18446744073709551615", [0m
+[0;32m        "CanIsolate": "no", [0m
+[0;32m        "CanReload": "yes", [0m
+[0;32m        "CanStart": "yes", [0m
+[0;32m        "CanStop": "yes", [0m
+[0;32m        "CapabilityBoundingSet": "18446744073709551615", [0m
+[0;32m        "ConditionResult": "no", [0m
+[0;32m        "ConditionTimestampMonotonic": "0", [0m
+[0;32m        "Conflicts": "iptables.service ip6tables.service ebtables.service shutdown.target ipset.service", [0m
+[0;32m        "ControlPID": "0", [0m
+[0;32m        "DefaultDependencies": "yes", [0m
+[0;32m        "Delegate": "no", [0m
+[0;32m        "Description": "firewalld - dynamic firewall daemon", [0m
+[0;32m        "DevicePolicy": "auto", [0m
+[0;32m        "Documentation": "man:firewalld(1)", [0m
+[0;32m        "EnvironmentFile": "/etc/sysconfig/firewalld (ignore_errors=yes)", [0m
+[0;32m        "ExecMainCode": "0", [0m
+[0;32m        "ExecMainExitTimestampMonotonic": "0", [0m
+[0;32m        "ExecMainPID": "0", [0m
+[0;32m        "ExecMainStartTimestampMonotonic": "0", [0m
+[0;32m        "ExecMainStatus": "0", [0m
+[0;32m        "ExecReload": "{ path=/bin/kill ; argv[]=/bin/kill -HUP $MAINPID ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }", [0m
+[0;32m        "ExecStart": "{ path=/usr/sbin/firewalld ; argv[]=/usr/sbin/firewalld --nofork --nopid $FIREWALLD_ARGS ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }", [0m
+[0;32m        "FailureAction": "none", [0m
+[0;32m        "FileDescriptorStoreMax": "0", [0m
+[0;32m        "FragmentPath": "/usr/lib/systemd/system/firewalld.service", [0m
+[0;32m        "GuessMainPID": "yes", [0m
+[0;32m        "IOScheduling": "0", [0m
+[0;32m        "Id": "firewalld.service", [0m
+[0;32m        "IgnoreOnIsolate": "no", [0m
+[0;32m        "IgnoreOnSnapshot": "no", [0m
+[0;32m        "IgnoreSIGPIPE": "yes", [0m
+[0;32m        "InactiveEnterTimestampMonotonic": "0", [0m
+[0;32m        "InactiveExitTimestampMonotonic": "0", [0m
+[0;32m        "JobTimeoutAction": "none", [0m
+[0;32m        "JobTimeoutUSec": "0", [0m
+[0;32m        "KillMode": "mixed", [0m
+[0;32m        "KillSignal": "15", [0m
+[0;32m        "LimitAS": "18446744073709551615", [0m
+[0;32m        "LimitCORE": "18446744073709551615", [0m
+[0;32m        "LimitCPU": "18446744073709551615", [0m
+[0;32m        "LimitDATA": "18446744073709551615", [0m
+[0;32m        "LimitFSIZE": "18446744073709551615", [0m
+[0;32m        "LimitLOCKS": "18446744073709551615", [0m
+[0;32m        "LimitMEMLOCK": "65536", [0m
+[0;32m        "LimitMSGQUEUE": "819200", [0m
+[0;32m        "LimitNICE": "0", [0m
+[0;32m        "LimitNOFILE": "4096", [0m
+[0;32m        "LimitNPROC": "30454", [0m
+[0;32m        "LimitRSS": "18446744073709551615", [0m
+[0;32m        "LimitRTPRIO": "0", [0m
+[0;32m        "LimitRTTIME": "18446744073709551615", [0m
+[0;32m        "LimitSIGPENDING": "30454", [0m
+[0;32m        "LimitSTACK": "18446744073709551615", [0m
+[0;32m        "LoadState": "loaded", [0m
+[0;32m        "MainPID": "0", [0m
+[0;32m        "MemoryAccounting": "no", [0m
+[0;32m        "MemoryCurrent": "18446744073709551615", [0m
+[0;32m        "MemoryLimit": "18446744073709551615", [0m
+[0;32m        "MountFlags": "0", [0m
+[0;32m        "Names": "firewalld.service", [0m
+[0;32m        "NeedDaemonReload": "no", [0m
+[0;32m        "Nice": "0", [0m
+[0;32m        "NoNewPrivileges": "no", [0m
+[0;32m        "NonBlocking": "no", [0m
+[0;32m        "NotifyAccess": "none", [0m
+[0;32m        "OOMScoreAdjust": "0", [0m
+[0;32m        "OnFailureJobMode": "replace", [0m
+[0;32m        "PermissionsStartOnly": "no", [0m
+[0;32m        "PrivateDevices": "no", [0m
+[0;32m        "PrivateNetwork": "no", [0m
+[0;32m        "PrivateTmp": "no", [0m
+[0;32m        "ProtectHome": "no", [0m
+[0;32m        "ProtectSystem": "no", [0m
+[0;32m        "RefuseManualStart": "no", [0m
+[0;32m        "RefuseManualStop": "no", [0m
+[0;32m        "RemainAfterExit": "no", [0m
+[0;32m        "Requires": "basic.target system.slice", [0m
+[0;32m        "Restart": "no", [0m
+[0;32m        "RestartUSec": "100ms", [0m
+[0;32m        "Result": "success", [0m
+[0;32m        "RootDirectoryStartOnly": "no", [0m
+[0;32m        "RuntimeDirectoryMode": "0755", [0m
+[0;32m        "SameProcessGroup": "no", [0m
+[0;32m        "SecureBits": "0", [0m
+[0;32m        "SendSIGHUP": "no", [0m
+[0;32m        "SendSIGKILL": "yes", [0m
+[0;32m        "Slice": "system.slice", [0m
+[0;32m        "StandardError": "null", [0m
+[0;32m        "StandardInput": "null", [0m
+[0;32m        "StandardOutput": "null", [0m
+[0;32m        "StartLimitAction": "none", [0m
+[0;32m        "StartLimitBurst": "5", [0m
+[0;32m        "StartLimitInterval": "10000000", [0m
+[0;32m        "StartupBlockIOWeight": "18446744073709551615", [0m
+[0;32m        "StartupCPUShares": "18446744073709551615", [0m
+[0;32m        "StatusErrno": "0", [0m
+[0;32m        "StopWhenUnneeded": "no", [0m
+[0;32m        "SubState": "dead", [0m
+[0;32m        "SyslogLevelPrefix": "yes", [0m
+[0;32m        "SyslogPriority": "30", [0m
+[0;32m        "SystemCallErrorNumber": "0", [0m
+[0;32m        "TTYReset": "no", [0m
+[0;32m        "TTYVHangup": "no", [0m
+[0;32m        "TTYVTDisallocate": "no", [0m
+[0;32m        "TasksAccounting": "no", [0m
+[0;32m        "TasksCurrent": "18446744073709551615", [0m
+[0;32m        "TasksMax": "18446744073709551615", [0m
+[0;32m        "TimeoutStartUSec": "1min 30s", [0m
+[0;32m        "TimeoutStopUSec": "1min 30s", [0m
+[0;32m        "TimerSlackNSec": "50000", [0m
+[0;32m        "Transient": "no", [0m
+[0;32m        "Type": "dbus", [0m
+[0;32m        "UMask": "0022", [0m
+[0;32m        "UnitFilePreset": "enabled", [0m
+[0;32m        "UnitFileState": "disabled", [0m
+[0;32m        "Wants": "network-pre.target", [0m
+[0;32m        "WatchdogTimestampMonotonic": "0", [0m
+[0;32m        "WatchdogUSec": "0"[0m
+[0;32m    }[0m
+[0;32m}[0m
+[0;34mRunning systemd[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679114.04-146564985583766 `" && echo ansible-tmp-1590679114.04-146564985583766="` echo /root/.ansible/tmp/ansible-tmp-1590679114.04-146564985583766 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/system/systemd.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpENMGGE TO /root/.ansible/tmp/ansible-tmp-1590679114.04-146564985583766/AnsiballZ_systemd.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679114.04-146564985583766/ /root/.ansible/tmp/ansible-tmp-1590679114.04-146564985583766/AnsiballZ_systemd.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679114.04-146564985583766/AnsiballZ_systemd.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679114.04-146564985583766/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => (item=NetworkManager) => {[0m
+[0;32m    "ansible_loop_var": "item", [0m
+[0;32m    "changed": false, [0m
+[0;32m    "enabled": false, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "daemon_reexec": false, [0m
+[0;32m            "daemon_reload": false, [0m
+[0;32m            "enabled": false, [0m
+[0;32m            "force": null, [0m
+[0;32m            "masked": null, [0m
+[0;32m            "name": "NetworkManager", [0m
+[0;32m            "no_block": false, [0m
+[0;32m            "scope": null, [0m
+[0;32m            "state": "stopped", [0m
+[0;32m            "user": null[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "item": "NetworkManager", [0m
+[0;32m    "name": "NetworkManager", [0m
+[0;32m    "state": "stopped", [0m
+[0;32m    "status": {[0m
+[0;32m        "ActiveEnterTimestamp": "Fri 2020-05-22 05:14:32 EDT", [0m
+[0;32m        "ActiveEnterTimestampMonotonic": "4990979", [0m
+[0;32m        "ActiveExitTimestamp": "Fri 2020-05-22 05:18:29 EDT", [0m
+[0;32m        "ActiveExitTimestampMonotonic": "241817653", [0m
+[0;32m        "ActiveState": "inactive", [0m
+[0;32m        "After": "dbus.service network-pre.target basic.target system.slice systemd-journald.socket", [0m
+[0;32m        "AllowIsolate": "no", [0m
+[0;32m        "AmbientCapabilities": "0", [0m
+[0;32m        "AssertResult": "yes", [0m
+[0;32m        "AssertTimestamp": "Fri 2020-05-22 05:14:32 EDT", [0m
+[0;32m        "AssertTimestampMonotonic": "4901758", [0m
+[0;32m        "Before": "shutdown.target network.service network.target NetworkManager-wait-online.service", [0m
+[0;32m        "BlockIOAccounting": "no", [0m
+[0;32m        "BlockIOWeight": "18446744073709551615", [0m
+[0;32m        "BusName": "org.freedesktop.NetworkManager", [0m
+[0;32m        "CPUAccounting": "no", [0m
+[0;32m        "CPUQuotaPerSecUSec": "infinity", [0m
+[0;32m        "CPUSchedulingPolicy": "0", [0m
+[0;32m        "CPUSchedulingPriority": "0", [0m
+[0;32m        "CPUSchedulingResetOnFork": "no", [0m
+[0;32m        "CPUShares": "18446744073709551615", [0m
+[0;32m        "CanIsolate": "no", [0m
+[0;32m        "CanReload": "yes", [0m
+[0;32m        "CanStart": "yes", [0m
+[0;32m        "CanStop": "yes", [0m
+[0;32m        "CapabilityBoundingSet": "539309282", [0m
+[0;32m        "ConditionResult": "yes", [0m
+[0;32m        "ConditionTimestamp": "Fri 2020-05-22 05:14:32 EDT", [0m
+[0;32m        "ConditionTimestampMonotonic": "4901758", [0m
+[0;32m        "Conflicts": "shutdown.target", [0m
+[0;32m        "ControlPID": "0", [0m
+[0;32m        "DefaultDependencies": "yes", [0m
+[0;32m        "Delegate": "no", [0m
+[0;32m        "Description": "Network Manager", [0m
+[0;32m        "DevicePolicy": "auto", [0m
+[0;32m        "Documentation": "man:NetworkManager(8)", [0m
+[0;32m        "ExecMainCode": "1", [0m
+[0;32m        "ExecMainExitTimestamp": "Fri 2020-05-22 05:18:29 EDT", [0m
+[0;32m        "ExecMainExitTimestampMonotonic": "241848444", [0m
+[0;32m        "ExecMainPID": "1020", [0m
+[0;32m        "ExecMainStartTimestamp": "Fri 2020-05-22 05:14:32 EDT", [0m
+[0;32m        "ExecMainStartTimestampMonotonic": "4908425", [0m
+[0;32m        "ExecMainStatus": "0", [0m
+[0;32m        "ExecReload": "{ path=/usr/bin/dbus-send ; argv[]=/usr/bin/dbus-send --print-reply --system --type=method_call --dest=org.freedesktop.NetworkManager /org/freedesktop/NetworkManager org.freedesktop.NetworkManager.Reload uint32:0 ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }", [0m
+[0;32m        "ExecStart": "{ path=/usr/sbin/NetworkManager ; argv[]=/usr/sbin/NetworkManager --no-daemon ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }", [0m
+[0;32m        "FailureAction": "none", [0m
+[0;32m        "FileDescriptorStoreMax": "0", [0m
+[0;32m        "FragmentPath": "/usr/lib/systemd/system/NetworkManager.service", [0m
+[0;32m        "GuessMainPID": "yes", [0m
+[0;32m        "IOScheduling": "0", [0m
+[0;32m        "Id": "NetworkManager.service", [0m
+[0;32m        "IgnoreOnIsolate": "no", [0m
+[0;32m        "IgnoreOnSnapshot": "no", [0m
+[0;32m        "IgnoreSIGPIPE": "yes", [0m
+[0;32m        "InactiveEnterTimestamp": "Fri 2020-05-22 05:18:29 EDT", [0m
+[0;32m        "InactiveEnterTimestampMonotonic": "241848539", [0m
+[0;32m        "InactiveExitTimestamp": "Fri 2020-05-22 05:14:32 EDT", [0m
+[0;32m        "InactiveExitTimestampMonotonic": "4908737", [0m
+[0;32m        "JobTimeoutAction": "none", [0m
+[0;32m        "JobTimeoutUSec": "0", [0m
+[0;32m        "KillMode": "process", [0m
+[0;32m        "KillSignal": "15", [0m
+[0;32m        "LimitAS": "18446744073709551615", [0m
+[0;32m        "LimitCORE": "18446744073709551615", [0m
+[0;32m        "LimitCPU": "18446744073709551615", [0m
+[0;32m        "LimitDATA": "18446744073709551615", [0m
+[0;32m        "LimitFSIZE": "18446744073709551615", [0m
+[0;32m        "LimitLOCKS": "18446744073709551615", [0m
+[0;32m        "LimitMEMLOCK": "65536", [0m
+[0;32m        "LimitMSGQUEUE": "819200", [0m
+[0;32m        "LimitNICE": "0", [0m
+[0;32m        "LimitNOFILE": "4096", [0m
+[0;32m        "LimitNPROC": "30454", [0m
+[0;32m        "LimitRSS": "18446744073709551615", [0m
+[0;32m        "LimitRTPRIO": "0", [0m
+[0;32m        "LimitRTTIME": "18446744073709551615", [0m
+[0;32m        "LimitSIGPENDING": "30454", [0m
+[0;32m        "LimitSTACK": "18446744073709551615", [0m
+[0;32m        "LoadState": "loaded", [0m
+[0;32m        "MainPID": "0", [0m
+[0;32m        "MemoryAccounting": "no", [0m
+[0;32m        "MemoryCurrent": "18446744073709551615", [0m
+[0;32m        "MemoryLimit": "18446744073709551615", [0m
+[0;32m        "MountFlags": "0", [0m
+[0;32m        "Names": "NetworkManager.service", [0m
+[0;32m        "NeedDaemonReload": "no", [0m
+[0;32m        "Nice": "0", [0m
+[0;32m        "NoNewPrivileges": "no", [0m
+[0;32m        "NonBlocking": "no", [0m
+[0;32m        "NotifyAccess": "none", [0m
+[0;32m        "OOMScoreAdjust": "0", [0m
+[0;32m        "OnFailureJobMode": "replace", [0m
+[0;32m        "PermissionsStartOnly": "no", [0m
+[0;32m        "PrivateDevices": "no", [0m
+[0;32m        "PrivateNetwork": "no", [0m
+[0;32m        "PrivateTmp": "no", [0m
+[0;32m        "ProtectHome": "read-only", [0m
+[0;32m        "ProtectSystem": "yes", [0m
+[0;32m        "RefuseManualStart": "no", [0m
+[0;32m        "RefuseManualStop": "no", [0m
+[0;32m        "RemainAfterExit": "no", [0m
+[0;32m        "RequiredBy": "NetworkManager-wait-online.service", [0m
+[0;32m        "Requires": "basic.target system.slice", [0m
+[0;32m        "Restart": "on-failure", [0m
+[0;32m        "RestartUSec": "100ms", [0m
+[0;32m        "Result": "success", [0m
+[0;32m        "RootDirectoryStartOnly": "no", [0m
+[0;32m        "RuntimeDirectoryMode": "0755", [0m
+[0;32m        "SameProcessGroup": "no", [0m
+[0;32m        "SecureBits": "0", [0m
+[0;32m        "SendSIGHUP": "no", [0m
+[0;32m        "SendSIGKILL": "yes", [0m
+[0;32m        "Slice": "system.slice", [0m
+[0;32m        "StandardError": "inherit", [0m
+[0;32m        "StandardInput": "null", [0m
+[0;32m        "StandardOutput": "journal", [0m
+[0;32m        "StartLimitAction": "none", [0m
+[0;32m        "StartLimitBurst": "5", [0m
+[0;32m        "StartLimitInterval": "10000000", [0m
+[0;32m        "StartupBlockIOWeight": "18446744073709551615", [0m
+[0;32m        "StartupCPUShares": "18446744073709551615", [0m
+[0;32m        "StatusErrno": "0", [0m
+[0;32m        "StopWhenUnneeded": "no", [0m
+[0;32m        "SubState": "dead", [0m
+[0;32m        "SyslogLevelPrefix": "yes", [0m
+[0;32m        "SyslogPriority": "30", [0m
+[0;32m        "SystemCallErrorNumber": "0", [0m
+[0;32m        "TTYReset": "no", [0m
+[0;32m        "TTYVHangup": "no", [0m
+[0;32m        "TTYVTDisallocate": "no", [0m
+[0;32m        "TasksAccounting": "no", [0m
+[0;32m        "TasksCurrent": "18446744073709551615", [0m
+[0;32m        "TasksMax": "18446744073709551615", [0m
+[0;32m        "TimeoutStartUSec": "1min 30s", [0m
+[0;32m        "TimeoutStopUSec": "1min 30s", [0m
+[0;32m        "TimerSlackNSec": "50000", [0m
+[0;32m        "Transient": "no", [0m
+[0;32m        "Type": "dbus", [0m
+[0;32m        "UMask": "0022", [0m
+[0;32m        "UnitFilePreset": "enabled", [0m
+[0;32m        "UnitFileState": "disabled", [0m
+[0;32m        "Wants": "network.target", [0m
+[0;32m        "WatchdogTimestampMonotonic": "0", [0m
+[0;32m        "WatchdogUSec": "0"[0m
+[0;32m    }[0m
+[0;32m}[0m
+
+TASK [common : Load br_netfilter] ************************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:27[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679114.29-254659475433435 `" && echo ansible-tmp-1590679114.29-254659475433435="` echo /root/.ansible/tmp/ansible-tmp-1590679114.29-254659475433435 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/system/modprobe.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpw73T9v TO /root/.ansible/tmp/ansible-tmp-1590679114.29-254659475433435/AnsiballZ_modprobe.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679114.29-254659475433435/ /root/.ansible/tmp/ansible-tmp-1590679114.29-254659475433435/AnsiballZ_modprobe.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679114.29-254659475433435/AnsiballZ_modprobe.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679114.29-254659475433435/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "changed": false, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "name": "br_netfilter", [0m
+[0;32m            "params": "", [0m
+[0;32m            "state": "present"[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "name": "br_netfilter", [0m
+[0;32m    "params": "", [0m
+[0;32m    "state": "present"[0m
+[0;32m}[0m
+
+TASK [common : Load br_netfilter at boot] ****************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:32[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679114.57-111964213652863 `" && echo ansible-tmp-1590679114.57-111964213652863="` echo /root/.ansible/tmp/ansible-tmp-1590679114.57-111964213652863 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/files/stat.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpKWxozZ TO /root/.ansible/tmp/ansible-tmp-1590679114.57-111964213652863/AnsiballZ_stat.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679114.57-111964213652863/ /root/.ansible/tmp/ansible-tmp-1590679114.57-111964213652863/AnsiballZ_stat.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679114.57-111964213652863/AnsiballZ_stat.py && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/files/file.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmp0QggUx TO /root/.ansible/tmp/ansible-tmp-1590679114.57-111964213652863/AnsiballZ_file.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679114.57-111964213652863/ /root/.ansible/tmp/ansible-tmp-1590679114.57-111964213652863/AnsiballZ_file.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679114.57-111964213652863/AnsiballZ_file.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679114.57-111964213652863/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "changed": false, [0m
+[0;32m    "checksum": "c3394aff3e3a3e3920e68205b8e839b3d725648e", [0m
+[0;32m    "dest": "/etc/modules-load.d/kubernetes.conf", [0m
+[0;32m    "diff": {[0m
+[0;32m        "after": {[0m
+[0;32m            "path": "/etc/modules-load.d/kubernetes.conf"[0m
+[0;32m        }, [0m
+[0;32m        "before": {[0m
+[0;32m            "path": "/etc/modules-load.d/kubernetes.conf"[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "gid": 0, [0m
+[0;32m    "group": "root", [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "_diff_peek": null, [0m
+[0;32m            "_original_basename": "tmpZV2ZG2", [0m
+[0;32m            "access_time": null, [0m
+[0;32m            "access_time_format": "%Y%m%d%H%M.%S", [0m
+[0;32m            "attributes": null, [0m
+[0;32m            "backup": null, [0m
+[0;32m            "content": null, [0m
+[0;32m            "delimiter": null, [0m
+[0;32m            "dest": "/etc/modules-load.d/kubernetes.conf", [0m
+[0;32m            "directory_mode": null, [0m
+[0;32m            "follow": true, [0m
+[0;32m            "force": false, [0m
+[0;32m            "group": "root", [0m
+[0;32m            "mode": "0644", [0m
+[0;32m            "modification_time": null, [0m
+[0;32m            "modification_time_format": "%Y%m%d%H%M.%S", [0m
+[0;32m            "owner": "root", [0m
+[0;32m            "path": "/etc/modules-load.d/kubernetes.conf", [0m
+[0;32m            "recurse": false, [0m
+[0;32m            "regexp": null, [0m
+[0;32m            "remote_src": null, [0m
+[0;32m            "selevel": null, [0m
+[0;32m            "serole": null, [0m
+[0;32m            "setype": null, [0m
+[0;32m            "seuser": null, [0m
+[0;32m            "src": null, [0m
+[0;32m            "state": "file", [0m
+[0;32m            "unsafe_writes": null[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "mode": "0644", [0m
+[0;32m    "owner": "root", [0m
+[0;32m    "path": "/etc/modules-load.d/kubernetes.conf", [0m
+[0;32m    "size": 12, [0m
+[0;32m    "state": "file", [0m
+[0;32m    "uid": 0[0m
+[0;32m}[0m
+
+TASK [common : Change sysctl setting] ********************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:41[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679114.9-59078256825522 `" && echo ansible-tmp-1590679114.9-59078256825522="` echo /root/.ansible/tmp/ansible-tmp-1590679114.9-59078256825522 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/system/sysctl.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpvAoVJe TO /root/.ansible/tmp/ansible-tmp-1590679114.9-59078256825522/AnsiballZ_sysctl.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679114.9-59078256825522/ /root/.ansible/tmp/ansible-tmp-1590679114.9-59078256825522/AnsiballZ_sysctl.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679114.9-59078256825522/AnsiballZ_sysctl.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679114.9-59078256825522/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => (item=net.bridge.bridge-nf-call-iptables) => {[0m
+[0;32m    "ansible_loop_var": "item", [0m
+[0;32m    "changed": false, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "ignoreerrors": false, [0m
+[0;32m            "name": "net.bridge.bridge-nf-call-iptables", [0m
+[0;32m            "reload": true, [0m
+[0;32m            "state": "present", [0m
+[0;32m            "sysctl_file": "/etc/sysctl.conf", [0m
+[0;32m            "sysctl_set": false, [0m
+[0;32m            "value": "1"[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "item": "net.bridge.bridge-nf-call-iptables"[0m
+[0;32m}[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679115.15-140310181885327 `" && echo ansible-tmp-1590679115.15-140310181885327="` echo /root/.ansible/tmp/ansible-tmp-1590679115.15-140310181885327 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/system/sysctl.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpltM_5G TO /root/.ansible/tmp/ansible-tmp-1590679115.15-140310181885327/AnsiballZ_sysctl.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679115.15-140310181885327/ /root/.ansible/tmp/ansible-tmp-1590679115.15-140310181885327/AnsiballZ_sysctl.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679115.15-140310181885327/AnsiballZ_sysctl.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679115.15-140310181885327/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => (item=net.bridge.bridge-nf-call-ip6tables) => {[0m
+[0;32m    "ansible_loop_var": "item", [0m
+[0;32m    "changed": false, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "ignoreerrors": false, [0m
+[0;32m            "name": "net.bridge.bridge-nf-call-ip6tables", [0m
+[0;32m            "reload": true, [0m
+[0;32m            "state": "present", [0m
+[0;32m            "sysctl_file": "/etc/sysctl.conf", [0m
+[0;32m            "sysctl_set": false, [0m
+[0;32m            "value": "1"[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "item": "net.bridge.bridge-nf-call-ip6tables"[0m
+[0;32m}[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679115.29-49282423510897 `" && echo ansible-tmp-1590679115.29-49282423510897="` echo /root/.ansible/tmp/ansible-tmp-1590679115.29-49282423510897 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/system/sysctl.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpKFE8wB TO /root/.ansible/tmp/ansible-tmp-1590679115.29-49282423510897/AnsiballZ_sysctl.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679115.29-49282423510897/ /root/.ansible/tmp/ansible-tmp-1590679115.29-49282423510897/AnsiballZ_sysctl.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679115.29-49282423510897/AnsiballZ_sysctl.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679115.29-49282423510897/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => (item=net.ipv4.ip_forward) => {[0m
+[0;32m    "ansible_loop_var": "item", [0m
+[0;32m    "changed": false, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "ignoreerrors": false, [0m
+[0;32m            "name": "net.ipv4.ip_forward", [0m
+[0;32m            "reload": true, [0m
+[0;32m            "state": "present", [0m
+[0;32m            "sysctl_file": "/etc/sysctl.conf", [0m
+[0;32m            "sysctl_set": false, [0m
+[0;32m            "value": "1"[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "item": "net.ipv4.ip_forward"[0m
+[0;32m}[0m
+
+TASK [common : Change sysctl fs.inotify.max_user_watches] ************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:51[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679115.5-121601943787844 `" && echo ansible-tmp-1590679115.5-121601943787844="` echo /root/.ansible/tmp/ansible-tmp-1590679115.5-121601943787844 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/system/sysctl.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpquqUeF TO /root/.ansible/tmp/ansible-tmp-1590679115.5-121601943787844/AnsiballZ_sysctl.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679115.5-121601943787844/ /root/.ansible/tmp/ansible-tmp-1590679115.5-121601943787844/AnsiballZ_sysctl.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679115.5-121601943787844/AnsiballZ_sysctl.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679115.5-121601943787844/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "changed": false, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "ignoreerrors": false, [0m
+[0;32m            "name": "fs.inotify.max_user_watches", [0m
+[0;32m            "reload": true, [0m
+[0;32m            "state": "present", [0m
+[0;32m            "sysctl_file": "/etc/sysctl.conf", [0m
+[0;32m            "sysctl_set": false, [0m
+[0;32m            "value": "65536"[0m
+[0;32m        }[0m
+[0;32m    }[0m
+[0;32m}[0m
+
+TASK [common : Change sysctl fs.inotify.max_user_instances] **********************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:57[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679115.75-224732827314250 `" && echo ansible-tmp-1590679115.75-224732827314250="` echo /root/.ansible/tmp/ansible-tmp-1590679115.75-224732827314250 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/system/sysctl.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpIeBrOC TO /root/.ansible/tmp/ansible-tmp-1590679115.75-224732827314250/AnsiballZ_sysctl.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679115.75-224732827314250/ /root/.ansible/tmp/ansible-tmp-1590679115.75-224732827314250/AnsiballZ_sysctl.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679115.75-224732827314250/AnsiballZ_sysctl.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679115.75-224732827314250/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "changed": false, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "ignoreerrors": false, [0m
+[0;32m            "name": "fs.inotify.max_user_instances", [0m
+[0;32m            "reload": true, [0m
+[0;32m            "state": "present", [0m
+[0;32m            "sysctl_file": "/etc/sysctl.conf", [0m
+[0;32m            "sysctl_set": false, [0m
+[0;32m            "value": "8192"[0m
+[0;32m        }[0m
+[0;32m    }[0m
+[0;32m}[0m
+
+TASK [common : Turn off swap mount] **********************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:64[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679115.94-199763159904141 `" && echo ansible-tmp-1590679115.94-199763159904141="` echo /root/.ansible/tmp/ansible-tmp-1590679115.94-199763159904141 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/system/mount.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpBhJya5 TO /root/.ansible/tmp/ansible-tmp-1590679115.94-199763159904141/AnsiballZ_mount.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679115.94-199763159904141/ /root/.ansible/tmp/ansible-tmp-1590679115.94-199763159904141/AnsiballZ_mount.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679115.94-199763159904141/AnsiballZ_mount.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679115.94-199763159904141/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "changed": false, [0m
+[0;32m    "dump": "0", [0m
+[0;32m    "fstab": "/etc/fstab", [0m
+[0;32m    "fstype": "swap", [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "backup": false, [0m
+[0;32m            "boot": true, [0m
+[0;32m            "dump": null, [0m
+[0;32m            "fstab": null, [0m
+[0;32m            "fstype": "swap", [0m
+[0;32m            "name": "swap", [0m
+[0;32m            "opts": null, [0m
+[0;32m            "passno": null, [0m
+[0;32m            "path": "swap", [0m
+[0;32m            "src": null, [0m
+[0;32m            "state": "absent"[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "name": "swap", [0m
+[0;32m    "opts": "defaults", [0m
+[0;32m    "passno": "0"[0m
+[0;32m}[0m
+
+TASK [common : Turn off swap now] ************************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:69[0m
+[0;36mskipping: [127.0.0.1] => {[0m
+[0;36m    "changed": false, [0m
+[0;36m    "skip_reason": "Conditional result was False"[0m
+[0;36m}[0m
+
+TASK [common : Config ipvs] ******************************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:73[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679116.35-115210588632015 `" && echo ansible-tmp-1590679116.35-115210588632015="` echo /root/.ansible/tmp/ansible-tmp-1590679116.35-115210588632015 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/files/stat.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmp4vP9wc TO /root/.ansible/tmp/ansible-tmp-1590679116.35-115210588632015/AnsiballZ_stat.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679116.35-115210588632015/ /root/.ansible/tmp/ansible-tmp-1590679116.35-115210588632015/AnsiballZ_stat.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679116.35-115210588632015/AnsiballZ_stat.py && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/files/file.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpUfpj9b TO /root/.ansible/tmp/ansible-tmp-1590679116.35-115210588632015/AnsiballZ_file.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679116.35-115210588632015/ /root/.ansible/tmp/ansible-tmp-1590679116.35-115210588632015/AnsiballZ_file.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679116.35-115210588632015/AnsiballZ_file.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679116.35-115210588632015/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "changed": false, [0m
+[0;32m    "checksum": "6cd1b849237cd98710c45881e193b51928da107b", [0m
+[0;32m    "dest": "/etc/sysconfig/modules/ipvs.modules", [0m
+[0;32m    "diff": {[0m
+[0;32m        "after": {[0m
+[0;32m            "path": "/etc/sysconfig/modules/ipvs.modules"[0m
+[0;32m        }, [0m
+[0;32m        "before": {[0m
+[0;32m            "path": "/etc/sysconfig/modules/ipvs.modules"[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "gid": 0, [0m
+[0;32m    "group": "root", [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "_diff_peek": null, [0m
+[0;32m            "_original_basename": "ipvs.modules", [0m
+[0;32m            "access_time": null, [0m
+[0;32m            "access_time_format": "%Y%m%d%H%M.%S", [0m
+[0;32m            "attributes": null, [0m
+[0;32m            "backup": null, [0m
+[0;32m            "content": null, [0m
+[0;32m            "delimiter": null, [0m
+[0;32m            "dest": "/etc/sysconfig/modules/ipvs.modules", [0m
+[0;32m            "directory_mode": null, [0m
+[0;32m            "follow": true, [0m
+[0;32m            "force": false, [0m
+[0;32m            "group": "root", [0m
+[0;32m            "mode": "0755", [0m
+[0;32m            "modification_time": null, [0m
+[0;32m            "modification_time_format": "%Y%m%d%H%M.%S", [0m
+[0;32m            "owner": "root", [0m
+[0;32m            "path": "/etc/sysconfig/modules/ipvs.modules", [0m
+[0;32m            "recurse": false, [0m
+[0;32m            "regexp": null, [0m
+[0;32m            "remote_src": null, [0m
+[0;32m            "selevel": null, [0m
+[0;32m            "serole": null, [0m
+[0;32m            "setype": null, [0m
+[0;32m            "seuser": null, [0m
+[0;32m            "src": null, [0m
+[0;32m            "state": "file", [0m
+[0;32m            "unsafe_writes": null[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "mode": "0755", [0m
+[0;32m    "owner": "root", [0m
+[0;32m    "path": "/etc/sysconfig/modules/ipvs.modules", [0m
+[0;32m    "size": 337, [0m
+[0;32m    "state": "file", [0m
+[0;32m    "uid": 0[0m
+[0;32m}[0m
+
+TASK [common : Load ipvs modules] ************************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:80[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679116.68-39068884464281 `" && echo ansible-tmp-1590679116.68-39068884464281="` echo /root/.ansible/tmp/ansible-tmp-1590679116.68-39068884464281 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/commands/command.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpEjOdb_ TO /root/.ansible/tmp/ansible-tmp-1590679116.68-39068884464281/AnsiballZ_command.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679116.68-39068884464281/ /root/.ansible/tmp/ansible-tmp-1590679116.68-39068884464281/AnsiballZ_command.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679116.68-39068884464281/AnsiballZ_command.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679116.68-39068884464281/ > /dev/null 2>&1 && sleep 0'[0m
+[0;33mchanged: [127.0.0.1] => {[0m
+[0;33m    "changed": true, [0m
+[0;33m    "cmd": "/etc/sysconfig/modules/ipvs.modules", [0m
+[0;33m    "delta": "0:00:00.034354", [0m
+[0;33m    "end": "2020-05-28 11:18:36.954416", [0m
+[0;33m    "invocation": {[0m
+[0;33m        "module_args": {[0m
+[0;33m            "_raw_params": "/etc/sysconfig/modules/ipvs.modules", [0m
+[0;33m            "_uses_shell": true, [0m
+[0;33m            "argv": null, [0m
+[0;33m            "chdir": null, [0m
+[0;33m            "creates": null, [0m
+[0;33m            "executable": null, [0m
+[0;33m            "removes": null, [0m
+[0;33m            "stdin": null, [0m
+[0;33m            "stdin_add_newline": true, [0m
+[0;33m            "strip_empty_ends": true, [0m
+[0;33m            "warn": true[0m
+[0;33m        }[0m
+[0;33m    }, [0m
+[0;33m    "rc": 0, [0m
+[0;33m    "start": "2020-05-28 11:18:36.920062", [0m
+[0;33m    "stderr": "", [0m
+[0;33m    "stderr_lines": [], [0m
+[0;33m    "stdout": "", [0m
+[0;33m    "stdout_lines": [][0m
+[0;33m}[0m
+
+TASK [common : Install docker] ***************************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:86[0m
+[0;35m[DEPRECATION WARNING]: Invoking "yum" only once while using a loop via squash_actions is deprecated. Instead of using a loop to supply multiple items and specifying `name: "{{ item }}"`, please use `name: ['docker-ce-18.09.1', 'docker-ce-cli-18.09.1', 'containerd.io']` and remove the loop. This feature will [0m
+[0;35mbe removed in version 2.11. Deprecation warnings can be disabled by setting deprecation_warnings=False in ansible.cfg.[0m
+[0;36mskipping: [127.0.0.1] => (item=[])  => {[0m
+[0;36m    "ansible_loop_var": "item", [0m
+[0;36m    "changed": false, [0m
+[0;36m    "item": [], [0m
+[0;36m    "skip_reason": "Conditional result was False"[0m
+[0;36m}[0m
+
+TASK [common : Make /etc/docker dir] *********************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:93[0m
+[0;36mskipping: [127.0.0.1] => {[0m
+[0;36m    "changed": false, [0m
+[0;36m    "skip_reason": "Conditional result was False"[0m
+[0;36m}[0m
+
+TASK [common : Config docker file] ***********************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:96[0m
+[0;36mskipping: [127.0.0.1] => {[0m
+[0;36m    "changed": false, [0m
+[0;36m    "skip_reason": "Conditional result was False"[0m
+[0;36m}[0m
+
+TASK [common : Restart docker service] *******************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:99[0m
+[0;36mskipping: [127.0.0.1] => {[0m
+[0;36m    "changed": false, [0m
+[0;36m    "skip_reason": "Conditional result was False"[0m
+[0;36m}[0m
+
+TASK [common : Install k8s packages] *********************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:105[0m
+[0;35m[DEPRECATION WARNING]: Invoking "yum" only once while using a loop via squash_actions is deprecated. Instead of using a loop to supply multiple items and specifying `name: "{{ item }}"`, please use `name: ['bridge-utils', 'ipvsadm', 'conntrack-tools', 'jq', 'kubelet', 'kubectl', 'kubeadm']` and remove the [0m
+[0;35mloop. This feature will be removed in version 2.11. Deprecation warnings can be disabled by setting deprecation_warnings=False in ansible.cfg.[0m
+[0;34mRunning yum as the backend for the yum action plugin[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679117.39-132414797813657 `" && echo ansible-tmp-1590679117.39-132414797813657="` echo /root/.ansible/tmp/ansible-tmp-1590679117.39-132414797813657 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/packaging/os/yum.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpw9WFrV TO /root/.ansible/tmp/ansible-tmp-1590679117.39-132414797813657/AnsiballZ_yum.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679117.39-132414797813657/ /root/.ansible/tmp/ansible-tmp-1590679117.39-132414797813657/AnsiballZ_yum.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679117.39-132414797813657/AnsiballZ_yum.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679117.39-132414797813657/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => (item=[u'bridge-utils', u'ipvsadm', u'conntrack-tools', u'jq', u'kubelet', u'kubectl', u'kubeadm']) => {[0m
+[0;32m    "ansible_loop_var": "item", [0m
+[0;32m    "changed": false, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "allow_downgrade": false, [0m
+[0;32m            "autoremove": false, [0m
+[0;32m            "bugfix": false, [0m
+[0;32m            "conf_file": null, [0m
+[0;32m            "disable_excludes": null, [0m
+[0;32m            "disable_gpg_check": false, [0m
+[0;32m            "disable_plugin": [], [0m
+[0;32m            "disablerepo": [], [0m
+[0;32m            "download_dir": null, [0m
+[0;32m            "download_only": false, [0m
+[0;32m            "enable_plugin": [], [0m
+[0;32m            "enablerepo": [], [0m
+[0;32m            "exclude": [], [0m
+[0;32m            "install_repoquery": true, [0m
+[0;32m            "install_weak_deps": true, [0m
+[0;32m            "installroot": "/", [0m
+[0;32m            "list": null, [0m
+[0;32m            "lock_timeout": 30, [0m
+[0;32m            "name": [[0m
+[0;32m                "bridge-utils", [0m
+[0;32m                "ipvsadm", [0m
+[0;32m                "conntrack-tools", [0m
+[0;32m                "jq", [0m
+[0;32m                "kubelet", [0m
+[0;32m                "kubectl", [0m
+[0;32m                "kubeadm"[0m
+[0;32m            ], [0m
+[0;32m            "releasever": null, [0m
+[0;32m            "security": false, [0m
+[0;32m            "skip_broken": false, [0m
+[0;32m            "state": "present", [0m
+[0;32m            "update_cache": false, [0m
+[0;32m            "update_only": false, [0m
+[0;32m            "use_backend": "auto", [0m
+[0;32m            "validate_certs": true[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "item": [[0m
+[0;32m        "bridge-utils", [0m
+[0;32m        "ipvsadm", [0m
+[0;32m        "conntrack-tools", [0m
+[0;32m        "jq", [0m
+[0;32m        "kubelet", [0m
+[0;32m        "kubectl", [0m
+[0;32m        "kubeadm"[0m
+[0;32m    ], [0m
+[0;32m    "msg": "", [0m
+[0;32m    "rc": 0, [0m
+[0;32m    "results": [[0m
+[0;32m        "bridge-utils-1.5-9.el7.x86_64 providing bridge-utils is already installed", [0m
+[0;32m        "ipvsadm-1.27-7.el7.x86_64 providing ipvsadm is already installed", [0m
+[0;32m        "conntrack-tools-1.4.4-5.el7_7.2.x86_64 providing conntrack-tools is already installed", [0m
+[0;32m        "jq-1.5-1.el7.x86_64 providing jq is already installed", [0m
+[0;32m        "kubelet-1.15.8-0.x86_64 providing kubelet is already installed", [0m
+[0;32m        "kubectl-1.15.8-0.x86_64 providing kubectl is already installed", [0m
+[0;32m        "kubeadm-1.15.8-0.x86_64 providing kubeadm is already installed"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [common : Enable kubelet] ***************************************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:118[0m
+[0;34mRunning systemd[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679117.77-184230709103932 `" && echo ansible-tmp-1590679117.77-184230709103932="` echo /root/.ansible/tmp/ansible-tmp-1590679117.77-184230709103932 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/system/systemd.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpxbiPnw TO /root/.ansible/tmp/ansible-tmp-1590679117.77-184230709103932/AnsiballZ_systemd.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679117.77-184230709103932/ /root/.ansible/tmp/ansible-tmp-1590679117.77-184230709103932/AnsiballZ_systemd.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679117.77-184230709103932/AnsiballZ_systemd.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679117.77-184230709103932/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "changed": false, [0m
+[0;32m    "enabled": true, [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "daemon_reexec": false, [0m
+[0;32m            "daemon_reload": false, [0m
+[0;32m            "enabled": true, [0m
+[0;32m            "force": null, [0m
+[0;32m            "masked": null, [0m
+[0;32m            "name": "kubelet", [0m
+[0;32m            "no_block": false, [0m
+[0;32m            "scope": null, [0m
+[0;32m            "state": null, [0m
+[0;32m            "user": null[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "name": "kubelet", [0m
+[0;32m    "status": {[0m
+[0;32m        "ActiveEnterTimestamp": "Fri 2020-05-22 05:18:46 EDT", [0m
+[0;32m        "ActiveEnterTimestampMonotonic": "258714164", [0m
+[0;32m        "ActiveExitTimestamp": "Thu 2020-05-28 11:10:14 EDT", [0m
+[0;32m        "ActiveExitTimestampMonotonic": "143767429698", [0m
+[0;32m        "ActiveState": "inactive", [0m
+[0;32m        "After": "systemd-journald.socket basic.target system.slice", [0m
+[0;32m        "AllowIsolate": "no", [0m
+[0;32m        "AmbientCapabilities": "0", [0m
+[0;32m        "AssertResult": "yes", [0m
+[0;32m        "AssertTimestamp": "Fri 2020-05-22 05:18:46 EDT", [0m
+[0;32m        "AssertTimestampMonotonic": "258705362", [0m
+[0;32m        "Before": "multi-user.target shutdown.target", [0m
+[0;32m        "BlockIOAccounting": "no", [0m
+[0;32m        "BlockIOWeight": "18446744073709551615", [0m
+[0;32m        "CPUAccounting": "no", [0m
+[0;32m        "CPUQuotaPerSecUSec": "infinity", [0m
+[0;32m        "CPUSchedulingPolicy": "0", [0m
+[0;32m        "CPUSchedulingPriority": "0", [0m
+[0;32m        "CPUSchedulingResetOnFork": "no", [0m
+[0;32m        "CPUShares": "18446744073709551615", [0m
+[0;32m        "CanIsolate": "no", [0m
+[0;32m        "CanReload": "no", [0m
+[0;32m        "CanStart": "yes", [0m
+[0;32m        "CanStop": "yes", [0m
+[0;32m        "CapabilityBoundingSet": "18446744073709551615", [0m
+[0;32m        "ConditionResult": "yes", [0m
+[0;32m        "ConditionTimestamp": "Fri 2020-05-22 05:18:46 EDT", [0m
+[0;32m        "ConditionTimestampMonotonic": "258705362", [0m
+[0;32m        "Conflicts": "shutdown.target", [0m
+[0;32m        "ControlPID": "0", [0m
+[0;32m        "DefaultDependencies": "yes", [0m
+[0;32m        "Delegate": "no", [0m
+[0;32m        "Description": "kubelet: The Kubernetes Node Agent", [0m
+[0;32m        "DevicePolicy": "auto", [0m
+[0;32m        "Documentation": "https://kubernetes.io/docs/", [0m
+[0;32m        "DropInPaths": "/usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf", [0m
+[0;32m        "Environment": "KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml", [0m
+[0;32m        "EnvironmentFile": "/etc/sysconfig/kubelet (ignore_errors=yes)", [0m
+[0;32m        "ExecMainCode": "1", [0m
+[0;32m        "ExecMainExitTimestamp": "Thu 2020-05-28 11:10:14 EDT", [0m
+[0;32m        "ExecMainExitTimestampMonotonic": "143767449946", [0m
+[0;32m        "ExecMainPID": "15100", [0m
+[0;32m        "ExecMainStartTimestamp": "Fri 2020-05-22 05:18:46 EDT", [0m
+[0;32m        "ExecMainStartTimestampMonotonic": "258714078", [0m
+[0;32m        "ExecMainStatus": "0", [0m
+[0;32m        "ExecStart": "{ path=/usr/bin/kubelet ; argv[]=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS ; ignore_errors=no ; start_time=[Fri 2020-05-22 05:18:46 EDT] ; stop_time=[Thu 2020-05-28 11:10:14 EDT] ; pid=15100 ; code=exited ; status=0 }", [0m
+[0;32m        "FailureAction": "none", [0m
+[0;32m        "FileDescriptorStoreMax": "0", [0m
+[0;32m        "FragmentPath": "/usr/lib/systemd/system/kubelet.service", [0m
+[0;32m        "GuessMainPID": "yes", [0m
+[0;32m        "IOScheduling": "0", [0m
+[0;32m        "Id": "kubelet.service", [0m
+[0;32m        "IgnoreOnIsolate": "no", [0m
+[0;32m        "IgnoreOnSnapshot": "no", [0m
+[0;32m        "IgnoreSIGPIPE": "yes", [0m
+[0;32m        "InactiveEnterTimestamp": "Thu 2020-05-28 11:10:14 EDT", [0m
+[0;32m        "InactiveEnterTimestampMonotonic": "143767450081", [0m
+[0;32m        "InactiveExitTimestamp": "Fri 2020-05-22 05:18:46 EDT", [0m
+[0;32m        "InactiveExitTimestampMonotonic": "258714164", [0m
+[0;32m        "JobTimeoutAction": "none", [0m
+[0;32m        "JobTimeoutUSec": "0", [0m
+[0;32m        "KillMode": "control-group", [0m
+[0;32m        "KillSignal": "15", [0m
+[0;32m        "LimitAS": "18446744073709551615", [0m
+[0;32m        "LimitCORE": "18446744073709551615", [0m
+[0;32m        "LimitCPU": "18446744073709551615", [0m
+[0;32m        "LimitDATA": "18446744073709551615", [0m
+[0;32m        "LimitFSIZE": "18446744073709551615", [0m
+[0;32m        "LimitLOCKS": "18446744073709551615", [0m
+[0;32m        "LimitMEMLOCK": "65536", [0m
+[0;32m        "LimitMSGQUEUE": "819200", [0m
+[0;32m        "LimitNICE": "0", [0m
+[0;32m        "LimitNOFILE": "4096", [0m
+[0;32m        "LimitNPROC": "30454", [0m
+[0;32m        "LimitRSS": "18446744073709551615", [0m
+[0;32m        "LimitRTPRIO": "0", [0m
+[0;32m        "LimitRTTIME": "18446744073709551615", [0m
+[0;32m        "LimitSIGPENDING": "30454", [0m
+[0;32m        "LimitSTACK": "18446744073709551615", [0m
+[0;32m        "LoadState": "loaded", [0m
+[0;32m        "MainPID": "0", [0m
+[0;32m        "MemoryAccounting": "no", [0m
+[0;32m        "MemoryCurrent": "18446744073709551615", [0m
+[0;32m        "MemoryLimit": "18446744073709551615", [0m
+[0;32m        "MountFlags": "0", [0m
+[0;32m        "Names": "kubelet.service", [0m
+[0;32m        "NeedDaemonReload": "no", [0m
+[0;32m        "Nice": "0", [0m
+[0;32m        "NoNewPrivileges": "no", [0m
+[0;32m        "NonBlocking": "no", [0m
+[0;32m        "NotifyAccess": "none", [0m
+[0;32m        "OOMScoreAdjust": "0", [0m
+[0;32m        "OnFailureJobMode": "replace", [0m
+[0;32m        "PermissionsStartOnly": "no", [0m
+[0;32m        "PrivateDevices": "no", [0m
+[0;32m        "PrivateNetwork": "no", [0m
+[0;32m        "PrivateTmp": "no", [0m
+[0;32m        "ProtectHome": "no", [0m
+[0;32m        "ProtectSystem": "no", [0m
+[0;32m        "RefuseManualStart": "no", [0m
+[0;32m        "RefuseManualStop": "no", [0m
+[0;32m        "RemainAfterExit": "no", [0m
+[0;32m        "Requires": "basic.target system.slice", [0m
+[0;32m        "Restart": "always", [0m
+[0;32m        "RestartUSec": "10s", [0m
+[0;32m        "Result": "success", [0m
+[0;32m        "RootDirectoryStartOnly": "no", [0m
+[0;32m        "RuntimeDirectoryMode": "0755", [0m
+[0;32m        "SameProcessGroup": "no", [0m
+[0;32m        "SecureBits": "0", [0m
+[0;32m        "SendSIGHUP": "no", [0m
+[0;32m        "SendSIGKILL": "yes", [0m
+[0;32m        "Slice": "system.slice", [0m
+[0;32m        "StandardError": "inherit", [0m
+[0;32m        "StandardInput": "null", [0m
+[0;32m        "StandardOutput": "journal", [0m
+[0;32m        "StartLimitAction": "none", [0m
+[0;32m        "StartLimitBurst": "5", [0m
+[0;32m        "StartLimitInterval": "0", [0m
+[0;32m        "StartupBlockIOWeight": "18446744073709551615", [0m
+[0;32m        "StartupCPUShares": "18446744073709551615", [0m
+[0;32m        "StatusErrno": "0", [0m
+[0;32m        "StopWhenUnneeded": "no", [0m
+[0;32m        "SubState": "dead", [0m
+[0;32m        "SyslogLevelPrefix": "yes", [0m
+[0;32m        "SyslogPriority": "30", [0m
+[0;32m        "SystemCallErrorNumber": "0", [0m
+[0;32m        "TTYReset": "no", [0m
+[0;32m        "TTYVHangup": "no", [0m
+[0;32m        "TTYVTDisallocate": "no", [0m
+[0;32m        "TasksAccounting": "no", [0m
+[0;32m        "TasksCurrent": "18446744073709551615", [0m
+[0;32m        "TasksMax": "18446744073709551615", [0m
+[0;32m        "TimeoutStartUSec": "1min 30s", [0m
+[0;32m        "TimeoutStopUSec": "1min 30s", [0m
+[0;32m        "TimerSlackNSec": "50000", [0m
+[0;32m        "Transient": "no", [0m
+[0;32m        "Type": "simple", [0m
+[0;32m        "UMask": "0022", [0m
+[0;32m        "UnitFilePreset": "disabled", [0m
+[0;32m        "UnitFileState": "enabled", [0m
+[0;32m        "WantedBy": "multi-user.target", [0m
+[0;32m        "WatchdogTimestampMonotonic": "0", [0m
+[0;32m        "WatchdogUSec": "0"[0m
+[0;32m    }[0m
+[0;32m}[0m
+
+TASK [common : Export yunion bin path in ~/.bashrc] ******************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/common/tasks/main.yml:122[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679118.07-121212819153486 `" && echo ansible-tmp-1590679118.07-121212819153486="` echo /root/.ansible/tmp/ansible-tmp-1590679118.07-121212819153486 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/files/lineinfile.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpb36_On TO /root/.ansible/tmp/ansible-tmp-1590679118.07-121212819153486/AnsiballZ_lineinfile.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679118.07-121212819153486/ /root/.ansible/tmp/ansible-tmp-1590679118.07-121212819153486/AnsiballZ_lineinfile.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679118.07-121212819153486/AnsiballZ_lineinfile.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679118.07-121212819153486/ > /dev/null 2>&1 && sleep 0'[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "backup": "", [0m
+[0;32m    "changed": false, [0m
+[0;32m    "diff": [[0m
+[0;32m        {[0m
+[0;32m            "after": "", [0m
+[0;32m            "after_header": "/root/.bashrc (content)", [0m
+[0;32m            "before": "", [0m
+[0;32m            "before_header": "/root/.bashrc (content)"[0m
+[0;32m        }, [0m
+[0;32m        {[0m
+[0;32m            "after_header": "/root/.bashrc (file attributes)", [0m
+[0;32m            "before_header": "/root/.bashrc (file attributes)"[0m
+[0;32m        }[0m
+[0;32m    ], [0m
+[0;32m    "invocation": {[0m
+[0;32m        "module_args": {[0m
+[0;32m            "attributes": null, [0m
+[0;32m            "backrefs": false, [0m
+[0;32m            "backup": false, [0m
+[0;32m            "content": null, [0m
+[0;32m            "create": true, [0m
+[0;32m            "delimiter": null, [0m
+[0;32m            "dest": "~/.bashrc", [0m
+[0;32m            "directory_mode": null, [0m
+[0;32m            "firstmatch": false, [0m
+[0;32m            "follow": false, [0m
+[0;32m            "force": null, [0m
+[0;32m            "group": null, [0m
+[0;32m            "insertafter": null, [0m
+[0;32m            "insertbefore": null, [0m
+[0;32m            "line": "export PATH=$PATH:/opt/yunion/bin", [0m
+[0;32m            "mode": null, [0m
+[0;32m            "owner": null, [0m
+[0;32m            "path": "/root/.bashrc", [0m
+[0;32m            "regexp": "^export PATH=.*/opt/yunion/bin", [0m
+[0;32m            "remote_src": null, [0m
+[0;32m            "selevel": null, [0m
+[0;32m            "serole": null, [0m
+[0;32m            "setype": null, [0m
+[0;32m            "seuser": null, [0m
+[0;32m            "src": null, [0m
+[0;32m            "state": "present", [0m
+[0;32m            "unsafe_writes": null, [0m
+[0;32m            "validate": null[0m
+[0;32m        }[0m
+[0;32m    }, [0m
+[0;32m    "msg": ""[0m
+[0;32m}[0m
+
+TASK [primary-master-node : Get default gateway] *********************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/primary-master-node/tasks/main.yml:5[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679118.44-58276147537912 `" && echo ansible-tmp-1590679118.44-58276147537912="` echo /root/.ansible/tmp/ansible-tmp-1590679118.44-58276147537912 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/commands/command.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpaFD3qQ TO /root/.ansible/tmp/ansible-tmp-1590679118.44-58276147537912/AnsiballZ_command.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679118.44-58276147537912/ /root/.ansible/tmp/ansible-tmp-1590679118.44-58276147537912/AnsiballZ_command.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679118.44-58276147537912/AnsiballZ_command.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679118.44-58276147537912/ > /dev/null 2>&1 && sleep 0'[0m
+[0;33mchanged: [127.0.0.1] => {[0m
+[0;33m    "changed": true, [0m
+[0;33m    "cmd": "ip route get 1 | head -n 1 | awk '{print $3}'", [0m
+[0;33m    "delta": "0:00:00.004242", [0m
+[0;33m    "end": "2020-05-28 11:18:38.564397", [0m
+[0;33m    "invocation": {[0m
+[0;33m        "module_args": {[0m
+[0;33m            "_raw_params": "ip route get 1 | head -n 1 | awk '{print $3}'", [0m
+[0;33m            "_uses_shell": true, [0m
+[0;33m            "argv": null, [0m
+[0;33m            "chdir": null, [0m
+[0;33m            "creates": null, [0m
+[0;33m            "executable": null, [0m
+[0;33m            "removes": null, [0m
+[0;33m            "stdin": null, [0m
+[0;33m            "stdin_add_newline": true, [0m
+[0;33m            "strip_empty_ends": true, [0m
+[0;33m            "warn": true[0m
+[0;33m        }[0m
+[0;33m    }, [0m
+[0;33m    "rc": 0, [0m
+[0;33m    "start": "2020-05-28 11:18:38.560155", [0m
+[0;33m    "stderr": "", [0m
+[0;33m    "stderr_lines": [], [0m
+[0;33m    "stdout": "172.16.137.2", [0m
+[0;33m    "stdout_lines": [[0m
+[0;33m        "172.16.137.2"[0m
+[0;33m    ][0m
+[0;33m}[0m
+
+TASK [primary-master-node : set default gateway var] *****************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/primary-master-node/tasks/main.yml:9[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "ansible_facts": {[0m
+[0;32m        "default_gateway": "172.16.137.2"[0m
+[0;32m    }, [0m
+[0;32m    "changed": false[0m
+[0;32m}[0m
+
+TASK [primary-master-node : Get default gateway 172.16.137.2 local ip address] ***************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/primary-master-node/tasks/main.yml:13[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679118.75-126485306454762 `" && echo ansible-tmp-1590679118.75-126485306454762="` echo /root/.ansible/tmp/ansible-tmp-1590679118.75-126485306454762 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/commands/command.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpzmptMB TO /root/.ansible/tmp/ansible-tmp-1590679118.75-126485306454762/AnsiballZ_command.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679118.75-126485306454762/ /root/.ansible/tmp/ansible-tmp-1590679118.75-126485306454762/AnsiballZ_command.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679118.75-126485306454762/AnsiballZ_command.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679118.75-126485306454762/ > /dev/null 2>&1 && sleep 0'[0m
+[0;33mchanged: [127.0.0.1] => {[0m
+[0;33m    "changed": true, [0m
+[0;33m    "cmd": "ip route get 1 | head -n 1 | awk '{print $7}'", [0m
+[0;33m    "delta": "0:00:00.004995", [0m
+[0;33m    "end": "2020-05-28 11:18:38.898919", [0m
+[0;33m    "invocation": {[0m
+[0;33m        "module_args": {[0m
+[0;33m            "_raw_params": "ip route get 1 | head -n 1 | awk '{print $7}'", [0m
+[0;33m            "_uses_shell": true, [0m
+[0;33m            "argv": null, [0m
+[0;33m            "chdir": null, [0m
+[0;33m            "creates": null, [0m
+[0;33m            "executable": null, [0m
+[0;33m            "removes": null, [0m
+[0;33m            "stdin": null, [0m
+[0;33m            "stdin_add_newline": true, [0m
+[0;33m            "strip_empty_ends": true, [0m
+[0;33m            "warn": true[0m
+[0;33m        }[0m
+[0;33m    }, [0m
+[0;33m    "rc": 0, [0m
+[0;33m    "start": "2020-05-28 11:18:38.893924", [0m
+[0;33m    "stderr": "", [0m
+[0;33m    "stderr_lines": [], [0m
+[0;33m    "stdout": "172.16.137.132", [0m
+[0;33m    "stdout_lines": [[0m
+[0;33m        "172.16.137.132"[0m
+[0;33m    ][0m
+[0;33m}[0m
+
+TASK [primary-master-node : set default ip var] **********************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/primary-master-node/tasks/main.yml:17[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "ansible_facts": {[0m
+[0;32m        "default_ip": "172.16.137.132"[0m
+[0;32m    }, [0m
+[0;32m    "changed": false[0m
+[0;32m}[0m
+
+TASK [primary-master-node : Get default ip address 172.16.137.132 masklen] *******************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/primary-master-node/tasks/main.yml:21[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679119.05-280663341920 `" && echo ansible-tmp-1590679119.05-280663341920="` echo /root/.ansible/tmp/ansible-tmp-1590679119.05-280663341920 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/commands/command.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpr7GnJh TO /root/.ansible/tmp/ansible-tmp-1590679119.05-280663341920/AnsiballZ_command.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679119.05-280663341920/ /root/.ansible/tmp/ansible-tmp-1590679119.05-280663341920/AnsiballZ_command.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679119.05-280663341920/AnsiballZ_command.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679119.05-280663341920/ > /dev/null 2>&1 && sleep 0'[0m
+[0;33mchanged: [127.0.0.1] => {[0m
+[0;33m    "changed": true, [0m
+[0;33m    "cmd": "ip route list | grep 172.16.137.132 | head -n 1 | awk '{print $1}' | cut -d '/' -f 2", [0m
+[0;33m    "delta": "0:00:00.012977", [0m
+[0;33m    "end": "2020-05-28 11:18:39.184179", [0m
+[0;33m    "invocation": {[0m
+[0;33m        "module_args": {[0m
+[0;33m            "_raw_params": "ip route list | grep 172.16.137.132 | head -n 1 | awk '{print $1}' | cut -d '/' -f 2", [0m
+[0;33m            "_uses_shell": true, [0m
+[0;33m            "argv": null, [0m
+[0;33m            "chdir": null, [0m
+[0;33m            "creates": null, [0m
+[0;33m            "executable": null, [0m
+[0;33m            "removes": null, [0m
+[0;33m            "stdin": null, [0m
+[0;33m            "stdin_add_newline": true, [0m
+[0;33m            "strip_empty_ends": true, [0m
+[0;33m            "warn": true[0m
+[0;33m        }[0m
+[0;33m    }, [0m
+[0;33m    "rc": 0, [0m
+[0;33m    "start": "2020-05-28 11:18:39.171202", [0m
+[0;33m    "stderr": "", [0m
+[0;33m    "stderr_lines": [], [0m
+[0;33m    "stdout": "24", [0m
+[0;33m    "stdout_lines": [[0m
+[0;33m        "24"[0m
+[0;33m    ][0m
+[0;33m}[0m
+
+TASK [primary-master-node : set default ip masklen] ******************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/primary-master-node/tasks/main.yml:25[0m
+[0;32mok: [127.0.0.1] => {[0m
+[0;32m    "ansible_facts": {[0m
+[0;32m        "default_masklen": "24"[0m
+[0;32m    }, [0m
+[0;32m    "changed": false[0m
+[0;32m}[0m
+
+TASK [primary-master-node : Get cluster token] ***********************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/primary-master-node/tasks/main.yml:29[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679119.3-122616621096872 `" && echo ansible-tmp-1590679119.3-122616621096872="` echo /root/.ansible/tmp/ansible-tmp-1590679119.3-122616621096872 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/commands/command.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpjX1ijh TO /root/.ansible/tmp/ansible-tmp-1590679119.3-122616621096872/AnsiballZ_command.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679119.3-122616621096872/ /root/.ansible/tmp/ansible-tmp-1590679119.3-122616621096872/AnsiballZ_command.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679119.3-122616621096872/AnsiballZ_command.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679119.3-122616621096872/ > /dev/null 2>&1 && sleep 0'[0m
+[0;33mchanged: [127.0.0.1] => {[0m
+[0;33m    "changed": true, [0m
+[0;33m    "cmd": "/opt/yunion/bin/ocadm token list | cut -d  ' ' -f1 | sed -n '2p'", [0m
+[0;33m    "delta": "0:00:00.065873", [0m
+[0;33m    "end": "2020-05-28 11:18:39.493526", [0m
+[0;33m    "invocation": {[0m
+[0;33m        "module_args": {[0m
+[0;33m            "_raw_params": "/opt/yunion/bin/ocadm token list | cut -d  ' ' -f1 | sed -n '2p'", [0m
+[0;33m            "_uses_shell": true, [0m
+[0;33m            "argv": null, [0m
+[0;33m            "chdir": null, [0m
+[0;33m            "creates": null, [0m
+[0;33m            "executable": null, [0m
+[0;33m            "removes": null, [0m
+[0;33m            "stdin": null, [0m
+[0;33m            "stdin_add_newline": true, [0m
+[0;33m            "strip_empty_ends": true, [0m
+[0;33m            "warn": true[0m
+[0;33m        }[0m
+[0;33m    }, [0m
+[0;33m    "rc": 0, [0m
+[0;33m    "start": "2020-05-28 11:18:39.427653", [0m
+[0;33m    "stderr": "failed to load admin kubeconfig: open /root/.kube/config: no such file or directory", [0m
+[0;33m    "stderr_lines": [[0m
+[0;33m        "failed to load admin kubeconfig: open /root/.kube/config: no such file or directory"[0m
+[0;33m    ], [0m
+[0;33m    "stdout": "", [0m
+[0;33m    "stdout_lines": [][0m
+[0;33m}[0m
+
+TASK [primary-master-node : Pull ocadm images on node] ***************************************************************************************************************************************************************************************************************************************************************
+[1;30mtask path: /opt/yunionboot/onecloud/roles/primary-master-node/tasks/main.yml:33[0m
+[0;34m<127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: root[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'echo ~root && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /root/.ansible/tmp/ansible-tmp-1590679119.58-66653801301895 `" && echo ansible-tmp-1590679119.58-66653801301895="` echo /root/.ansible/tmp/ansible-tmp-1590679119.58-66653801301895 `" ) && sleep 0'[0m
+[0;34mUsing module file /usr/lib/python2.7/site-packages/ansible/modules/commands/command.py[0m
+[0;34m<127.0.0.1> PUT /root/.ansible/tmp/ansible-local-104318yqCgSw/tmpEo0Aeq TO /root/.ansible/tmp/ansible-tmp-1590679119.58-66653801301895/AnsiballZ_command.py[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'chmod u+x /root/.ansible/tmp/ansible-tmp-1590679119.58-66653801301895/ /root/.ansible/tmp/ansible-tmp-1590679119.58-66653801301895/AnsiballZ_command.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c '/usr/bin/python /root/.ansible/tmp/ansible-tmp-1590679119.58-66653801301895/AnsiballZ_command.py && sleep 0'[0m
+[0;34m<127.0.0.1> EXEC /bin/sh -c 'rm -f -r /root/.ansible/tmp/ansible-tmp-1590679119.58-66653801301895/ > /dev/null 2>&1 && sleep 0'[0m
+[0;31mfatal: [127.0.0.1]: FAILED! => {[0m
+[0;31m    "changed": true, [0m
+[0;31m    "cmd": [[0m
+[0;31m        "/opt/yunion/bin/ocadm", [0m
+[0;31m        "config", [0m
+[0;31m        "images", [0m
+[0;31m        "pull", [0m
+[0;31m        "--image-repository", [0m
+[0;31m        "172.16.137.132:5000/yunionio", [0m
+[0;31m        "--onecloud-version", [0m
+[0;31m        "v3.2.0-20200512.1", [0m
+[0;31m        "--operator-version", [0m
+[0;31m        "v3.2.0-20200512.1"[0m
+[0;31m    ], [0m
+[0;31m    "delta": "0:00:00.344447", [0m
+[0;31m    "end": "2020-05-28 11:18:40.040802", [0m
+[0;31m    "invocation": {[0m
+[0;31m        "module_args": {[0m
+[0;31m            "_raw_params": "/opt/yunion/bin/ocadm config images pull --image-repository 172.16.137.132:5000/yunionio --onecloud-version v3.2.0-20200512.1 --operator-version v3.2.0-20200512.1", [0m
+[0;31m            "_uses_shell": false, [0m
+[0;31m            "argv": null, [0m
+[0;31m            "chdir": null, [0m
+[0;31m            "creates": null, [0m
+[0;31m            "executable": null, [0m
+[0;31m            "removes": null, [0m
+[0;31m            "stdin": null, [0m
+[0;31m            "stdin_add_newline": true, [0m
+[0;31m            "strip_empty_ends": true, [0m
+[0;31m            "warn": true[0m
+[0;31m        }[0m
+[0;31m    }, [0m
+[0;31m    "msg": "non-zero return code", [0m
+[0;31m    "rc": 1, [0m
+[0;31m    "start": "2020-05-28 11:18:39.696355", [0m
+[0;31m    "stderr": "failed to pull image \"172.16.137.132:5000/yunionio/etcd:3.4.6\": output: Error response from daemon: manifest for 172.16.137.132:5000/yunionio/etcd:3.4.6 not found\n, error: exit status 1", [0m
+[0;31m    "stderr_lines": [[0m
+[0;31m        "failed to pull image \"172.16.137.132:5000/yunionio/etcd:3.4.6\": output: Error response from daemon: manifest for 172.16.137.132:5000/yunionio/etcd:3.4.6 not found", [0m
+[0;31m        ", error: exit status 1"[0m
+[0;31m    ], [0m
+[0;31m    "stdout": "[config/images] Pulling 172.16.137.132:5000/yunionio/kube-apiserver:v1.15.8\n[config/images] Pulled 172.16.137.132:5000/yunionio/kube-apiserver:v1.15.8\n[config/images] Pulling 172.16.137.132:5000/yunionio/kube-controller-manager:v1.15.8\n[config/images] Pulled 172.16.137.132:5000/yunionio/kube-controller-manager:v1.15.8\n[config/images] Pulling 172.16.137.132:5000/yunionio/kube-scheduler:v1.15.8\n[config/images] Pulled 172.16.137.132:5000/yunionio/kube-scheduler:v1.15.8\n[config/images] Pulling 172.16.137.132:5000/yunionio/kube-proxy:v1.15.8\n[config/images] Pulled 172.16.137.132:5000/yunionio/kube-proxy:v1.15.8\n[config/images] Pulling 172.16.137.132:5000/yunionio/pause:3.1\n[config/images] Pulled 172.16.137.132:5000/yunionio/pause:3.1\n[config/images] Pulling 172.16.137.132:5000/yunionio/etcd:3.4.6", [0m
+[0;31m    "stdout_lines": [[0m
+[0;31m        "[config/images] Pulling 172.16.137.132:5000/yunionio/kube-apiserver:v1.15.8", [0m
+[0;31m        "[config/images] Pulled 172.16.137.132:5000/yunionio/kube-apiserver:v1.15.8", [0m
+[0;31m        "[config/images] Pulling 172.16.137.132:5000/yunionio/kube-controller-manager:v1.15.8", [0m
+[0;31m        "[config/images] Pulled 172.16.137.132:5000/yunionio/kube-controller-manager:v1.15.8", [0m
+[0;31m        "[config/images] Pulling 172.16.137.132:5000/yunionio/kube-scheduler:v1.15.8", [0m
+[0;31m        "[config/images] Pulled 172.16.137.132:5000/yunionio/kube-scheduler:v1.15.8", [0m
+[0;31m        "[config/images] Pulling 172.16.137.132:5000/yunionio/kube-proxy:v1.15.8", [0m
+[0;31m        "[config/images] Pulled 172.16.137.132:5000/yunionio/kube-proxy:v1.15.8", [0m
+[0;31m        "[config/images] Pulling 172.16.137.132:5000/yunionio/pause:3.1", [0m
+[0;31m        "[config/images] Pulled 172.16.137.132:5000/yunionio/pause:3.1", [0m
+[0;31m        "[config/images] Pulling 172.16.137.132:5000/yunionio/etcd:3.4.6"[0m
+[0;31m    ][0m
+[0;31m}[0m
+
+PLAY RECAP ***********************************************************************************************************************************************************************************************************************************************************************************************************
+[0;31m127.0.0.1[0m                  : [0;32mok=35  [0m [0;33mchanged=5   [0m unreachable=0    [0;31mfailed=1   [0m [0;36mskipped=5   [0m rescued=0    ignored=0
+

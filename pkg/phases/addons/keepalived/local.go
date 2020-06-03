@@ -18,6 +18,9 @@ package keepalived
 
 import (
 	kubeadmapi "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm"
+	v1 "k8s.io/api/core/v1"
+	kubeadmapi "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm"
+	staticpodutil "k8s.io/kubernetes/cmd/kubeadm/app/util/staticpod"
 )
 
 type Member struct {
@@ -44,23 +47,21 @@ func CreateLocalKeepalivedStaticPodManifestFile(manifestDir string, nodeName str
 
 // GetKeepalivedPodSpec returns the keepalived static Pod actualized to the context of the current configuration
 // NB. GetKeepalivedPodSpec methods holds the information about how kubeadm creates keepalived static pod manifests.
-//func GetKeepalivedPodSpec(cfg *kubeadmapi.ClusterConfiguration, endpoint *kubeadmapi.APIEndpoint, nodeName string, initialCluster []Member) error {
-//
-//	keepalivedMounts := map[string]v1.Volume{}
-//	return staticpodutil.ComponentPod(v1.Container{
-//		Name:            "keepalived",
-//		Command:         getKeepalivedCommand(cfg, endpoint, nodeName, initialCluster),
-//		Image:           images.GetKeepalivedImage(cfg),
-//		ImagePullPolicy: v1.PullIfNotPresent,
-//		// Mount the keepalived datadir path read-write so keepalived can store data in a more persistent manner
-//		VolumeMounts: []v1.VolumeMount{
-//			staticpodutil.NewVolumeMount(keepalivedVolumeName, cfg.Keepalived.Local.DataDir, false),
-//			staticpodutil.NewVolumeMount(certsVolumeName, cfg.CertificatesDir+"/keepalived", false),
-//		},
-//		LivenessProbe: staticpodutil.KeepalivedProbe(
-//			&cfg.Keepalived, kubeadmconstants.KeepalivedListenClientPort, cfg.CertificatesDir,
-//			kubeadmconstants.KeepalivedCACertName, kubeadmconstants.KeepalivedHealthcheckClientCertName, kubeadmconstants.KeepalivedHealthcheckClientKeyName,
-//		),
-//	}, keepalivedMounts)
-//	return nil
-//}
+
+func GetKeepalivedPodSpec(cfg *kubeadmapi.ClusterConfiguration, endpoint *kubeadmapi.APIEndpoint, nodeName string, initialCluster []Member) error {
+
+	keepalivedMounts := map[string]v1.Volume{}
+	return staticpodutil.ComponentPod(v1.Container{
+		Name:            "keepalived",
+		Command:         []string{},
+		Image:           "172.16.137.132:5000/yunionio/keepalived:latest",
+		ImagePullPolicy: v1.PullIfNotPresent,
+		// Mount the keepalived datadir path read-write so keepalived can store data in a more persistent manner
+		VolumeMounts: []v1.VolumeMount{},
+		LivenessProbe: staticpodutil.KeepalivedProbe(
+			&cfg.Keepalived, kubeadmconstants.KeepalivedListenClientPort, cfg.CertificatesDir,
+			kubeadmconstants.KeepalivedCACertName, kubeadmconstants.KeepalivedHealthcheckClientCertName, kubeadmconstants.KeepalivedHealthcheckClientKeyName,
+		),
+	}, keepalivedMounts)
+	return nil
+}
