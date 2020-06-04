@@ -81,6 +81,7 @@ type joinOptions struct {
 	glanceNode            bool
 	baremetalNode         bool
 	esxiNode              bool
+	upgradeFromV2         bool
 }
 
 // compile-time assert that the local data object satisfies the phases data interface.
@@ -134,8 +135,10 @@ func NewCmdJoin(out io.Writer, joinOptions *joinOptions) *cobra.Command {
 			err = joinRunner.Run(args)
 			kubeadmutil.CheckErr(err)
 
-			err = onecloud.GenerateDefaultHostConfig(joinOptions.hostCfg)
-			kubeadmutil.CheckErr(err)
+			if !joinOptions.upgradeFromV2 {
+				err = onecloud.GenerateDefaultHostConfig(joinOptions.hostCfg)
+				kubeadmutil.CheckErr(err)
+			}
 
 			// if the node is hosting a new control plane instance
 			if data.cfg.ControlPlane != nil {
@@ -258,6 +261,7 @@ func addJoinOtherFlags(flagSet *flag.FlagSet, joinOptions *joinOptions) {
 		"Join node IP",
 	)
 	options.AddGlanceNodeLabelFlag(flagSet, &joinOptions.glanceNode, &joinOptions.baremetalNode, &joinOptions.esxiNode)
+	options.AddUpgradeFromV2Flags(flagSet, &joinOptions.upgradeFromV2)
 }
 
 // newJoinOptions returns a struct ready for being used for creating cmd join flags.
