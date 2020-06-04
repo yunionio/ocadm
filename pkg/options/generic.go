@@ -34,6 +34,10 @@ func AddOperatorVersionFlags(fs *pflag.FlagSet, version *string) {
 	fs.StringVar(version, OperatorVersion, v1.DefaultOperatorVersion, "Choose onecloud operator version")
 }
 
+func AddUpgradeFromV2Flags(fs *pflag.FlagSet, upgradeFromV2 *bool) {
+	fs.BoolVar(upgradeFromV2, "upgrade-from-v2", false, "Is upgrade from v2")
+}
+
 func AddGlanceNodeLabelFlag(fs *pflag.FlagSet, glanceNode, baremetalNode, esxiNode *bool) {
 	fs.BoolVar(glanceNode, "glance-node", false, "as glance node on upgrade from onecloud version 2.x")
 	fs.BoolVar(baremetalNode, "baremetal-node", false, "as baremetal node on upgrade from onecloud version 2.x")
