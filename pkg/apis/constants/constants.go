@@ -36,6 +36,8 @@ const (
 	DefaultK8sSidecarVersion = "0.1.20"
 	Busybox                  = "busybox"
 	BusyboxVersion           = "1.28.0-glibc"
+	MetricsServer            = "metrics-server-amd64"
+	MetricsServerVersion     = "v0.3.6"
 
 	EndpointTypeInternal = "internal"
 	EndpointTypePublic   = "public"
