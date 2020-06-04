@@ -64,11 +64,19 @@ func (m *regionManager) getConfigMap(oc *v1alpha1.OnecloudCluster, cfg *v1alpha1
 		return nil, err
 	}
 	config := cfg.RegionServer
+	spec := oc.Spec.RegionServer
 	SetDBOptions(&opt.DBOptions, oc.Spec.Mysql, config.DB)
 	SetOptionsServiceTLS(&opt.BaseOptions)
 	SetServiceCommonOptions(&opt.CommonOptions, oc, config.ServiceDBCommonOptions.ServiceCommonOptions)
 	// TODO: fix this, currently init container can't sync table
 	opt.AutoSyncTable = true
+
+	opt.DNSDomain = spec.DNSDomain
+	if spec.DNSServer == "" {
+		spec.DNSServer = oc.Spec.LoadBalancerEndpoint
+	}
+	oc.Spec.RegionServer = spec
+	opt.DNSServer = spec.DNSServer
 
 	opt.PortV2 = constants.RegionPort
 	err := m.setBaremetalPrepareConfigure(oc, cfg, opt)
@@ -126,7 +134,12 @@ func (m *regionManager) getService(oc *v1alpha1.OnecloudCluster) *corev1.Service
 }
 
 func (m *regionManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg *v1alpha1.OnecloudClusterConfig) (*apps.Deployment, error) {
-	return m.newCloudServiceSinglePortDeployment(v1alpha1.RegionComponentType, oc, oc.Spec.RegionServer.DeploymentSpec, constants.RegionPort, true)
+	deploy, err := m.newCloudServiceSinglePortDeployment(v1alpha1.RegionComponentType, oc, oc.Spec.RegionServer.DeploymentSpec, constants.RegionPort, true)
+	if err != nil {
+		return nil, err
+	}
+	deploy.Spec.Template.Spec.ServiceAccountName = constants.ServiceAccountOnecloudOperator
+	return deploy, nil
 }
 
 func (m *regionManager) getDeploymentStatus(oc *v1alpha1.OnecloudCluster) *v1alpha1.DeploymentStatus {

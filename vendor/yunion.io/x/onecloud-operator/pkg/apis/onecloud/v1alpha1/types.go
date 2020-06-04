@@ -20,6 +20,11 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+var (
+	StartingDeadlineSeconds int64   = 300
+	CronjobMonitorExpand    float64 = 1.2
+)
+
 const (
 	OnecloudClusterResourceKind   = "OnecloudCluster"
 	OnecloudClusterResourcePlural = "onecloudclusters"
@@ -79,12 +84,17 @@ const (
 	CloudmonPingComponentType ComponentType = "cloudmon-ping"
 	// CloudmonReportUsage is report-usage cronjob
 	CloudmonReportUsageComponentType ComponentType = "cloudmon-report-usage"
+	// CloudmonReportServerAli is report-usage cronjob
+	CloudmonReportServerComponentType ComponentType = "cloudmon-report-server"
+	// CloudmonReportHost is report-host cronjob
+	CloudmonReportHostComponentType ComponentType = "cloudmon-report-host"
 	// Esxi Agent
 	EsxiAgentComponentType ComponentType = "esxi-agent"
 
-	OvnNorthComponentType ComponentType = "ovn-north"
-	OvnHostComponentType  ComponentType = "ovn-host"
-	VpcAgentComponentType ComponentType = "vpcagent"
+	OvnNorthComponentType  ComponentType = "ovn-north"
+	OvnHostComponentType   ComponentType = "ovn-host"
+	VpcAgentComponentType  ComponentType = "vpcagent"
+	RegionDNSComponentType ComponentType = "region-dns"
 )
 
 // ComponentPhase is the current state of component
@@ -143,6 +153,8 @@ type OnecloudClusterSpec struct {
 	Keystone KeystoneSpec `json:"keystone"`
 	// RegionServer holds configuration for region
 	RegionServer RegionSpec `json:"regionServer"`
+	// RegionDNS holds configuration for region-dns
+	RegionDNS RegionDNSSpec `json:"regionDNS"`
 	// Scheduler holds configuration for scheduler
 	Scheduler DeploymentSpec `json:"scheduler"`
 	// Glance holds configuration for glance
@@ -195,6 +207,10 @@ type OnecloudClusterSpec struct {
 	CloudmonPing CronJobSpec `json:"cloudmonping"`
 	// CloudmonReportUsage holds configuration for report-usage cronjob
 	CloudmonReportUsage CronJobSpec `json:"cloudmonreportusage"`
+	// CloudmonReportServerAli holds configuration for report-server cronjob
+	CloudmonReportServer CronJobSpec `json:"cloudmonreportserver"`
+	// CloudmonReportHost holds configuration for report-usage cronjob
+	CloudmonReportHost CronJobSpec `json:"cloudmonreporthost"`
 	// EsxiAgent hols configuration for esxi agent
 	EsxiAgent StatefulDeploymentSpec `json:"esxiagent"`
 
@@ -318,6 +334,10 @@ type KeystoneStatus struct {
 
 type RegionStatus struct {
 	DeploymentStatus
+	RegionId     string
+	RegionZoneId string
+	ZoneId       string
+	WireId       string
 }
 
 type GlanceStatus struct {
@@ -334,6 +354,26 @@ type MeterStatus struct {
 
 type RegionSpec struct {
 	DeploymentSpec
+	// DNSServer is the address of DNS server
+	DNSServer string `json:"dnsServer"`
+	// DNSDomain is the global default dns domain suffix for virtual servers
+	DNSDomain string `json:"dnsDomain"`
+}
+
+type RegionDNSProxy struct {
+	// check: https://coredns.io/plugins/proxy/
+	From string   `json:"from"`
+	To   []string `json:"to"`
+	// Policy string `json:"policy"`
+}
+
+type RegionDNSSpec struct {
+	DaemonSetSpec
+	Proxies []RegionDNSProxy `json:"proxies"`
+}
+
+type RegionDNSStatus struct {
+	DeploymentStatus
 }
 
 type HostAgentSpec struct {

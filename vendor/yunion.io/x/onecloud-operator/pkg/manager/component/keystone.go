@@ -69,9 +69,11 @@ func (m *keystoneManager) getConfigMap(oc *v1alpha1.OnecloudCluster, clusterCfg 
 	config := clusterCfg.Keystone
 	SetDBOptions(&opt.DBOptions, oc.Spec.Mysql, config.DB)
 	SetOptionsServiceTLS(&opt.BaseOptions)
-	SetServiceBaseOptions(&opt.BaseOptions, oc.Spec.Region, config.ServiceBaseConfig)
+	SetServiceBaseOptions(&opt.BaseOptions, oc.GetRegion(), config.ServiceBaseConfig)
 
 	opt.BootstrapAdminUserPassword = oc.Spec.Keystone.BootstrapPassword
+	// always reset admin user password to ensure password is correct
+	opt.ResetAdminUserPassword = true
 	opt.AdminPort = constants.KeystoneAdminPort
 	opt.Port = constants.KeystonePublicPort
 
@@ -86,12 +88,13 @@ func (m *keystoneManager) getDeployment(oc *v1alpha1.OnecloudCluster, _ *v1alpha
 			{
 				Name:  "init",
 				Image: oc.Spec.Keystone.Image,
+				ImagePullPolicy: oc.Spec.Keystone.ImagePullPolicy,
 				Command: []string{
 					"/opt/yunion/bin/keystone",
 					"--config",
 					"/etc/yunion/keystone.conf",
 					"--auto-sync-table",
-					"--reset-admin-user-password",
+					// "--reset-admin-user-password",
 					"--exit-after-db-init",
 				},
 				VolumeMounts: volMounts,

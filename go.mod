@@ -8,6 +8,7 @@ require (
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
+	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v1.4.2-0.20190109173153-a79fabbfe841 // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
@@ -19,6 +20,7 @@ require (
 	github.com/go-logr/logr v0.1.0 // indirect
 	github.com/go-logr/zapr v0.1.1 // indirect
 	github.com/go-sql-driver/mysql v1.4.1
+	github.com/gregjones/httpcache v0.0.0-20181110185634-c63ab54fda8f // indirect
 	github.com/joho/godotenv v1.3.0
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/lithammer/dedent v1.1.0
@@ -28,29 +30,28 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.3
-	golang.org/x/sync v0.0.0-20190423024810-112230192c58
+	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 	golang.org/x/sys v0.0.0-20200124204421-9fbb57f87de9 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/square/go-jose.v2 v2.3.1 // indirect
-	gopkg.in/yaml.v2 v2.2.8 // indirect
-	k8s.io/api v0.15.8
+	k8s.io/api v0.17.3
 	k8s.io/apiextensions-apiserver v0.0.0
-	k8s.io/apimachinery v0.15.8
+	k8s.io/apimachinery v0.17.3
 	k8s.io/cli-runtime v0.0.0
 	k8s.io/client-go v12.0.0+incompatible
-	k8s.io/cluster-bootstrap v0.0.0
+	k8s.io/cluster-bootstrap v0.17.3
 	k8s.io/component-base v0.15.8
 	k8s.io/klog v0.3.3
-	k8s.io/kubernetes v1.15.8
+	k8s.io/kubernetes v1.16.0
 	k8s.io/utils v0.0.0-20190607212802-c55fbcfc754a
 	sigs.k8s.io/cluster-api v0.1.4
 	sigs.k8s.io/controller-runtime v0.1.11 // indirect
 	sigs.k8s.io/testing_frameworks v0.1.1 // indirect
-	yunion.io/x/jsonutils v0.0.0-20200303051356-aa609aba0cda
-	yunion.io/x/log v0.0.0-20190629062853-9f6483a7103d
-	yunion.io/x/onecloud v0.0.0-20200309043639-7b0ceddd6b80
-	yunion.io/x/onecloud-operator v0.0.2-0.20200309080407-e89871b996c7
-	yunion.io/x/pkg v0.0.0-20200304112442-9dae9351325e
+	yunion.io/x/jsonutils v0.0.0-20200601015434-d61aefddfe79
+	yunion.io/x/log v0.0.0-20200313080802-57a4ce5966b3
+	yunion.io/x/onecloud v0.0.0-20200604132419-56ebaea85e41
+	yunion.io/x/onecloud-operator v0.0.2-0.20200601093550-04cb451cfd53
+	yunion.io/x/pkg v0.0.0-20200603123312-ad58e621aec0
 )
 
 replace (
@@ -73,6 +74,7 @@ replace (
 	k8s.io/kube-scheduler => k8s.io/kube-scheduler v0.15.8
 	k8s.io/kubectl => k8s.io/kubectl v0.15.9-beta.0
 	k8s.io/kubelet => k8s.io/kubelet v0.15.8
+	k8s.io/kubernetes => k8s.io/kubernetes v1.15.8
 	k8s.io/legacy-cloud-providers => k8s.io/legacy-cloud-providers v0.15.8
 	k8s.io/metrics => k8s.io/metrics v0.15.8
 	k8s.io/node-api => k8s.io/node-api v0.15.8
