@@ -498,7 +498,7 @@ func SyncCloudEndpoint(oc *onecloud.OnecloudCluster, cType onecloud.ComponentTyp
 		constants.EndpointTypePublic:   ep.GetUrl(publicAddress),
 		constants.EndpointTypeInternal: ep.GetUrl(internalAddress),
 	}
-	return onecloudutil.RegisterServiceEndpoints(s, oc.Spec.Region, ep.ServiceName, ep.ServiceType, urls)
+	return onecloudutil.RegisterServiceEndpoints(s, oc.Spec.Region, ep.ServiceName, ep.ServiceType, "", urls)
 }
 
 func DeleteCloudEndpoint(s *mcclient.ClientSession, ep *CloudEndpoint) error {

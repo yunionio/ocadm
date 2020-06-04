@@ -17,15 +17,70 @@ package identity
 import "yunion.io/x/onecloud/pkg/apis"
 
 type IdentityProviderDetails struct {
-	apis.StandaloneResourceDetails
+	apis.EnabledStatusStandaloneResourceDetails
 
-	SyncIntervalSeconds int    `json:"sync_interval_seconds"`
-	TargetDomain        string `json:"target_domain"`
+	// 认证源账号信息同步周期
+	SyncIntervalSeconds int `json:"sync_interval_seconds"`
 
-	RoleCount    int `json:"role_count,allowempty"`
-	UserCount    int `json:"user_count,allowempty"`
-	PolicyCount  int `json:"policy_count,allowempty"`
-	DomainCount  int `json:"domain_count,allowempty"`
+	// 认证源的目标域名称
+	TargetDomain string `json:"target_domain"`
+
+	// 该认证源关联的所有域的角色数量
+	RoleCount int `json:"role_count,allowempty"`
+
+	// 该认证源关联的所有域的用户数量
+	UserCount int `json:"user_count,allowempty"`
+
+	// 该认证源关联的所有域的权限策略数量
+	PolicyCount int `json:"policy_count,allowempty"`
+
+	// 该认证源关联的所有域的数量
+	DomainCount int `json:"domain_count,allowempty"`
+
+	// 该认证源关联的所有域的项目数量
 	ProjectCount int `json:"project_count,allowempty"`
-	GroupCount   int `json:"group_count,allowempty"`
+
+	// 该认证源关联的所有域的组数量
+	GroupCount int `json:"group_count,allowempty"`
+
+	SIdentityProvider
+}
+
+type IdpResourceInfo struct {
+	// 认证源ID
+	IdpId string `json:"idp_id"`
+
+	// 认证源名称
+	Idp string `json:"idp"`
+
+	// 该资源在认证源的原始ID
+	IdpEntityId string `json:"idp_entity_id"`
+
+	// 认证源类型, 例如sql, cas, ldap等
+	IdpDriver string `json:"idp_driver"`
+}
+
+type IdentityProviderCreateInput struct {
+	apis.EnabledStatusStandaloneResourceCreateInput
+
+	// 后端驱动名称
+	Driver string `json:"driver"`
+
+	// 模板名称
+	Template string `json:"template"`
+
+	// 默认导入用户和组的域
+	TargetDomain string `json:"target_domain"`
+	// swagger:ignore
+	// Deprecated
+	TargetDomainId string `json:"target_domain_id" "yunion:deprecated-by":"target_domain"`
+
+	// 新建域的时候是否自动新建第一个项目
+	AutoCreateProject *bool `json:"auto_create_project"`
+
+	// 自动同步间隔，单位：秒
+	SyncIntervalSeconds *int `json:"sync_interval_seconds"`
+
+	// 配置信息
+	Config TConfigs `json:"config"`
 }

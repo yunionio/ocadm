@@ -62,9 +62,20 @@ type DBInstanceDatabaseCreateInput struct {
 }
 
 type DBInstancedatabaseDetails struct {
-	apis.StandaloneResourceDetails
+	apis.StatusStandaloneResourceDetails
+	apis.ProjectizedResourceInfo
+	DBInstanceResourceInfo
+
 	SDBInstanceDatabase
 
 	// 数据库权限
 	DBInstanceprivileges []DBInstancePrivilege `json:"dbinstanceprivileges"`
+	ProjectId            string                `json:"tenant_id"`
+}
+
+type DBInstanceparameterDetails struct {
+	apis.StandaloneResourceDetails
+	DBInstanceResourceInfo
+
+	SDBInstanceParameter
 }

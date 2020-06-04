@@ -34,6 +34,8 @@ const (
 	// It's set by helm when installing a release
 	InstanceLabelKey string = "app.kubernetes.io/instance"
 	AppLabelKey      string = "app"
+
+	ServiceAccountOnecloudOperator string = "onecloud-operator"
 )
 
 const (
@@ -288,7 +290,30 @@ const (
 	EsxiAgentPort      = 30883
 	EsxiAgentDataStore = "/opt/cloud/workspace"
 
+	ServiceOperatorAdminUser = "osOperator"
+	ServiceOperatorPort      = 30885
+
 	VpcAgentAdminUser = "vpcagentadmin"
+
+	EtcdClientPort            = 2379
+	EtcdPeerPort              = 2380
+	EtcdImageName             = "etcd"
+	EtcdDefaultClusterSize    = 3
+	EtcdImageVersion          = "3.4.6"
+	EtcdDefaultRequestTimeout = 5 * time.Second
+	EtcdDefaultDialTimeout    = 3 * time.Second
+	BusyboxImageName          = "busybox"
+	BusyboxImageVersion       = "1.28.0-glibc"
+	ServiceNameEtcd           = "etcd"
+	ServiceTypeEtcd           = ServiceNameEtcd
+	ServiceCertEtcdName       = ServiceNameEtcd
+
+	ItsmAdminUser   = "itsm"
+	ItsmPort        = 30595
+	ItsmDB          = "itsm"
+	ItsmDBUser      = "itsm"
+	ServiceNameItsm = "itsm"
+	ServiceTypeItsm = "itsm"
 )
 
 const (
@@ -346,4 +371,24 @@ var (
 	ConfigDir        = "/etc/yunion"
 	VolumeConfigName = "config"
 	VolumeCertsName  = "certs"
+
+	Localhost = "localhost"
+
+	EtcdServerSecret = "etcd-server"
+	EtcdClientSecret = "etcd-client"
+	EtcdPeerSecret   = "etcd-peer"
+	EtcdClientTLSDir = "/etc/etcdtls/operator/etcd-tls"
+
+	EtcdServerName       = "server"
+	EtcdServerCACertName = "server-ca"
+	EtcdServerCertName   = "server.crt"
+	EtcdServerKeyName    = "server.key"
+	EtcdClientName       = "etcd-client"
+	EtcdClientCACertName = "etcd-client-ca"
+	EtcdClientCertName   = "etcd-client.crt"
+	EtcdClientKeyName    = "etcd-client.key"
+	EtcdPeerName         = "peer"
+	EtcdPeerCACertName   = "peer-ca"
+	EtcdPeerCertName     = "peer.crt"
+	EtcdPeerKeyName      = "peer.key"
 )

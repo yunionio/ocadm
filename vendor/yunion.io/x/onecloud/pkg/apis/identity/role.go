@@ -17,7 +17,9 @@ package identity
 import "yunion.io/x/onecloud/pkg/apis"
 
 type RoleDetails struct {
-	apis.StandaloneResourceDetails
+	IdentityBaseResourceDetails
+	apis.SharableResourceBaseInfo
+
 	SRole
 
 	UserCount     int      `json:"user_count"`

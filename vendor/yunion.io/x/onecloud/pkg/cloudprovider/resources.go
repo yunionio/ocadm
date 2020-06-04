@@ -24,7 +24,6 @@ import (
 
 	"yunion.io/x/onecloud/pkg/mcclient"
 	"yunion.io/x/onecloud/pkg/util/billing"
-	"yunion.io/x/onecloud/pkg/util/rbacutils"
 )
 
 type ICloudResource interface {
@@ -50,6 +49,8 @@ type IBillingResource interface {
 	GetBillingType() string
 	GetCreatedAt() time.Time
 	GetExpiredAt() time.Time
+	SetAutoRenew(autoRenew bool) error
+	IsAutoRenew() bool
 }
 
 type ICloudRegion interface {
@@ -136,6 +137,10 @@ type ICloudRegion interface {
 	GetProvider() string
 
 	GetICloudEvents(start time.Time, end time.Time, withReadEvent bool) ([]ICloudEvent, error) //获取公有云操作日志接口
+
+	GetCapabilities() []string
+
+	GetICloudQuotas() ([]ICloudQuota, error)
 }
 
 type ICloudZone interface {
@@ -167,6 +172,7 @@ type ICloudImage interface {
 	GetMinRamSizeMb() int
 	GetImageFormat() string
 	GetCreatedAt() time.Time
+	UEFI() bool
 }
 
 type ICloudStoragecache interface {
@@ -198,7 +204,7 @@ type ICloudStorage interface {
 	GetStorageConf() jsonutils.JSONObject
 	GetEnabled() bool
 
-	CreateIDisk(name string, sizeGb int, desc string) (ICloudDisk, error)
+	CreateIDisk(conf *DiskCreateConfig) (ICloudDisk, error)
 
 	GetIDiskById(idStr string) (ICloudDisk, error)
 
@@ -246,6 +252,8 @@ type ICloudHost interface {
 type ICloudVM interface {
 	IBillingResource
 	IVirtualResource
+
+	ConvertPublicIpToEip() error
 
 	GetIHost() ICloudHost
 	GetIHostId() string
@@ -456,8 +464,8 @@ type ICloudNetwork interface {
 	GetIpMask() int8
 	GetGateway() string
 	GetServerType() string
-	GetIsPublic() bool
-	GetPublicScope() rbacutils.TRbacScope
+	// GetIsPublic() bool
+	// GetPublicScope() rbacutils.TRbacScope
 
 	Delete() error
 
@@ -490,7 +498,7 @@ type ICloudLoadbalancer interface {
 
 	GetIEIP() (ICloudEIP, error)
 
-	Delete() error
+	Delete(ctx context.Context) error
 
 	Start() error
 	Stop() error
@@ -501,7 +509,7 @@ type ICloudLoadbalancer interface {
 	CreateILoadBalancerBackendGroup(group *SLoadbalancerBackendGroup) (ICloudLoadbalancerBackendGroup, error)
 	GetILoadBalancerBackendGroupById(groupId string) (ICloudLoadbalancerBackendGroup, error)
 
-	CreateILoadBalancerListener(listener *SLoadbalancerListener) (ICloudLoadbalancerListener, error)
+	CreateILoadBalancerListener(ctx context.Context, listener *SLoadbalancerListener) (ICloudLoadbalancerListener, error)
 	GetILoadBalancerListenerById(listenerId string) (ICloudLoadbalancerListener, error)
 }
 
@@ -551,9 +559,9 @@ type ICloudLoadbalancerListener interface {
 
 	Start() error
 	Stop() error
-	Sync(listener *SLoadbalancerListener) error
+	Sync(ctx context.Context, listener *SLoadbalancerListener) error
 
-	Delete() error
+	Delete(ctx context.Context) error
 }
 
 type ICloudLoadbalancerListenerRule interface {
@@ -565,7 +573,7 @@ type ICloudLoadbalancerListenerRule interface {
 	GetCondition() string
 	GetBackendGroupId() string
 
-	Delete() error
+	Delete(ctx context.Context) error
 }
 
 type ICloudLoadbalancerBackendGroup interface {
@@ -583,8 +591,8 @@ type ICloudLoadbalancerBackendGroup interface {
 	AddBackendServer(serverId string, weight int, port int) (ICloudLoadbalancerBackend, error)
 	RemoveBackendServer(serverId string, weight int, port int) error
 
-	Delete() error
-	Sync(group *SLoadbalancerBackendGroup) error
+	Delete(ctx context.Context) error
+	Sync(ctx context.Context, group *SLoadbalancerBackendGroup) error
 }
 
 type ICloudLoadbalancerBackend interface {
@@ -595,7 +603,7 @@ type ICloudLoadbalancerBackend interface {
 	GetBackendType() string
 	GetBackendRole() string
 	GetBackendId() string
-	SyncConf(port, weight int) error
+	SyncConf(ctx context.Context, port, weight int) error
 }
 
 type ICloudLoadbalancerCertificate interface {
@@ -750,7 +758,9 @@ type ICloudDBInstance interface {
 
 	GetConnectionStr() string
 	GetInternalConnectionStr() string
-	GetIZoneId() string
+	GetZone1Id() string
+	GetZone2Id() string
+	GetZone3Id() string
 	GetIVpcId() string
 
 	GetDBNetwork() (*SDBInstanceNetwork, error)
@@ -934,4 +944,12 @@ type ICloudEvent interface {
 	IsSuccess() bool
 
 	GetCreatedAt() time.Time
+}
+
+type ICloudQuota interface {
+	GetGlobalId() string
+	GetDesc() string
+	GetQuotaType() string
+	GetMaxQuotaCount() int
+	GetCurrentQuotaUsedCount() int
 }
