@@ -17,9 +17,12 @@ package compute
 import "yunion.io/x/onecloud/pkg/apis"
 
 type VpcDetails struct {
-	apis.StandaloneResourceDetails
+	apis.EnabledStatusInfrasResourceBaseDetails
+	ManagedResourceInfo
+	CloudregionResourceInfo
+	GlobalVpcResourceInfo
+
 	SVpc
-	CloudproviderInfo
 
 	// 二层网络数量
 	// example: 1
@@ -33,4 +36,76 @@ type VpcDetails struct {
 	// NAT网关个数
 	// example: 0
 	NatgatewayCount int `json:"natgateway_count"`
+}
+
+type VpcResourceInfoBase struct {
+	// Vpc Name
+	Vpc string `json:"vpc"`
+
+	// VPC外部Id
+	VpcExtId string `json:"vpc_ext_id"`
+}
+
+type VpcResourceInfo struct {
+	VpcResourceInfoBase
+
+	// VPC归属区域ID
+	CloudregionId string `json:"cloudregion_id"`
+
+	CloudregionResourceInfo
+
+	// VPC归属云订阅ID
+	ManagerId string `json:"manager_id"`
+
+	ManagedResourceInfo
+}
+
+type VpcSyncstatusInput struct {
+}
+
+type VpcCreateInput struct {
+	apis.EnabledStatusInfrasResourceBaseCreateInput
+
+	CloudregionResourceInput
+
+	CloudproviderResourceInput
+
+	// CIDR_BLOCK
+	CidrBlock string `json:"cidr_block"`
+
+	// Vpc外网访问模式
+	ExternalAccessMode string `json:"external_access_mode"`
+}
+
+type VpcUpdateInput struct {
+	apis.EnabledStatusInfrasResourceBaseUpdateInput
+
+	// Vpc外网访问模式
+	ExternalAccessMode string `json:"external_access_mode"`
+}
+
+type VpcResourceInput struct {
+	// 关联VPC(ID或Name)
+	Vpc string `json:"vpc"`
+	// swagger:ignore
+	// Deprecated
+	// filter by vpc Id
+	VpcId string `json:"vpc_id" "yunion:deprecated-by":"vpc"`
+
+	// Vpc外网访问模式
+	ExternalAccessMode string `json:"external_access_mode"`
+}
+
+type VpcFilterListInputBase struct {
+	VpcResourceInput
+
+	// 按VPC名称排序
+	// pattern:asc|desc
+	OrderByVpc string `json:"order_by_vpc"`
+}
+
+type VpcFilterListInput struct {
+	VpcFilterListInputBase
+	RegionalFilterListInput
+	ManagedResourceListInput
 }

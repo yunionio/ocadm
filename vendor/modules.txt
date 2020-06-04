@@ -1,3 +1,5 @@
+# cloud.google.com/go v0.50.0
+cloud.google.com/go/compute/metadata
 # github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78
 github.com/Azure/go-ansiterm
 github.com/Azure/go-ansiterm/winterm
@@ -22,6 +24,12 @@ github.com/coreos/etcd/mvcc/mvccpb
 github.com/coreos/etcd/pkg/tlsutil
 github.com/coreos/etcd/pkg/transport
 github.com/coreos/etcd/pkg/types
+# github.com/coreos/etcd-operator v0.9.4
+github.com/coreos/etcd-operator/pkg/apis/etcd/v1beta2
+github.com/coreos/etcd-operator/pkg/util/constants
+github.com/coreos/etcd-operator/pkg/util/etcdutil
+github.com/coreos/etcd-operator/pkg/util/k8sutil
+github.com/coreos/etcd-operator/pkg/util/retryutil
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
 # github.com/docker/distribution v2.7.1+incompatible
@@ -72,12 +80,12 @@ github.com/fatih/camelcase
 github.com/fatih/color
 # github.com/ghodss/yaml v1.0.0
 github.com/ghodss/yaml
-# github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7
+# github.com/gin-contrib/sse v0.1.0
 github.com/gin-contrib/sse
-# github.com/gin-gonic/gin v1.3.0
+# github.com/gin-gonic/gin v1.5.0
 github.com/gin-gonic/gin
 github.com/gin-gonic/gin/binding
-github.com/gin-gonic/gin/json
+github.com/gin-gonic/gin/internal/json
 github.com/gin-gonic/gin/render
 # github.com/go-openapi/jsonpointer v0.19.0
 github.com/go-openapi/jsonpointer
@@ -87,6 +95,11 @@ github.com/go-openapi/jsonreference
 github.com/go-openapi/spec
 # github.com/go-openapi/swag v0.17.2
 github.com/go-openapi/swag
+# github.com/go-playground/locales v0.12.1
+github.com/go-playground/locales
+github.com/go-playground/locales/currency
+# github.com/go-playground/universal-translator v0.16.0
+github.com/go-playground/universal-translator
 # github.com/go-sql-driver/mysql v1.4.1
 github.com/go-sql-driver/mysql
 # github.com/godbus/dbus v0.0.0-20151105175453-c7fdd8b5cd55
@@ -107,7 +120,7 @@ github.com/golang-plus/uuid/internal/namebased/md5
 github.com/golang-plus/uuid/internal/namebased/sha1
 github.com/golang-plus/uuid/internal/random
 github.com/golang-plus/uuid/internal/timebased
-# github.com/golang/groupcache v0.0.0-20190129154638-5b532d6fd5ef
+# github.com/golang/groupcache v0.0.0-20191227052852-215e87163ea7
 github.com/golang/groupcache/lru
 # github.com/golang/protobuf v1.3.2
 github.com/golang/protobuf/proto
@@ -147,6 +160,8 @@ github.com/joho/godotenv
 github.com/json-iterator/go
 # github.com/konsorten/go-windows-terminal-sequences v1.0.1
 github.com/konsorten/go-windows-terminal-sequences
+# github.com/leodido/go-urn v1.1.0
+github.com/leodido/go-urn
 # github.com/lithammer/dedent v1.1.0
 github.com/lithammer/dedent
 # github.com/mailru/easyjson v0.0.0-20180823135443-60711f1a8329
@@ -185,16 +200,18 @@ github.com/opencontainers/go-digest
 # github.com/opencontainers/image-spec v0.0.0-20170604055404-372ad780f634
 github.com/opencontainers/image-spec/specs-go
 github.com/opencontainers/image-spec/specs-go/v1
+# github.com/pborman/uuid v1.2.0
+github.com/pborman/uuid
 # github.com/peterbourgon/diskv v2.0.1+incompatible
 github.com/peterbourgon/diskv
-# github.com/pkg/errors v0.8.1
+# github.com/pkg/errors v0.9.1
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
 # github.com/prometheus/client_golang v1.0.0
 github.com/prometheus/client_golang/prometheus
 github.com/prometheus/client_golang/prometheus/internal
-# github.com/prometheus/client_model v0.0.0-20190129233127-fd36f4220a90
+# github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4
 github.com/prometheus/client_model/go
 # github.com/prometheus/common v0.4.1
 github.com/prometheus/common/expfmt
@@ -224,21 +241,21 @@ github.com/vishvananda/netlink
 github.com/vishvananda/netlink/nl
 # github.com/vishvananda/netns v0.0.0-20191106174202-0a2b9b5464df
 github.com/vishvananda/netns
-# golang.org/x/crypto v0.0.0-20191002192127-34f69633bfdc
+# golang.org/x/crypto v0.0.0-20191206172530-e9b2fee46413
 golang.org/x/crypto/argon2
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blake2b
 golang.org/x/crypto/blowfish
+golang.org/x/crypto/chacha20
 golang.org/x/crypto/curve25519
 golang.org/x/crypto/ed25519
 golang.org/x/crypto/ed25519/internal/edwards25519
-golang.org/x/crypto/internal/chacha20
 golang.org/x/crypto/internal/subtle
 golang.org/x/crypto/pbkdf2
 golang.org/x/crypto/poly1305
 golang.org/x/crypto/ssh
 golang.org/x/crypto/ssh/terminal
-# golang.org/x/net v0.0.0-20191007182048-72f939374954
+# golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/http/httpguts
@@ -250,10 +267,13 @@ golang.org/x/net/internal/timeseries
 golang.org/x/net/proxy
 golang.org/x/net/publicsuffix
 golang.org/x/net/trace
-# golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
+# golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6
 golang.org/x/oauth2
+golang.org/x/oauth2/google
 golang.org/x/oauth2/internal
-# golang.org/x/sync v0.0.0-20190423024810-112230192c58
+golang.org/x/oauth2/jws
+golang.org/x/oauth2/jwt
+# golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 golang.org/x/sync/errgroup
 # golang.org/x/sys v0.0.0-20200124204421-9fbb57f87de9
 golang.org/x/sys/cpu
@@ -275,19 +295,24 @@ golang.org/x/text/unicode/norm
 golang.org/x/text/width
 # golang.org/x/time v0.0.0-20190308202827-9d24e82272b4
 golang.org/x/time/rate
-# google.golang.org/appengine v1.5.0
+# google.golang.org/appengine v1.6.5
+google.golang.org/appengine
 google.golang.org/appengine/cloudsql
 google.golang.org/appengine/internal
+google.golang.org/appengine/internal/app_identity
 google.golang.org/appengine/internal/base
 google.golang.org/appengine/internal/datastore
 google.golang.org/appengine/internal/log
+google.golang.org/appengine/internal/modules
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20190502173448-54afdca5d873
+# google.golang.org/genproto v0.0.0-20191230161307-f3c370f40bfb
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.23.1
+# google.golang.org/grpc v1.26.0
 google.golang.org/grpc
+google.golang.org/grpc/attributes
+google.golang.org/grpc/backoff
 google.golang.org/grpc/balancer
 google.golang.org/grpc/balancer/base
 google.golang.org/grpc/balancer/roundrobin
@@ -304,10 +329,13 @@ google.golang.org/grpc/internal
 google.golang.org/grpc/internal/backoff
 google.golang.org/grpc/internal/balancerload
 google.golang.org/grpc/internal/binarylog
+google.golang.org/grpc/internal/buffer
 google.golang.org/grpc/internal/channelz
 google.golang.org/grpc/internal/envconfig
 google.golang.org/grpc/internal/grpcrand
 google.golang.org/grpc/internal/grpcsync
+google.golang.org/grpc/internal/resolver/dns
+google.golang.org/grpc/internal/resolver/passthrough
 google.golang.org/grpc/internal/syscall
 google.golang.org/grpc/internal/transport
 google.golang.org/grpc/keepalive
@@ -315,14 +343,12 @@ google.golang.org/grpc/metadata
 google.golang.org/grpc/naming
 google.golang.org/grpc/peer
 google.golang.org/grpc/resolver
-google.golang.org/grpc/resolver/dns
-google.golang.org/grpc/resolver/passthrough
 google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
-# gopkg.in/go-playground/validator.v8 v8.18.2
-gopkg.in/go-playground/validator.v8
+# gopkg.in/go-playground/validator.v9 v9.29.1
+gopkg.in/go-playground/validator.v9
 # gopkg.in/inf.v0 v0.9.1
 gopkg.in/inf.v0
 # gopkg.in/ini.v1 v1.44.0
@@ -334,7 +360,7 @@ gopkg.in/square/go-jose.v2/json
 gopkg.in/square/go-jose.v2/jwt
 # gopkg.in/yaml.v2 v2.2.8
 gopkg.in/yaml.v2
-# k8s.io/api v0.15.8 => k8s.io/api v0.15.8
+# k8s.io/api v0.17.3 => k8s.io/api v0.15.8
 k8s.io/api/admission/v1beta1
 k8s.io/api/admissionregistration/v1beta1
 k8s.io/api/apps/v1
@@ -380,7 +406,7 @@ k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset
 k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/scheme
 k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1
 k8s.io/apiextensions-apiserver/pkg/features
-# k8s.io/apimachinery v0.15.8 => k8s.io/apimachinery v0.15.9-beta.0
+# k8s.io/apimachinery v0.17.3 => k8s.io/apimachinery v0.15.9-beta.0
 k8s.io/apimachinery/pkg/api/equality
 k8s.io/apimachinery/pkg/api/errors
 k8s.io/apimachinery/pkg/api/meta
@@ -623,6 +649,7 @@ k8s.io/client-go/pkg/apis/clientauthentication/v1alpha1
 k8s.io/client-go/pkg/apis/clientauthentication/v1beta1
 k8s.io/client-go/pkg/version
 k8s.io/client-go/plugin/pkg/client/auth/exec
+k8s.io/client-go/plugin/pkg/client/auth/gcp
 k8s.io/client-go/rest
 k8s.io/client-go/rest/watch
 k8s.io/client-go/restmapper
@@ -661,7 +688,7 @@ k8s.io/client-go/util/jsonpath
 k8s.io/client-go/util/keyutil
 k8s.io/client-go/util/retry
 k8s.io/client-go/util/workqueue
-# k8s.io/cluster-bootstrap v0.0.0 => k8s.io/cluster-bootstrap v0.15.8
+# k8s.io/cluster-bootstrap v0.17.3 => k8s.io/cluster-bootstrap v0.15.8
 k8s.io/cluster-bootstrap/token/api
 k8s.io/cluster-bootstrap/token/util
 # k8s.io/component-base v0.15.8 => k8s.io/component-base v0.15.8
@@ -679,7 +706,7 @@ k8s.io/kube-openapi/pkg/util/proto/validation
 k8s.io/kube-proxy/config/v1alpha1
 # k8s.io/kubelet v0.0.0 => k8s.io/kubelet v0.15.8
 k8s.io/kubelet/config/v1beta1
-# k8s.io/kubernetes v1.15.8
+# k8s.io/kubernetes v1.16.0 => k8s.io/kubernetes v1.15.8
 k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm
 k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/scheme
 k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta1
@@ -866,15 +893,17 @@ sigs.k8s.io/yaml
 # yunion.io/x/executor v0.0.0-20200227030256-a18417815e74
 yunion.io/x/executor/apis
 yunion.io/x/executor/client
-# yunion.io/x/jsonutils v0.0.0-20200303051356-aa609aba0cda
+# yunion.io/x/jsonutils v0.0.0-20200601015434-d61aefddfe79
 yunion.io/x/jsonutils
-# yunion.io/x/log v0.0.0-20190629062853-9f6483a7103d
+# yunion.io/x/log v0.0.0-20200313080802-57a4ce5966b3
 yunion.io/x/log
 yunion.io/x/log/hooks
-# yunion.io/x/onecloud v0.0.0-20200309043639-7b0ceddd6b80
+# yunion.io/x/onecloud v0.0.0-20200604070413-0d759322af47
 yunion.io/x/onecloud/pkg/ansibleserver/options
 yunion.io/x/onecloud/pkg/apis
 yunion.io/x/onecloud/pkg/apis/ansible
+yunion.io/x/onecloud/pkg/apis/billing
+yunion.io/x/onecloud/pkg/apis/cloudcommon/proxy
 yunion.io/x/onecloud/pkg/apis/cloudprovider
 yunion.io/x/onecloud/pkg/apis/compute
 yunion.io/x/onecloud/pkg/apis/identity
@@ -924,7 +953,7 @@ yunion.io/x/onecloud/pkg/util/stringutils2
 yunion.io/x/onecloud/pkg/vpcagent/options
 yunion.io/x/onecloud/pkg/webconsole/options
 yunion.io/x/onecloud/pkg/yunionconf/options
-# yunion.io/x/onecloud-operator v0.0.2-0.20200309080407-e89871b996c7
+# yunion.io/x/onecloud-operator v0.0.2-0.20200603144436-0fb80066243b
 yunion.io/x/onecloud-operator/pkg/apis/constants
 yunion.io/x/onecloud-operator/pkg/apis/onecloud/scheme
 yunion.io/x/onecloud-operator/pkg/apis/onecloud/v1alpha1
@@ -944,7 +973,7 @@ yunion.io/x/onecloud-operator/pkg/util/onecloud
 yunion.io/x/onecloud-operator/pkg/util/passwd
 yunion.io/x/onecloud-operator/pkg/util/pkiutil
 yunion.io/x/onecloud-operator/pkg/util/retry
-# yunion.io/x/pkg v0.0.0-20200304112442-9dae9351325e
+# yunion.io/x/pkg v0.0.0-20200603123312-ad58e621aec0
 yunion.io/x/pkg/errors
 yunion.io/x/pkg/gotypes
 yunion.io/x/pkg/trace
@@ -965,7 +994,7 @@ yunion.io/x/pkg/util/version
 yunion.io/x/pkg/utils
 # yunion.io/x/s3cli v0.0.0-20190917004522-13ac36d8687e
 yunion.io/x/s3cli
-# yunion.io/x/sqlchemy v0.0.0-20200221103553-6a98f7f8ab92
+# yunion.io/x/sqlchemy v0.0.0-20200312002602-1177cd8fbc57
 yunion.io/x/sqlchemy
-# yunion.io/x/structarg v0.0.0-20190809075558-115bed041de3
+# yunion.io/x/structarg v0.0.0-20200423163001-168d0687be7e
 yunion.io/x/structarg

@@ -150,7 +150,7 @@ func GetTransport(insecure bool) *http.Transport {
 	return getTransport(insecure, false)
 }
 
-func adptiveDial(network, addr string) (net.Conn, error) {
+func adptiveDial(ctx context.Context, network, addr string) (net.Conn, error) {
 	conn, err := net.DialTimeout(network, addr, 10*time.Second)
 	if err != nil {
 		return nil, err
@@ -189,7 +189,7 @@ func getTransport(insecure bool, adaptive bool) *http.Transport {
 		TLSClientConfig:       &tls.Config{InsecureSkipVerify: insecure},
 	}
 	if adaptive {
-		tr.Dial = adptiveDial
+		tr.DialContext = adptiveDial
 	} else {
 		tr.DialContext = (&net.Dialer{
 			// 建立TCP连接超时时间
@@ -246,6 +246,20 @@ func GetClient(insecure bool, timeout time.Duration) *http.Client {
 		// for cancellation instead of implementing CancelRequest.
 		Timeout: timeout,
 	}
+}
+
+type TransportProxyFunc func(*http.Request) (*url.URL, error)
+
+func SetClientProxyFunc(
+	client *http.Client,
+	proxyFunc TransportProxyFunc,
+) bool {
+	set := false
+	if transport, ok := client.Transport.(*http.Transport); ok {
+		transport.Proxy = proxyFunc
+		set = true
+	}
+	return set
 }
 
 func GetTimeoutClient(timeout time.Duration) *http.Client {

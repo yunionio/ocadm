@@ -42,7 +42,7 @@ func NewActionManager(keyword, keywordPlural string, columns, adminColumns []str
 		Keyword:     keyword, KeywordPlural: keywordPlural}
 }
 
-func NewMonitorManager(keyword, keywordPlural string, columns, adminColumns []string) modulebase.ResourceManager {
+func NewServiceTreeManager(keyword, keywordPlural string, columns, adminColumns []string) modulebase.ResourceManager {
 	return modulebase.ResourceManager{
 		BaseManager: *modulebase.NewBaseManager("servicetree", "", "v1", columns, adminColumns),
 		Keyword:     keyword, KeywordPlural: keywordPlural}
@@ -52,6 +52,13 @@ func NewMonitorV2Manager(keyword, keywordPlural string, columns, adminColumns []
 	return modulebase.ResourceManager{
 		BaseManager: *modulebase.NewBaseManager("monitor", "", "", columns, adminColumns),
 		Keyword:     keyword, KeywordPlural: keywordPlural}
+}
+
+func NewJointMonitorV2Manager(keyword, keywordPlural string, columns, adminColumns []string, master, slave modulebase.Manager) modulebase.JointResourceManager {
+	return modulebase.JointResourceManager{
+		ResourceManager: NewMonitorV2Manager(keyword, keywordPlural, columns, adminColumns),
+		Master:          master,
+		Slave:           slave}
 }
 
 func NewCloudwatcherManager(keyword, keywordPlural string, columns, adminColumns []string) modulebase.ResourceManager {
@@ -75,7 +82,7 @@ func NewJointComputeManager(keyword, keywordPlural string, columns, adminColumns
 
 func NewJointMonitorManager(keyword, keywordPlural string, columns, adminColumns []string, master, slave modulebase.Manager) modulebase.JointResourceManager {
 	return modulebase.JointResourceManager{
-		ResourceManager: NewMonitorManager(keyword, keywordPlural, columns, adminColumns),
+		ResourceManager: NewServiceTreeManager(keyword, keywordPlural, columns, adminColumns),
 		Master:          master,
 		Slave:           slave}
 }

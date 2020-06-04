@@ -80,9 +80,14 @@ type DBInstancePrivilege struct {
 }
 
 type DBInstanceAccountDetails struct {
-	apis.StandaloneResourceDetails
+	apis.StatusStandaloneResourceDetails
+	apis.ProjectizedResourceInfo
+	DBInstanceResourceInfo
+
 	SDBInstanceAccount
 
 	// 账号权限列表
 	DBInstanceprivileges []DBInstancePrivilege `json:"dbinstanceprivileges,allowempty"`
+
+	ProjectId string `json:"tenant_id"`
 }

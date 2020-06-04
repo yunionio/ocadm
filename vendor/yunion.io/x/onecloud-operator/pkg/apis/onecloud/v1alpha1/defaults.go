@@ -16,7 +16,6 @@ package v1alpha1
 
 import (
 	"fmt"
-
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/rand"
@@ -27,24 +26,25 @@ import (
 )
 
 const (
-	DefaultVersion              = "latest"
-	DefaultOnecloudRegion       = "region0"
-	DefaultOnecloudZone         = "zone0"
-	DefaultOnecloudWire         = "bcast0"
-	DefaultImageRepository      = "registry.hub.docker.com/yunion"
-	DefaultVPCId                = "default"
-	DefaultGlanceStorageSize    = "100G"
-	DefaultMeterStorageSize     = "100G"
-	DefaultInfluxdbStorageSize  = "20G"
-	DefaultNotifyStorageSize    = "1G" // for plugin template
-	DefaultBaremetalStorageSize = "1G"
-	DefaultEsxiAgentStorageSize = "30G"
+	DefaultVersion                 = "latest"
+	DefaultOnecloudRegion          = "region0"
+	DefaultOnecloudRegionDNSDomain = "cloud.onecloud.io"
+	DefaultOnecloudZone            = "zone0"
+	DefaultOnecloudWire            = "bcast0"
+	DefaultImageRepository         = "registry.hub.docker.com/yunion"
+	DefaultVPCId                   = "default"
+	DefaultGlanceStorageSize       = "100G"
+	DefaultMeterStorageSize        = "100G"
+	DefaultInfluxdbStorageSize     = "20G"
+	DefaultNotifyStorageSize       = "1G" // for plugin template
+	DefaultBaremetalStorageSize    = "1G"
+	DefaultEsxiAgentStorageSize    = "30G"
 	// rancher local-path-provisioner: https://github.com/rancher/local-path-provisioner
 	DefaultStorageClass = "local-path"
 
-	DefaultOvnVersion   = "2.9.6"
+	DefaultOvnVersion   = "2.10.4"
 	DefaultOvnImageName = "openvswitch"
-	DefaultOvnImageTag  = DefaultOvnVersion + "-2"
+	DefaultOvnImageTag  = DefaultOvnVersion + "-0"
 
 	DefaultInfluxdbImageVersion = "1.7.7"
 )
@@ -94,23 +94,26 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
 
 	SetDefaults_KeystoneSpec(&obj.Keystone, obj.ImageRepository, obj.Version)
 	SetDefaults_RegionSpec(&obj.RegionServer, obj.ImageRepository, obj.Version)
+	SetDefaults_RegionDNSSpec(&obj.RegionDNS, obj.ImageRepository, obj.Version)
 
 	for cType, spec := range map[ComponentType]*DeploymentSpec{
-		ClimcComponentType:         &obj.Climc,
-		WebconsoleComponentType:    &obj.Webconsole,
-		SchedulerComponentType:     &obj.Scheduler,
-		LoggerComponentType:        &obj.Logger,
-		YunionconfComponentType:    &obj.Yunionconf,
-		KubeServerComponentType:    &obj.KubeServer,
-		AnsibleServerComponentType: &obj.AnsibleServer,
-		CloudnetComponentType:      &obj.Cloudnet,
-		CloudeventComponentType:    &obj.Cloudevent,
-		S3gatewayComponentType:     &obj.S3gateway,
-		DevtoolComponentType:       &obj.Devtool,
-		AutoUpdateComponentType:    &obj.AutoUpdate,
-		OvnNorthComponentType:      &obj.OvnNorth,
-		VpcAgentComponentType:      &obj.VpcAgent,
-		MonitorComponentType:       &obj.Monitor,
+		ClimcComponentType:           &obj.Climc,
+		WebconsoleComponentType:      &obj.Webconsole,
+		SchedulerComponentType:       &obj.Scheduler,
+		LoggerComponentType:          &obj.Logger,
+		YunionconfComponentType:      &obj.Yunionconf,
+		KubeServerComponentType:      &obj.KubeServer,
+		AnsibleServerComponentType:   &obj.AnsibleServer,
+		CloudnetComponentType:        &obj.Cloudnet,
+		CloudeventComponentType:      &obj.Cloudevent,
+		S3gatewayComponentType:       &obj.S3gateway,
+		DevtoolComponentType:         &obj.Devtool,
+		AutoUpdateComponentType:      &obj.AutoUpdate,
+		OvnNorthComponentType:        &obj.OvnNorth,
+		VpcAgentComponentType:        &obj.VpcAgent,
+		MonitorComponentType:         &obj.Monitor,
+		ServiceOperatorComponentType: &obj.ServiceOperator,
+		ItsmComponentType:            &obj.Itsm,
 	} {
 		SetDefaults_DeploymentSpec(spec, getImage(obj.ImageRepository, spec.Repository, cType, spec.ImageName, obj.Version, spec.Tag))
 	}
@@ -170,6 +173,14 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
 	SetDefaults_CronJobSpec(&obj.CloudmonReportUsage,
 		getImage(obj.ImageRepository, obj.CloudmonReportUsage.Repository, APIGatewayComponentTypeEE,
 			obj.CloudmonReportUsage.ImageName, obj.Version, obj.APIGateway.Tag))
+
+	SetDefaults_CronJobSpec(&obj.CloudmonReportServer,
+		getImage(obj.ImageRepository, obj.CloudmonReportServer.Repository, APIGatewayComponentTypeEE,
+			obj.CloudmonReportServer.ImageName, obj.Version, obj.APIGateway.Tag))
+
+	SetDefaults_CronJobSpec(&obj.CloudmonReportHost,
+		getImage(obj.ImageRepository, obj.CloudmonReportHost.Repository, APIGatewayComponentTypeEE,
+			obj.CloudmonReportHost.ImageName, obj.Version, obj.APIGateway.Tag))
 }
 
 func SetDefaults_Mysql(obj *Mysql) {
@@ -215,6 +226,13 @@ func SetDefaults_KeystoneSpec(obj *KeystoneSpec, imageRepo, version string) {
 
 func SetDefaults_RegionSpec(obj *RegionSpec, imageRepo, version string) {
 	SetDefaults_DeploymentSpec(&obj.DeploymentSpec, getImage(imageRepo, obj.Repository, RegionComponentType, obj.ImageName, version, obj.Tag))
+	if obj.DNSDomain == "" {
+		obj.DNSDomain = DefaultOnecloudRegionDNSDomain
+	}
+}
+
+func SetDefaults_RegionDNSSpec(obj *RegionDNSSpec, imageRepo, version string) {
+	SetDefaults_DaemonSetSpec(&obj.DaemonSetSpec, getImage(imageRepo, obj.Repository, RegionDNSComponentType, obj.ImageName, version, obj.Tag))
 }
 
 func setPVCStoreage(obj *ContainerSpec, size string) {
@@ -315,6 +333,7 @@ func SetDefaults_OnecloudClusterConfig(obj *OnecloudClusterConfig) {
 		&obj.AutoUpdate:                          {constants.AutoUpdateAdminUser, constants.AutoUpdatePort},
 		&obj.EsxiAgent.ServiceCommonOptions:      {constants.EsxiAgentAdminUser, constants.EsxiAgentPort},
 		&obj.VpcAgent.ServiceCommonOptions:       {constants.VpcAgentAdminUser, 0},
+		&obj.ServiceOperator:                     {constants.ServiceOperatorAdminUser, constants.ServiceOperatorPort},
 	} {
 		SetDefaults_ServiceCommonOptions(opt, userPort.user, userPort.port)
 	}
@@ -342,6 +361,7 @@ func SetDefaults_OnecloudClusterConfig(obj *OnecloudClusterConfig) {
 		&obj.Devtool:                             {constants.DevtoolAdminUser, constants.DevtoolPort, constants.DevtoolDB, constants.DevtoolDBUser},
 		&obj.Meter.ServiceDBCommonOptions:        {constants.MeterAdminUser, constants.MeterPort, constants.MeterDB, constants.MeterDBUser},
 		&obj.Monitor:                             {constants.MonitorAdminUser, constants.MonitorPort, constants.MonitorDB, constants.MonitorDBUser},
+		&obj.Itsm.ServiceDBCommonOptions:         {constants.ItsmAdminUser, constants.ItsmPort, constants.ItsmDB, constants.ItsmDBUser},
 	} {
 		if user, ok := registryPorts[tmp.port]; ok {
 			log.Fatalf("port %d has been registered by %s", tmp.port, user)
@@ -349,6 +369,7 @@ func SetDefaults_OnecloudClusterConfig(obj *OnecloudClusterConfig) {
 		registryPorts[tmp.port] = tmp.user
 		SetDefaults_ServiceDBCommonOptions(opt, tmp.db, tmp.dbUser, tmp.user, tmp.port)
 	}
+	SetDefaults_ItsmConfig(&obj.Itsm)
 }
 
 func SetDefaults_ServiceBaseConfig(obj *ServiceBaseConfig, port int) {
@@ -391,4 +412,9 @@ func setDefaults_CloudUser(obj *CloudUser, username string) {
 	if obj.Password == "" {
 		obj.Password = passwd.GeneratePassword()
 	}
+}
+
+func SetDefaults_ItsmConfig(obj *ItsmConfig) {
+	obj.SecondDatabase = fmt.Sprintf("%s_engine", obj.DB.Database)
+	obj.EncryptionKey = passwd.GeneratePassword()
 }

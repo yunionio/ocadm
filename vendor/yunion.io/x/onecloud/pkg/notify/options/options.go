@@ -15,20 +15,41 @@
 package options
 
 import (
-	"yunion.io/x/onecloud/pkg/cloudcommon/options"
+	common_options "yunion.io/x/onecloud/pkg/cloudcommon/options"
 )
 
 type NotifyOption struct {
-	options.CommonOptions
-	options.DBOptions
+	common_options.CommonOptions
+	common_options.DBOptions
 
 	DingtalkEnabled bool   `help:"Enable dingtalk"`
 	SocketFileDir   string `help:"Socket file directory" default:"/etc/yunion/notify"`
 	UpdateInterval  int    `help:"Update send services interval(unit:min)" default:"30"`
-	VerifyEmailUrl  string `help:"url of verify email"`
-	ReSendScope     int    `help:"Resend all messages that have not been sent successfully within ReSendScope
-seconds" default:"30"`
+	// VerifyEmailUrlPath string `help:"url of verify email" json:"verify_email_url_path"`
+
+	// Deprecated
+	VerifyEmailUrl string `help:"url of verify email" json:"verify_email_url"`
+
+	ReSendScope int `help:"Resend all messages that have not been sent successfully within ReSendScope seconds" default:"30"`
+
 	InitNotificationScope int `help:"initialize data of notification with in InitNotificationScope hours" default:"100"`
 }
 
 var Options NotifyOption
+
+func OnOptionsChange(oldO, newO interface{}) bool {
+	oldOpts := oldO.(*NotifyOption)
+	newOpts := newO.(*NotifyOption)
+
+	changed := false
+
+	if common_options.OnCommonOptionsChange(&oldOpts.CommonOptions, &newOpts.CommonOptions) {
+		changed = true
+	}
+
+	if oldOpts.SocketFileDir != newOpts.SocketFileDir {
+		changed = true
+	}
+
+	return changed
+}

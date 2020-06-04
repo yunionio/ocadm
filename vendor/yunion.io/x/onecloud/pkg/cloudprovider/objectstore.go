@@ -37,7 +37,7 @@ type TBucketACLType string
 
 const (
 	// 50 MB
-	MAX_PUT_OBJECT_SIZEBYTES = int64(1000 * 1000 * 50)
+	MAX_PUT_OBJECT_SIZEBYTES = int64(1024 * 1024 * 50)
 
 	// ACLDefault = TBucketACLType("default")
 
@@ -161,7 +161,7 @@ type ICloudBucket interface {
 	PutObject(ctx context.Context, key string, input io.Reader, sizeBytes int64, cannedAcl TBucketACLType, storageClassStr string, meta http.Header) error
 
 	NewMultipartUpload(ctx context.Context, key string, cannedAcl TBucketACLType, storageClassStr string, meta http.Header) (string, error)
-	UploadPart(ctx context.Context, key string, uploadId string, partIndex int, input io.Reader, partSize int64) (string, error)
+	UploadPart(ctx context.Context, key string, uploadId string, partIndex int, input io.Reader, partSize int64, offset, totalSize int64) (string, error)
 	CopyPart(ctx context.Context, key string, uploadId string, partIndex int, srcBucketName string, srcKey string, srcOffset int64, srcLength int64) (string, error)
 	CompleteMultipartUpload(ctx context.Context, key string, uploadId string, partEtags []string) error
 	AbortMultipartUpload(ctx context.Context, key string, uploadId string) error
@@ -183,16 +183,18 @@ type ICloudObject interface {
 	SetAcl(acl TBucketACLType) error
 }
 
-func ICloudObject2JSONObject(obj ICloudObject) jsonutils.JSONObject {
-	obj2 := struct {
-		Key          string
-		SizeBytes    int64
-		StorageClass string
-		ETag         string
-		LastModified time.Time
-		Meta         http.Header
-		Acl          string
-	}{
+type SCloudObject struct {
+	Key          string
+	SizeBytes    int64
+	StorageClass string
+	ETag         string
+	LastModified time.Time
+	Meta         http.Header
+	Acl          string
+}
+
+func ICloudObject2Struct(obj ICloudObject) SCloudObject {
+	return SCloudObject{
 		Key:          obj.GetKey(),
 		SizeBytes:    obj.GetSizeBytes(),
 		StorageClass: obj.GetStorageClass(),
@@ -201,7 +203,10 @@ func ICloudObject2JSONObject(obj ICloudObject) jsonutils.JSONObject {
 		Meta:         obj.GetMeta(),
 		Acl:          string(obj.GetAcl()),
 	}
-	return jsonutils.Marshal(obj2)
+}
+
+func ICloudObject2JSONObject(obj ICloudObject) jsonutils.JSONObject {
+	return jsonutils.Marshal(ICloudObject2Struct(obj))
 }
 
 func (o *SBaseCloudObject) GetKey() string {
@@ -270,6 +275,7 @@ func GetIBucketStats(bucket ICloudBucket) (SBucketStats, error) {
 	if objs.IsTruncated {
 		return stats, errors.Wrap(httperrors.ErrTooLarge, "too many objects")
 	}
+	stats.ObjectCount, stats.SizeBytes = 0, 0
 	for _, obj := range objs.Objects {
 		stats.SizeBytes += obj.GetSizeBytes()
 		stats.ObjectCount += 1
@@ -407,7 +413,7 @@ func UploadObject(ctx context.Context, bucket ICloudBucket, key string, blocksz 
 		return errors.Wrap(err, "bucket.NewMultipartUpload")
 	}
 	etags := make([]string, partCount)
-	// offset := int64(0)
+	offset := int64(0)
 	for i := 0; i < int(partCount); i += 1 {
 		if i == int(partCount)-1 {
 			partSize = sizeBytes - partSize*(partCount-1)
@@ -415,7 +421,7 @@ func UploadObject(ctx context.Context, bucket ICloudBucket, key string, blocksz 
 		if debug {
 			log.Debugf("UploadPart %d %d", i+1, partSize)
 		}
-		etag, err := bucket.UploadPart(ctx, key, uploadId, i+1, io.LimitReader(input, partSize), partSize)
+		etag, err := bucket.UploadPart(ctx, key, uploadId, i+1, io.LimitReader(input, partSize), partSize, offset, sizeBytes)
 		if err != nil {
 			err2 := bucket.AbortMultipartUpload(ctx, key, uploadId)
 			if err2 != nil {
@@ -423,7 +429,7 @@ func UploadObject(ctx context.Context, bucket ICloudBucket, key string, blocksz 
 			}
 			return errors.Wrap(err, "bucket.UploadPart")
 		}
-		// offset += partSize
+		offset += partSize
 		etags[i] = etag
 	}
 	err = bucket.CompleteMultipartUpload(ctx, key, uploadId, etags)
@@ -522,7 +528,7 @@ func CopyObject(ctx context.Context, blocksz int64, dstBucket ICloudBucket, dstK
 		return errors.Wrap(err, "bucket.NewMultipartUpload")
 	}
 	etags := make([]string, partCount)
-	// offset := int64(0)
+	offset := int64(0)
 	for i := 0; i < int(partCount); i += 1 {
 		start := int64(i) * partSize
 		if i == int(partCount)-1 {
@@ -540,12 +546,13 @@ func CopyObject(ctx context.Context, blocksz int64, dstBucket ICloudBucket, dstK
 		if err == nil {
 			defer srcStream.Close()
 			var etag string
-			etag, err = dstBucket.UploadPart(ctx, dstKey, uploadId, i+1, io.LimitReader(srcStream, partSize), partSize)
+			etag, err = dstBucket.UploadPart(ctx, dstKey, uploadId, i+1, io.LimitReader(srcStream, partSize), partSize, offset, sizeBytes)
 			if err == nil {
 				etags[i] = etag
 				continue
 			}
 		}
+		offset += partSize
 		if err != nil {
 			err2 := dstBucket.AbortMultipartUpload(ctx, dstKey, uploadId)
 			if err2 != nil {
@@ -575,7 +582,7 @@ func CopyPart(ctx context.Context,
 	}
 	defer srcReader.Close()
 
-	etag, err := iDstBucket.UploadPart(ctx, dstKey, uploadId, partNumber, io.LimitReader(srcReader, rangeOpt.SizeBytes()), rangeOpt.SizeBytes())
+	etag, err := iDstBucket.UploadPart(ctx, dstKey, uploadId, partNumber, io.LimitReader(srcReader, rangeOpt.SizeBytes()), rangeOpt.SizeBytes(), 0, 0)
 	if err != nil {
 		return "", errors.Wrap(err, "iDstBucket.UploadPart")
 	}

@@ -22,13 +22,16 @@ type SSortedStrings []string
 
 func NewSortedStrings(strs []string) SSortedStrings {
 	if strs == nil {
-		return nil
+		return SSortedStrings{}
 	}
 	sort.Strings(strs)
 	return SSortedStrings(strs)
 }
 
 func Append(ss SSortedStrings, ele ...string) SSortedStrings {
+	if ss == nil {
+		ss = NewSortedStrings([]string{})
+	}
 	for _, e := range ele {
 		pos, find := ss.Index(e)
 		if find {
@@ -155,6 +158,24 @@ func Merge(a, b SSortedStrings) SSortedStrings {
 	}
 	if j < len(b) {
 		ret = append(ret, b[j:]...)
+	}
+	return SSortedStrings(ret)
+}
+
+func Intersect(a, b SSortedStrings) SSortedStrings {
+	ret := make([]string, 0)
+	i := 0
+	j := 0
+	for i < len(a) && j < len(b) {
+		if a[i] == b[j] {
+			ret = append(ret, a[i])
+			i += 1
+			j += 1
+		} else if a[i] < b[j] {
+			i += 1
+		} else if a[i] > b[j] {
+			j += 1
+		}
 	}
 	return SSortedStrings(ret)
 }
