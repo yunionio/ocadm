@@ -47,8 +47,8 @@ type DiskSpec struct {
 }
 
 type HostListInput struct {
-	apis.EnabledStatusStandaloneResourceListInput
-	apis.DomainizedResourceListInput
+	apis.EnabledStatusInfrasResourceBaseListInput
+	apis.ExternalizedResourceBaseListInput
 
 	ManagedResourceListInput
 	ZonalFilterListInput
@@ -70,13 +70,52 @@ type HostListInput struct {
 	IsEmpty *bool `json:"is_empty"`
 	// filter host that is baremetal
 	Baremetal *bool `json:"baremetal"`
+
+	// 机架
+	Rack []string `json:"rack"`
+	// 机位
+	Slots []string `json:"slots"`
+	// 管理口MAC
+	AccessMac []string `json:"access_mac"`
+	// 管理口Ip地址
+	AccessIp []string `json:"access_ip"`
+	// 物理机序列号信息
+	SN []string `json:"sn"`
+	// CPU大小
+	CpuCount []int `json:"cpu_count"`
+	// 内存大小,单位Mb
+	MemSize []int `json:"mem_size"`
+	// 存储类型
+	StorageType []string `json:"storage_type"`
+	// IPMI地址
+	IpmiIp []string `json:"ipmi_ip"`
+	// 宿主机状态
+	// example: online
+	HostStatus []string `json:"host_status"`
+	// 宿主机类型
+	HostType []string `json:"host_type"`
+	// host服务软件版本
+	Version []string `json:"version"`
+	// OVN软件版本
+	OvnVersion []string `json:"ovn_version"`
+	// 是否处于维护状态
+	IsMaintenance *bool `json:"is_maintenance"`
+	// 是否为导入的宿主机
+	IsImport *bool `json:"is_import"`
+	// 是否允许PXE启动
+	EnablePxeBoot *bool `json:"enable_pxe_boot"`
+	// 主机UUID
+	Uuid []string `json:"uuid"`
+	// 主机启动模式, 可能值位PXE和ISO
+	BootMode []string `json:"boot_mode"`
 }
 
 type HostDetails struct {
-	apis.StandaloneResourceDetails
-	SHost
+	apis.EnabledStatusInfrasResourceBaseDetails
+	ManagedResourceInfo
+	ZoneResourceInfo
 
-	CloudproviderInfo
+	SHost
 
 	Schedtags []SchedtagShortDescDetails `json:"schedtags"`
 
@@ -104,6 +143,10 @@ type HostDetails struct {
 	CpuCommitRate float64 `json:"cpu_commit_rate"`
 	// 内存超分率
 	MemCommitRate float64 `json:"mem_commit_rate"`
+	// CPU超售比
+	CpuCommitBound float32 `json:"cpu_commit_bound"`
+	// 内存超售比
+	MemCommitBound float32 `json:"mem_commint_bound"`
 	// 存储大小
 	Storage int64 `json:"storage"`
 	// 已使用存储大小
@@ -120,7 +163,233 @@ type HostDetails struct {
 	IsPrepaidRecycle  bool                `json:"is_prepaid_recycle"`
 	CanPrepare        bool                `json:"can_prepare"`
 	PrepareFailReason string              `json:"prepare_fail_reason"`
+	// 允许开启宿主机健康检查
+	AllowHealthCheck bool `json:"allow_health_check"`
 
 	// 标签
 	Metadata map[string]string `json:"metadata"`
+}
+
+type HostResourceInfo struct {
+	// 归属云订阅ID
+	ManagerId string `json:"manager_id"`
+
+	ManagedResourceInfo
+
+	// 归属可用区ID
+	ZoneId string `json:"zone_id"`
+
+	ZoneResourceInfo
+
+	// 宿主机名称
+	Host string `json:"host"`
+
+	// 宿主机序列号
+	HostSN string `json:"host_sn"`
+
+	// 宿主机状态
+	HostStatus string `json:"host_status"`
+
+	// 宿主机服务状态`
+	HostServiceStatus string `json:"host_service_status"`
+
+	// 宿主机类型
+	HostType string `json:"host_type"`
+}
+
+type HostFilterListInput struct {
+	ZonalFilterListInput
+	ManagedResourceListInput
+
+	HostFilterListInputBase
+}
+
+type HostFilterListInputBase struct {
+	HostResourceInput
+
+	// 以宿主机序列号过滤
+	HostSN string `json:"host_sn"`
+
+	// 以宿主机名称排序
+	OrderByHost string `json:"order_by_host"`
+
+	// 以宿主机序列号名称排序
+	OrderByHostSN string `json:"order_by_host_sn"`
+}
+
+type HostResourceInput struct {
+	// 宿主机或物理机（ID或Name）
+	Host string `json:"host"`
+	// swagger:ignore
+	// Deprecated
+	// filter by host_id
+	HostId string `json:"host_id" "yunion:deprecated-by":"host"`
+}
+
+type HostRegisterMetadata struct {
+	apis.Meta
+
+	OnKubernetes bool   `json:"on_kubernetes"`
+	Hostname     string `json:"hostname"`
+}
+
+type HostAccessAttributes struct {
+	// 物理机管理URI
+	ManagerUri string `json:"manager_uri"`
+
+	// 物理机管理口IP
+	AccessIp string `json:"access_ip"`
+
+	// 物理机管理口MAC
+	AccessMac string `json:"access_mac"`
+
+	// 物理机管理口IP子网
+	AccessNet string `json:"access_net"`
+	// 物理机管理口二次网络
+	AccessWire string `json:"access_wire"`
+}
+
+type HostSizeAttributes struct {
+	// CPU核数
+	CpuCount *int `json:"cpu_count"`
+	// 物理CPU颗数
+	NodeCount *int8 `json:"node_count"`
+	// CPU描述信息
+	CpuDesc string `json:"cpu_desc"`
+	// CPU频率
+	CpuMhz *int `json:"cpu_mhz"`
+	// CPU缓存大小,单位KB
+	CpuCache string `json:"cpu_cache"`
+	// 预留CPU大小
+	CpuReserved *int `json:"cpu_reserved"`
+	// CPU超分比
+	CpuCmtbound *float32 `json:"cpu_cmtbound"`
+	// CPUMicrocode
+	CpuMicrocode string `json:"cpu_microcode"`
+	// CPU架构
+	CpuArchitecture string `json:"cpu_architecture"`
+
+	// 内存大小(单位MB)
+	MemSize string `json:"mem_size"`
+	// 预留内存大小(单位MB)
+	MemReserved string `json:"mem_reserved"`
+	// 内存超分比
+	MemCmtbound *float32 `json:"mem_cmtbound"`
+
+	// 存储大小,单位Mb
+	StorageSize *int `json:"storage_size"`
+	// 存储类型
+	StorageType string `json:"storage_type"`
+	// 存储驱动类型
+	StorageDriver string `json:"storage_driver"`
+	// 存储详情
+	StorageInfo jsonutils.JSONObject `json:"storage_info"`
+}
+
+type HostIpmiAttributes struct {
+	// username
+	IpmiUsername string `json:"ipmi_username"`
+	// password
+	IpmiPassword string `json:"ipmi_password"`
+	// ip address
+	IpmiIpAddr string `json:"ipmi_ip_addr"`
+	// presence
+	IpmiPresent *bool `json:"ipmi_present"`
+	// lan channel
+	IpmiLanChannel *int `json:"ipmi_lan_channel"`
+	// verified
+	IpmiVerified *bool `json:"ipmi_verified"`
+	// Redfish API support
+	IpmiRedfishApi *bool `json:"ipmi_redfish_api"`
+	// Cdrom boot support
+	IpmiCdromBoot *bool `json:"ipmi_cdrom_boot"`
+	// ipmi_pxe_boot
+	IpmiPxeBoot *bool `json:"ipmi_pxe_boot"`
+}
+
+type HostCreateInput struct {
+	apis.EnabledStatusInfrasResourceBaseCreateInput
+
+	ZoneResourceInput
+
+	HostAccessAttributes
+	HostSizeAttributes
+	HostIpmiAttributes
+
+	// 新建带IPMI信息的物理机时不进行IPMI信息探测
+	NoProbe *bool `json:"no_probe"`
+
+	// host uuid
+	Uuid string `json:"uuid"`
+
+	// Host类型
+	HostType string `json:"host_type"`
+
+	// 是否为裸金属
+	IsBaremetal *bool `json:"is_baremetal"`
+
+	// 机架
+	Rack string `json:"rack"`
+	// 机位
+	Slots string `json:"slots"`
+
+	// 系统信息
+	SysInfo jsonutils.JSONObject `json:"sys_info"`
+
+	// 物理机序列号信息
+	SN string `json:"sn"`
+
+	// host服务软件版本
+	Version string `json:"version"`
+	// OVN软件版本
+	OvnVersion string `json:"ovn_version"`
+
+	// 是否为导入的宿主机
+	IsImport *bool `json:"is_import"`
+
+	// 是否允许PXE启动
+	EnablePxeBoot *bool `json:"enable_pxe_boot"`
+
+	// 主机启动模式, 可能值位PXE和ISO
+	BootMode string `json:"boot_mode"`
+}
+
+type HostUpdateInput struct {
+	apis.EnabledStatusInfrasResourceBaseUpdateInput
+
+	HostAccessAttributes
+	HostSizeAttributes
+	HostIpmiAttributes
+
+	// IPMI info
+	IpmiInfo jsonutils.JSONObject `json:"ipmi_info"`
+
+	// 机架
+	Rack string `json:"rack"`
+	// 机位
+	Slots string `json:"slots"`
+
+	// 系统信息
+	SysInfo jsonutils.JSONObject `json:"sys_info"`
+	// 物理机序列号信息
+	SN string `json:"sn"`
+
+	// 宿主机类型
+	HostType string `json:"host_type"`
+
+	// host服务软件版本
+	Version string `json:"version"`
+	// OVN软件版本
+	OvnVersion string `json:"ovn_version"`
+	// 是否为裸金属
+	IsBaremetal *bool `json:"is_baremetal"`
+
+	// 是否允许PXE启动
+	EnablePxeBoot *bool `json:"enable_pxe_boot"`
+
+	// 主机UUID
+	Uuid string `json:"uuid"`
+
+	// 主机启动模式, 可能值位PXE和ISO
+	BootMode string `json:"boot_mode"`
 }

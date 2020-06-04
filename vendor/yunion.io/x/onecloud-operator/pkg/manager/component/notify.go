@@ -16,7 +16,6 @@ package component
 
 import (
 	"fmt"
-	"path/filepath"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -33,13 +32,15 @@ import (
 )
 
 const (
-	NotifySocketFileDir   = "/etc/yunion/socket"
-	NotifyTemplateDir     = "/etc/yunion/template"
-	NotifyPluginDingtalk  = "dingtalk"
-	NotifyPluginConfig    = "plugin-config"
-	NotifyPluginEmail     = "email"
-	NotifyPluginSmsAliyun = "smsaliyun"
-	NotifyPluginWebsocket = "websocket"
+	NotifySocketFileDir       = "/etc/yunion/socket"
+	NotifyPluginDingtalk      = "dingtalk"
+	NotifyPluginConfig        = "plugin-config"
+	NotifyPluginEmail         = "email"
+	NotifyPluginSmsAliyun     = "smsaliyun"
+	NotifyPluginWebsocket     = "websocket"
+	NotifyPluginFeishu        = "feishu"
+	NotifyPluginFeishuRobot   = "feishu-robot"
+	NotifyPluginDingtalkRobot = "dingtalk-robot"
 )
 
 type notifyManager struct {
@@ -71,8 +72,7 @@ func (m *notifyManager) getPhaseControl(man controller.ComponentManager) control
 
 type NotifyPluginBaseConfig struct {
 	SockFileDir string `default:"/etc/yunion/socket"`
-	SenderNum   int    `default:"5"`
-	TemplateDir string `default:"/etc/yunion/template"`
+	SenderNum   int    `default:"20"`
 	LogLevel    string `default:"info"`
 }
 
@@ -97,7 +97,8 @@ func (m *notifyManager) getConfigMap(oc *v1alpha1.OnecloudCluster, cfg *v1alpha1
 	SetServiceCommonOptions(&opt.CommonOptions, oc, config.ServiceCommonOptions)
 	opt.SocketFileDir = NotifySocketFileDir
 	opt.UpdateInterval = 30
-	opt.VerifyEmailUrl = fmt.Sprintf("https://%s/v2/email-verification/id/{0}/token/{1}?region=%s", oc.Spec.LoadBalancerEndpoint, oc.Spec.Region)
+	opt.VerifyEmailUrl = fmt.Sprintf("https://%s/v2/email-verification/id/{0}/token/{1}?region=%s", oc.Spec.LoadBalancerEndpoint, oc.GetRegion())
+	//opt.VerifyEmailUrlPath = fmt.Sprintf("/v2/email-verification/id/{0}/token/{1}?region=%s", oc.Spec.Region)
 	opt.ReSendScope = 30
 	opt.Port = constants.NotifyPort
 
@@ -105,7 +106,6 @@ func (m *notifyManager) getConfigMap(oc *v1alpha1.OnecloudCluster, cfg *v1alpha1
 	pluginBaseOpt := &NotifyPluginBaseConfig{
 		SockFileDir: NotifySocketFileDir,
 		SenderNum:   5,
-		TemplateDir: NotifyTemplateDir,
 		LogLevel:    "info",
 	}
 
@@ -113,28 +113,21 @@ func (m *notifyManager) getConfigMap(oc *v1alpha1.OnecloudCluster, cfg *v1alpha1
 	toStr := func(opt interface{}) string {
 		return jsonutils.Marshal(opt).YAMLString()
 	}
-	templatePath := func(pluginName string) string {
-		return filepath.Join(NotifyTemplateDir, pluginName)
-	}
 	// set plugins config
 	// dingtalk and aliyunsms
-	pluginBaseOpt.TemplateDir = templatePath(NotifyPluginDingtalk)
-	data[NotifyPluginDingtalk] = toStr(pluginBaseOpt)
-	for _, pluginName := range []string{NotifyPluginDingtalk, NotifyPluginSmsAliyun} {
-		pluginBaseOpt.TemplateDir = templatePath(pluginName)
+	for _, pluginName := range []string{NotifyPluginDingtalk, NotifyPluginSmsAliyun, NotifyPluginFeishu,
+		NotifyPluginFeishuRobot, NotifyPluginDingtalkRobot} {
 		data[pluginName] = toStr(pluginBaseOpt)
 	}
 	// email
-	pluginBaseOpt.TemplateDir = templatePath(NotifyPluginEmail)
 	data[NotifyPluginEmail] = toStr(NotifyPluginEmailConfig{
 		NotifyPluginBaseConfig: *pluginBaseOpt,
 		ChannelSize:            100,
 	})
 	// websocket
-	pluginBaseOpt.TemplateDir = templatePath(NotifyPluginWebsocket)
 	data[NotifyPluginWebsocket] = toStr(NotifyPluginWebsocketConfig{
 		NotifyPluginBaseConfig: *pluginBaseOpt,
-		Region:                 oc.Spec.Region,
+		Region:                 oc.GetRegion(),
 	})
 
 	cfgMap.Data = data
@@ -142,8 +135,8 @@ func (m *notifyManager) getConfigMap(oc *v1alpha1.OnecloudCluster, cfg *v1alpha1
 	return cfgMap, nil
 }
 
-func (m *notifyManager) getService(oc *v1alpha1.OnecloudCluster) *corev1.Service {
-	return m.newSingleNodePortService(v1alpha1.NotifyComponentType, oc, constants.NotifyPort)
+func (m *notifyManager) getService(oc *v1alpha1.OnecloudCluster) []*corev1.Service {
+	return []*corev1.Service{m.newSingleNodePortService(v1alpha1.NotifyComponentType, oc, constants.NotifyPort)}
 }
 
 func (m *notifyManager) getPVC(oc *v1alpha1.OnecloudCluster) (*corev1.PersistentVolumeClaim, error) {
@@ -154,7 +147,7 @@ func (m *notifyManager) getPVC(oc *v1alpha1.OnecloudCluster) (*corev1.Persistent
 func (m *notifyManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg *v1alpha1.OnecloudClusterConfig) (*apps.Deployment, error) {
 	img := oc.Spec.Notify.Image
 	pluginImg := strings.ReplaceAll(img, "notify", "notify-plugins")
-	deploy, err := m.newCloudServiceSinglePortDeployment(v1alpha1.NotifyComponentType, oc, oc.Spec.Notify.DeploymentSpec, constants.NotifyPort, true)
+	deploy, err := m.newCloudServiceSinglePortDeployment(v1alpha1.NotifyComponentType, oc, oc.Spec.Notify.DeploymentSpec, constants.NotifyPort, true, false)
 	if err != nil {
 		return nil, err
 	}
@@ -168,9 +161,6 @@ func (m *notifyManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg *v1alpha
 		Name:      "socket",
 		MountPath: NotifySocketFileDir,
 	}
-	pvcVol := NewPVCVolumePair("template-data", NotifyTemplateDir, oc, v1alpha1.NotifyComponentType)
-	templateVol := pvcVol.GetVolume()
-	templateVolMount := pvcVol.GetVolumeMount()
 	cfgMapName := controller.ComponentConfigMapName(oc, v1alpha1.NotifyComponentType)
 	pluginCfgVol := corev1.Volume{
 		Name: NotifyPluginConfig,
@@ -184,6 +174,9 @@ func (m *notifyManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg *v1alpha
 					{Key: NotifyPluginEmail, Path: fmt.Sprintf("%s.conf", NotifyPluginEmail)},
 					{Key: NotifyPluginSmsAliyun, Path: fmt.Sprintf("%s.conf", NotifyPluginSmsAliyun)},
 					{Key: NotifyPluginWebsocket, Path: fmt.Sprintf("%s.conf", NotifyPluginWebsocket)},
+					{Key: NotifyPluginFeishu, Path: fmt.Sprintf("%s.conf", NotifyPluginFeishu)},
+					{Key: NotifyPluginFeishuRobot, Path: fmt.Sprintf("%s.conf", NotifyPluginFeishuRobot)},
+					{Key: NotifyPluginDingtalkRobot, Path: fmt.Sprintf("%s.conf", NotifyPluginDingtalkRobot)},
 				},
 			},
 		},
@@ -196,8 +189,7 @@ func (m *notifyManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg *v1alpha
 			Command:         []string{fmt.Sprintf("/opt/yunion/bin/%s", name), "--config", fmt.Sprintf("/etc/yunion/%s.conf", name)},
 			VolumeMounts: []corev1.VolumeMount{
 				socketVolMount,
-				templateVolMount,
-				corev1.VolumeMount{
+				{
 					MountPath: constants.ConfigDir,
 					Name:      NotifyPluginConfig,
 				},
@@ -209,6 +201,9 @@ func (m *notifyManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg *v1alpha
 		newPluginC(NotifyPluginEmail),
 		newPluginC(NotifyPluginSmsAliyun),
 		newPluginC(NotifyPluginWebsocket),
+		newPluginC(NotifyPluginFeishu),
+		newPluginC(NotifyPluginFeishuRobot),
+		newPluginC(NotifyPluginDingtalkRobot),
 	}
 	spec := &deploy.Spec.Template.Spec
 	cs := spec.Containers
@@ -217,7 +212,7 @@ func (m *notifyManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg *v1alpha
 	cs = append(cs, pluginCs...)
 	spec.Containers = cs
 	vols := spec.Volumes
-	vols = append(vols, socketVol, pluginCfgVol, templateVol)
+	vols = append(vols, socketVol, pluginCfgVol)
 	spec.Volumes = vols
 	return deploy, nil
 }

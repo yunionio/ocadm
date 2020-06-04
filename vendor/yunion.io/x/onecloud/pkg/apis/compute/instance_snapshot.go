@@ -29,9 +29,13 @@ type SimpleSnapshot struct {
 	CloudregionId string `json:"cloudregion_id"`
 	// 快照大小
 	Size int `json:"size"`
+	// 快照状态
+	Status string `json:"status"`
+	// 存储类型
+	StorageType string `json:"storage_type"`
 }
 
-type InstnaceSnapshotDetails struct {
+type InstanceSnapshotDetails struct {
 	apis.VirtualResourceDetails
 	SInstanceSnapshot
 
@@ -46,4 +50,13 @@ type InstnaceSnapshotDetails struct {
 	// 快照列表
 	Snapshots  []SimpleSnapshot  `json:"snapshots"`
 	Properties map[string]string `json:"properties"`
+}
+
+type InstanceSnapshotListInput struct {
+	apis.VirtualResourceListInput
+
+	ServerFilterListInput
+
+	// 操作系统类型
+	OsType []string `json:"os_type"`
 }

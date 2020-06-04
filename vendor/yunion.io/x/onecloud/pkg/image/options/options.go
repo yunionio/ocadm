@@ -36,7 +36,7 @@ type SImageOptions struct {
 
 	EnableTorrentService bool `help:"Enable torrent service" default:"false"`
 
-	TargetImageFormats []string `help:"target image formats that the system will automatically convert to" default:"qcow2,vmdk,vhd"`
+	TargetImageFormats []string `help:"target image formats that the system will automatically convert to" default:"qcow2,vmdk"`
 
 	TorrentClientPath string `help:"path to torrent executable" default:"/opt/yunion/bin/torrent"`
 
@@ -51,9 +51,10 @@ func OnOptionsChange(oldO, newO interface{}) bool {
 	oldOpts := oldO.(*SImageOptions)
 	newOpts := newO.(*SImageOptions)
 
+	changed := false
 	if common_options.OnCommonOptionsChange(&oldOpts.CommonOptions, &newOpts.CommonOptions) {
-		return true
+		changed = true
 	}
 
-	return false
+	return changed
 }

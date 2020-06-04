@@ -58,7 +58,7 @@ type BaseOptions struct {
 	TempPath  string   `help:"Path for store temp file, at least 40G space" default:"/opt/yunion/tmp"`
 
 	ApplicationID      string `help:"Application ID"`
-	RequestWorkerCount int    `default:"4" help:"Request worker thread count, default is 4"`
+	RequestWorkerCount int    `default:"8" help:"Request worker thread count, default is 8"`
 
 	EnableSsl   bool   `help:"Enable https"`
 	SslCaCerts  string `help:"ssl certificate ca root file, separating ca and cert file is not encouraged" alias:"ca-file"`
@@ -75,7 +75,7 @@ type BaseOptions struct {
 
 	ConfigSyncPeriodSeconds int `help:"service config sync interval in seconds, default 300 seconds/5 minutes" default:"300"`
 
-	IsSlaveNode        bool `help:"Region service slave node"`
+	IsSlaveNode        bool `help:"Slave mode"`
 	CronJobWorkerCount int  `help:"Cron job worker count" default:"4"`
 
 	DefaultQuotaValue string `help:"default quota value" choices:"unlimit|zero|default" default:"default"`
@@ -86,8 +86,17 @@ type BaseOptions struct {
 
 	TimeZone string `help:"time zone" default:"Asia/Shanghai"`
 
+	DomainizedNamespace bool `help:"turn on global name space, default is on" default:"false" json:"domainized_namespace,allowfalse"`
+
+	ApiServer string `help:"URL to access frontend webconsole"`
+
 	structarg.BaseOptions
 }
+
+const (
+	LockMethodInMemory = "inmemory"
+	LockMethodEtcd     = "etcd"
+)
 
 type CommonOptions struct {
 	AuthURL            string `help:"Keystone auth URL" alias:"auth-uri"`
@@ -116,22 +125,25 @@ type DBOptions struct {
 
 	QueryOffsetOptimization bool `help:"apply query offset optimization"`
 
-	LockmanMethod  string   `help:"method for lock synchronization" choices:"inmemory|etcd" default:"inmemory"`
-	EtcdLockPrefix string   `help:"prefix of etcd lock records" default:"/locks"`
-	EtcdLockTTL    int      `help:"ttl of etcd lock records"`
-	EtcdEndpoints  []string `help:"endpoints of etcd cluster"`
+	LockmanMethod string `help:"method for lock synchronization" choices:"inmemory|etcd" default:"inmemory"`
 
-	EtcdUsername string `help:"username of etcd cluster"`
-	EtcdPassword string `help:"password of etcd cluster"`
-
-	EtcdUseTLS        bool   `help:"use tls transport to connect etcd cluster" default:"false"`
-	EtcdSkipTLSVerify bool   `help:"skip tls verification" default:"false"`
-	EtcdCacert        string `help:"path to cacert for connecting to etcd cluster"`
-	EtcdCert          string `help:"path to cert file for connecting to etcd cluster"`
-	EtcdKey           string `help:"path to key file for connecting to etcd cluster"`
+	EtcdOptions
+	EtcdLockPrefix string `help:"prefix of etcd lock records" default:"/onecloud/lockman"`
+	EtcdLockTTL    int    `help:"ttl of etcd lock records" default:"5"`
 }
 
-func (this *DBOptions) GetEtcdTLSConfig() (*tls.Config, error) {
+type EtcdOptions struct {
+	EtcdEndpoints     []string `help:"endpoints of etcd cluster"`
+	EtcdUsername      string   `help:"username of etcd cluster"`
+	EtcdPassword      string   `help:"password of etcd cluster"`
+	EtcdUseTLS        bool     `help:"use tls transport to connect etcd cluster" default:"false"`
+	EtcdSkipTLSVerify bool     `help:"skip tls verification" default:"false"`
+	EtcdCacert        string   `help:"path to cacert for connecting to etcd cluster"`
+	EtcdCert          string   `help:"path to cert file for connecting to etcd cluster"`
+	EtcdKey           string   `help:"path to key file for connecting to etcd cluster"`
+}
+
+func (this *EtcdOptions) GetEtcdTLSConfig() (*tls.Config, error) {
 	var (
 		cert       tls.Certificate
 		certLoaded bool
@@ -212,7 +224,7 @@ func ParseOptions(optStruct interface{}, args []string, configFileName string, s
 
 	err = reflectutils.FindAnonymouStructPointer(optStruct, &optionsRef)
 	if err != nil {
-		log.Fatalf("Find common options fail %s", err)
+		log.Fatalf("Find common options fail: %s", err)
 	}
 
 	if optionsRef.Help {
@@ -283,4 +295,6 @@ func ParseOptions(optStruct interface{}, args []string, configFileName string, s
 	if len(optionsRef.Region) > 0 {
 		consts.SetRegion(optionsRef.Region)
 	}
+
+	consts.SetDomainizedNamespace(optionsRef.DomainizedNamespace)
 }

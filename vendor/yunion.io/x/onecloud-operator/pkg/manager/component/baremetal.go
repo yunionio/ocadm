@@ -48,6 +48,10 @@ func (m *baremetalManager) getConfigMap(
 	SetOptionsServiceTLS(&opt.BaseOptions)
 	SetServiceCommonOptions(&opt.CommonOptions, oc, config.ServiceCommonOptions)
 	opt.Port = constants.BaremetalPort
+	opt.AutoRegisterBaremetal = false
+	opt.LinuxDefaultRootUser = true
+	opt.DefaultIpmiPassword = "YunionDev@123"
+	opt.Zone = oc.GetZone()
 	return m.newServiceConfigMap(v1alpha1.BaremetalAgentComponentType, oc, opt), nil
 }
 
