@@ -17,6 +17,8 @@ package cloudprovider
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"time"
 
 	"yunion.io/x/jsonutils"
 	"yunion.io/x/log"
@@ -25,6 +27,7 @@ import (
 
 	"yunion.io/x/onecloud/pkg/httperrors"
 	"yunion.io/x/onecloud/pkg/mcclient"
+	"yunion.io/x/onecloud/pkg/util/httputils"
 )
 
 const (
@@ -32,66 +35,66 @@ const (
 )
 
 type SCloudaccountCredential struct {
-	// 账号所在的项目
+	// 账号所在的项目 (openstack)
 	ProjectName string `json:"project_name"`
 
-	// 账号所在的域
+	// 账号所在的域 (openstack)
 	// default: Default
 	DomainName string `json:"domain_name"`
 
-	// 用户名
+	// 用户名 (openstack, zstack, esxi)
 	Username string `json:"username"`
 
-	// 密码
+	// 密码 (openstack, zstack, esxi)
 	Password string `json:"password"`
 
-	// 认证地址
+	// 认证地址 (openstack,zstack)
 	AuthUrl string `json:"auto_url"`
 
-	// 秘钥id
+	// 秘钥id (Aliyun, Aws, huawei, ucloud, ctyun, zstack, s3)
 	AccessKeyId string `json:"access_key_id"`
 
-	// 秘钥key
+	// 秘钥key (Aliyun, Aws, huawei, ucloud, ctyun, zstack, s3)
 	AccessKeySecret string `json:"access_key_secret"`
 
-	// 环境
+	// 环境 (Azure, Aws, huawei, ctyun)
 	Environment string `json:"environment"`
 
-	// 目录ID
+	// 目录ID (Azure)
 	DirectoryId string `json:"directory_id"`
 
-	// 客户端ID
+	// 客户端ID (Azure)
 	ClientId string `json:"client_id"`
 
-	// 客户端秘钥
+	// 客户端秘钥 (Azure)
 	ClientSecret string `json:"client_secret"`
 
-	// 主机IP
+	// 主机IP (esxi)
 	Host string `json:"host"`
 
-	// 主机端口
+	// 主机端口 (esxi)
 	Port int `json:"port"`
 
-	// 端点
+	// 端点 (s3)
 	Endpoint string `json:"endpoint"`
 
-	// app id
+	// app id (Qcloud)
 	AppId string `json:"app_id"`
 
-	//秘钥ID
+	//秘钥ID (Qcloud)
 	SecretId string `json:"secret_id"`
 
-	//秘钥key
+	//秘钥key (Qcloud)
 	SecretKey string `json:"secret_key"`
 
-	// Google服务账号email
-	ClientEmail string `json:"client_email"`
-	// Google服务账号project id
-	ProjectId string `json:"project_id"`
-	// Google服务账号秘钥id
-	PrivateKeyId string `json:"private_key_id"`
-	// Google服务账号秘钥
-	PrivateKey string `json:"private_key"`
+	// Google服务账号email (gcp)
+	GCPClientEmail string `json:"gcp_client_email"`
+	// Google服务账号project id (gcp)
+	GCPProjectId string `json:"gcp_project_id"`
+	// Google服务账号秘钥id (gcp)
+	GCPPrivateKeyId string `json:"gcp_private_key_id"`
+	// Google服务账号秘钥 (gcp)
+	GCPPrivateKey string `json:"gcp_private_key"`
 }
 
 type SCloudaccount struct {
@@ -140,8 +143,34 @@ type SCloudaccount struct {
 	AccessUrl string `json:"access_url"`
 }
 
+type ProviderConfig struct {
+	// Id, Name are properties of Cloudprovider object
+	Id   string
+	Name string
+
+	// Vendor are names like Aliyun, OpenStack, etc.
+	Vendor  string
+	URL     string
+	Account string
+	Secret  string
+
+	ProxyFunc httputils.TransportProxyFunc
+}
+
+func (cp *ProviderConfig) HttpClient() *http.Client {
+	client := httputils.GetClient(true, 15*time.Second)
+	httputils.SetClientProxyFunc(client, cp.ProxyFunc)
+	return client
+}
+
+func (cp *ProviderConfig) AdaptiveTimeoutHttpClient() *http.Client {
+	client := httputils.GetAdaptiveTimeoutClient()
+	httputils.SetClientProxyFunc(client, cp.ProxyFunc)
+	return client
+}
+
 type ICloudProviderFactory interface {
-	GetProvider(providerId, providerName, url, account, secret string) (ICloudProvider, error)
+	GetProvider(cfg ProviderConfig) (ICloudProvider, error)
 
 	GetClientRC(url, account, secret string) (map[string]string, error)
 
@@ -228,7 +257,7 @@ func GetProviderFactory(provider string) (ICloudProviderFactory, error) {
 	if ok {
 		return factory, nil
 	}
-	log.Errorf("Provider %s not registerd", provider)
+	log.Errorf("Provider %s not registered", provider)
 	return nil, fmt.Errorf("No such provider %s", provider)
 }
 
@@ -240,12 +269,12 @@ func GetRegistedProviderIds() []string {
 	return providers
 }
 
-func GetProvider(providerId, providerName, accessUrl, account, secret, provider string) (ICloudProvider, error) {
-	driver, err := GetProviderFactory(provider)
+func GetProvider(cfg ProviderConfig) (ICloudProvider, error) {
+	driver, err := GetProviderFactory(cfg.Vendor)
 	if err != nil {
 		return nil, errors.Wrap(err, "GetProviderFactory")
 	}
-	return driver.GetProvider(providerId, providerName, accessUrl, account, secret)
+	return driver.GetProvider(cfg)
 }
 
 func GetClientRC(accessUrl, account, secret, provider string) (map[string]string, error) {
@@ -261,10 +290,10 @@ func IsSupported(provider string) bool {
 	return ok
 }
 
-func IsValidCloudAccount(accessUrl, account, secret, provider string) (string, error) {
-	factory, ok := providerTable[provider]
+func IsValidCloudAccount(cfg ProviderConfig) (string, error) {
+	factory, ok := providerTable[cfg.Vendor]
 	if ok {
-		provider, err := factory.GetProvider("", "", accessUrl, account, secret)
+		provider, err := factory.GetProvider(cfg)
 		if err != nil {
 			return "", err
 		}

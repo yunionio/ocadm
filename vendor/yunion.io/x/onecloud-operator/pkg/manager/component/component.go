@@ -34,11 +34,12 @@ import (
 	"k8s.io/klog"
 
 	"yunion.io/x/jsonutils"
-	"yunion.io/x/onecloud-operator/pkg/label"
+	"yunion.io/x/onecloud/pkg/mcclient"
 
 	"yunion.io/x/onecloud-operator/pkg/apis/constants"
 	"yunion.io/x/onecloud-operator/pkg/apis/onecloud/v1alpha1"
 	"yunion.io/x/onecloud-operator/pkg/controller"
+	"yunion.io/x/onecloud-operator/pkg/label"
 	"yunion.io/x/onecloud-operator/pkg/manager"
 )
 
@@ -205,13 +206,12 @@ func (m *ComponentManager) syncConfigMap(
 	if svcAccountFactory != nil {
 		account := svcAccountFactory(clustercfg)
 		if account != nil {
-			s, err := m.onecloudControl.GetSession(oc)
-			if err != nil {
-				return errorswrap.Wrap(err, "get cloud session")
-			}
-			if err := EnsureServiceAccount(s, *account); err != nil {
-				return errorswrap.Wrapf(err, "ensure service account %#v", *account)
-			}
+			m.onecloudControl.RunWithSession(oc, func(s *mcclient.ClientSession) error {
+				if err := EnsureServiceAccount(s, *account); err != nil {
+					return errorswrap.Wrapf(err, "ensure service account %#v", *account)
+				}
+				return nil
+			})
 		}
 	}
 	cfgMap, err := cfgMapFactory(oc, clustercfg)
@@ -224,13 +224,18 @@ func (m *ComponentManager) syncConfigMap(
 	if err := SetConfigMapLastAppliedConfigAnnotation(cfgMap); err != nil {
 		return err
 	}
-	oldCfgMap, _ := m.configer.Lister().ConfigMaps(oc.GetNamespace()).Get(cfgMap.GetName())
+	oldCfgMap, err := m.configer.Lister().ConfigMaps(oc.GetNamespace()).Get(cfgMap.GetName())
+	if err != nil && !errors.IsNotFound(err) {
+		return err
+	}
 	if oldCfgMap != nil {
-		if equal, err := configMapEqual(cfgMap, oldCfgMap); err != nil {
-			return err
-		} else if equal {
-			return nil
-		}
+		//if equal, err := configMapEqual(cfgMap, oldCfgMap); err != nil {
+		//	return err
+		//} else if equal {
+		//	return nil
+		//}
+		// if cfgmap exist do not update
+		return nil
 	}
 	return m.configer.CreateOrUpdateConfigMap(oc, cfgMap)
 }
@@ -435,11 +440,11 @@ func (m *ComponentManager) newDefaultDeploymentWithCloudAffinity(
 		spec.Affinity.NodeAffinity = &corev1.NodeAffinity{}
 	}
 	spec.Affinity.NodeAffinity.PreferredDuringSchedulingIgnoredDuringExecution = []corev1.PreferredSchedulingTerm{
-		corev1.PreferredSchedulingTerm{
+		{
 			Weight: 1,
 			Preference: corev1.NodeSelectorTerm{
 				MatchExpressions: []corev1.NodeSelectorRequirement{
-					corev1.NodeSelectorRequirement{
+					{
 						Key:      constants.OnecloudControllerLabelKey,
 						Operator: corev1.NodeSelectorOpIn,
 						Values:   []string{"enable"},
@@ -639,8 +644,9 @@ func (m *ComponentManager) newCloudServiceDeploymentWithInit(
 	initContainersF := func(volMounts []corev1.VolumeMount) []corev1.Container {
 		return []corev1.Container{
 			{
-				Name:  "init",
-				Image: deployCfg.Image,
+				Name:            "init",
+				Image:           deployCfg.Image,
+				ImagePullPolicy: deployCfg.ImagePullPolicy,
 				Command: []string{
 					fmt.Sprintf("/opt/yunion/bin/%s", cType.String()),
 					"--config",
@@ -772,6 +778,7 @@ func (m *ComponentManager) newCronJob(
 	appLabel := m.getComponentLabel(oc, componentType)
 	podAnnotations := spec.Annotations
 	cronJobName := controller.NewClusterComponentName(ocName, componentType)
+	var jobSpecBackoffLimit int32 = 1
 
 	cronJob := &batchv1.CronJob{
 		ObjectMeta: metav1.ObjectMeta{
@@ -794,6 +801,7 @@ func (m *ComponentManager) newCronJob(
 				},
 				Spec: jobbatchv1.JobSpec{
 					// Selector: appLabel.LabelSelector(),
+					BackoffLimit: &jobSpecBackoffLimit,
 					Template: corev1.PodTemplateSpec{
 						ObjectMeta: metav1.ObjectMeta{
 							Labels:      appLabel.Labels(),
@@ -830,7 +838,7 @@ func (m *ComponentManager) newDefaultCronJob(
 	containersFactory func([]corev1.VolumeMount) []corev1.Container,
 ) (*batchv1.CronJob, error) {
 	return m.newCronJob(componentType, oc, volHelper, spec, initContainersFactory,
-		containersFactory, false, corev1.DNSClusterFirst, "", nil, nil, nil, nil)
+		containersFactory, false, corev1.DNSClusterFirst, batchv1.ReplaceConcurrent, &(v1alpha1.StartingDeadlineSeconds), nil, nil, nil)
 }
 
 func (m *ComponentManager) newPVC(cType v1alpha1.ComponentType, oc *v1alpha1.OnecloudCluster, spec v1alpha1.StatefulDeploymentSpec) (*corev1.PersistentVolumeClaim, error) {
@@ -890,17 +898,13 @@ func (m *ComponentManager) syncPVC(oc *v1alpha1.OnecloudCluster,
 func (m *ComponentManager) syncPhase(oc *v1alpha1.OnecloudCluster,
 	phaseFactory func(controller.ComponentManager) controller.PhaseControl) error {
 	phase := phaseFactory(m.onecloudControl.Components(oc))
-	if _, err := m.onecloudControl.GetSession(oc); err != nil {
-		return errorswrap.Wrapf(err, "get cluster %s session", oc.GetName())
-	}
-
 	if phase == nil {
 		return nil
 	}
 	if err := phase.Setup(); err != nil {
 		return err
 	}
-	if err := phase.SystemInit(); err != nil {
+	if err := phase.SystemInit(oc); err != nil {
 		return err
 	}
 	return nil
@@ -963,6 +967,10 @@ func (m *ComponentManager) Logger() manager.Manager {
 
 func (m *ComponentManager) Region() manager.Manager {
 	return newRegionManager(m)
+}
+
+func (m *ComponentManager) RegionDNS() manager.Manager {
+	return newRegionDNSManager(m)
 }
 
 func (m *ComponentManager) Climc() manager.Manager {
@@ -1071,4 +1079,12 @@ func (m *ComponentManager) EsxiAgent() manager.Manager {
 
 func (m *ComponentManager) Monitor() manager.Manager {
 	return newMonitorManager(m)
+}
+
+func (m *ComponentManager) CloudmonReportServer() manager.Manager {
+	return newCloudmonReportServerManager(m)
+}
+
+func (m *ComponentManager) CloudmonReportHost() manager.Manager {
+	return newCloudmonReportHostManager(m)
 }

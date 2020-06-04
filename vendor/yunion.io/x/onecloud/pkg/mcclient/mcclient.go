@@ -79,6 +79,10 @@ func (this *Client) HttpClient() *http.Client {
 	return this.httpconn
 }
 
+func (this *Client) SetHttpTransportProxyFunc(proxyFunc httputils.TransportProxyFunc) {
+	httputils.SetClientProxyFunc(this.httpconn, proxyFunc)
+}
+
 func (this *Client) SetDebug(debug bool) {
 	this.debug = debug
 }
@@ -331,13 +335,14 @@ func (this *Client) NewSession(ctx context.Context, region, zone, endpointType s
 		ctx = context.Background()
 	}
 	return &ClientSession{
-		ctx:               ctx,
-		client:            this,
-		region:            region,
-		zone:              zone,
-		endpointType:      endpointType,
-		token:             token,
-		defaultApiVersion: apiVersion,
-		Header:            http.Header{},
+		ctx:                 ctx,
+		client:              this,
+		region:              region,
+		zone:                zone,
+		endpointType:        endpointType,
+		token:               token,
+		defaultApiVersion:   apiVersion,
+		Header:              http.Header{},
+		customizeServiceUrl: map[string]string{},
 	}
 }
