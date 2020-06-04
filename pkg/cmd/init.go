@@ -106,6 +106,7 @@ type initOptions struct {
 	glanceNode                       bool
 	baremetalNode                    bool
 	esxiNode                         bool
+	upgradeFromV2                    bool
 }
 
 var _ initphases.InitData = &initData{}
@@ -155,9 +156,9 @@ func NewCmdInit(out io.Writer, initOptions *initOptions) *cobra.Command {
 
 			err = initRunner.Run(args)
 			kubeadmutil.CheckErr(err)
-			err = onecloud.GenerateDefaultHostConfig(initOptions.hostCfg)
-			if err != nil {
-				fmt.Printf("Generate host config error: %s", err)
+			if !initOptions.upgradeFromV2 {
+				err = onecloud.GenerateDefaultHostConfig(initOptions.hostCfg)
+				kubeadmutil.CheckErr(err)
 			}
 
 			err = showJoinCommand(data, out)
@@ -335,6 +336,7 @@ func AddInitOtherFlags(flagSet *flag.FlagSet, initOptions *initOptions) {
 	)
 	options.AddOperatorVersionFlags(flagSet, &initOptions.operatorVersion)
 	options.AddGlanceNodeLabelFlag(flagSet, &initOptions.glanceNode, &initOptions.baremetalNode, &initOptions.esxiNode)
+	options.AddUpgradeFromV2Flags(flagSet, &initOptions.upgradeFromV2)
 }
 
 // newInitOptions returns a struct ready for being used for creating cmd init flags.
