@@ -18,13 +18,79 @@ import "yunion.io/x/onecloud/pkg/apis"
 
 type ElasticcacheDetails struct {
 	apis.VirtualResourceDetails
+	VpcResourceInfo
+	ZoneResourceInfoBase
 
 	SElasticcache
 
-	CloudproviderInfo
-
-	// 虚拟私有网络名称
-	Vpc string `json:"vpc"`
 	// IP子网名称
 	Network string `json:"network"`
+}
+
+type ElasticcacheResourceInfo struct {
+	// 弹性缓存实例名称
+	Elasticcache string `json:"elasticcache"`
+
+	// 引擎
+	Engine string `json:"engine"`
+	// 引擎版本
+	EngineVersion string `json:"engine_version"`
+
+	// 归属VPC ID
+	VpcId string `json:"vpc_id"`
+
+	VpcResourceInfo
+
+	// 归属Zone ID
+	ZoneId string `json:"zone_id"`
+
+	ZoneResourceInfoBase
+}
+
+type ELasticcacheResourceInput struct {
+	// 弹性缓存实例(ID or Name)
+	Elasticcache string `json:"elasticcache"`
+
+	// swagger:ignore
+	// Deprecated
+	ElasticcacheId string `json:"elasticcache_id" "yunion:deprecated-by":"elasticcache"`
+}
+
+type ElasticcacheFilterListInput struct {
+	ELasticcacheResourceInput
+
+	// 以弹性缓存实例名称排序
+	OrderByElasticcache string `json:"order_by_elasticcache"`
+
+	VpcFilterListInput
+
+	ZonalFilterListBase
+}
+
+type ElasticcacheAccountDetails struct {
+	apis.StatusStandaloneResourceDetails
+	apis.ProjectizedResourceInfo
+	ElasticcacheResourceInfo
+
+	SElasticcacheAccount
+	ProjectId string `json:"tenant_id"`
+}
+
+type ElasticcacheAclDetails struct {
+	apis.StandaloneResourceDetails
+	apis.ProjectizedResourceInfo
+	ElasticcacheResourceInfo
+
+	SElasticcacheAcl
+	ProjectId string `json:"tenant_id"`
+}
+
+type ElasticcacheParameterDetails struct {
+	apis.StandaloneResourceDetails
+	ElasticcacheResourceInfo
+
+	SElasticcacheParameter
+}
+
+type ElasticcacheSyncstatusInput struct {
 }

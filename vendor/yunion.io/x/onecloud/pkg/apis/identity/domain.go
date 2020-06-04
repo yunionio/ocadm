@@ -18,6 +18,8 @@ import "yunion.io/x/onecloud/pkg/apis"
 
 type DomainDetails struct {
 	apis.StandaloneResourceDetails
+	IdpResourceInfo
+
 	SDomain
 
 	UserCout    int `json:"user_count"`
@@ -26,4 +28,26 @@ type DomainDetails struct {
 	RoleCount   int `json:"role_count"`
 	PolicyCount int `json:"policy_count"`
 	IdpCount    int `json:"idp_count"`
+
+	ExternalResourceInfo
+}
+
+type DomainUpdateInput struct {
+	apis.StandaloneResourceBaseUpdateInput
+
+	// 显示名
+	Displayname string `json:"displayname"`
+
+	// 是否启用
+	Enabled *bool `json:"enabled"`
+}
+
+type DomainCreateInput struct {
+	apis.StandaloneResourceCreateInput
+
+	// 显示名
+	Displayname string `json:"displayname"`
+
+	// 是否启用
+	Enabled *bool `json:"enabled"`
 }

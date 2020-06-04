@@ -17,13 +17,10 @@ package compute
 import "yunion.io/x/onecloud/pkg/apis"
 
 type ElasticcacheBackupDetails struct {
-	apis.StandaloneResourceDetails
+	apis.StatusStandaloneResourceDetails
+	apis.ProjectizedResourceInfo
+	ElasticcacheResourceInfo
+
 	SElasticcacheBackup
-
-	CloudproviderInfo
-
-	// 引擎
-	Engine string `json:"engine"`
-	// 引擎版本
-	EngineVersion string `json:"engine_version"`
+	ProjectId string `json:"tenant_id"`
 }

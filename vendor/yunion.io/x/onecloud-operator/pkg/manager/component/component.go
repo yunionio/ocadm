@@ -26,6 +26,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes"
 	appv1 "k8s.io/client-go/listers/apps/v1"
 	batchlisters "k8s.io/client-go/listers/batch/v1beta1"
@@ -34,11 +35,12 @@ import (
 	"k8s.io/klog"
 
 	"yunion.io/x/jsonutils"
-	"yunion.io/x/onecloud-operator/pkg/label"
+	"yunion.io/x/onecloud/pkg/mcclient"
 
 	"yunion.io/x/onecloud-operator/pkg/apis/constants"
 	"yunion.io/x/onecloud-operator/pkg/apis/onecloud/v1alpha1"
 	"yunion.io/x/onecloud-operator/pkg/controller"
+	"yunion.io/x/onecloud-operator/pkg/label"
 	"yunion.io/x/onecloud-operator/pkg/manager"
 )
 
@@ -59,8 +61,9 @@ type ComponentManager struct {
 	cronLister    batchlisters.CronJobLister
 	nodeLister    corelisters.NodeLister
 
-	configer        Configer
-	onecloudControl *controller.OnecloudControl
+	configer               Configer
+	onecloudControl        *controller.OnecloudControl
+	onecloudClusterControl controller.ClusterControlInterface
 }
 
 // NewComponentManager return *BaseComponentManager
@@ -81,66 +84,69 @@ func NewComponentManager(
 	nodeLister corelisters.NodeLister,
 	configer Configer,
 	onecloudControl *controller.OnecloudControl,
+	onecloudClusterControl controller.ClusterControlInterface,
 ) *ComponentManager {
 	return &ComponentManager{
-		kubeCli:         kubeCli,
-		deployControl:   deployCtrol,
-		deployLister:    deployLister,
-		svcControl:      svcControl,
-		svcLister:       svcLister,
-		pvcControl:      pvcControl,
-		pvcLister:       pvcLister,
-		ingControl:      ingControl,
-		ingLister:       ingLister,
-		dsControl:       dsControl,
-		dsLister:        dsLister,
-		cronControl:     cronControl,
-		cronLister:      cronLister,
-		nodeLister:      nodeLister,
-		configer:        configer,
-		onecloudControl: onecloudControl,
+		kubeCli:                kubeCli,
+		deployControl:          deployCtrol,
+		deployLister:           deployLister,
+		svcControl:             svcControl,
+		svcLister:              svcLister,
+		pvcControl:             pvcControl,
+		pvcLister:              pvcLister,
+		ingControl:             ingControl,
+		ingLister:              ingLister,
+		dsControl:              dsControl,
+		dsLister:               dsLister,
+		cronControl:            cronControl,
+		cronLister:             cronLister,
+		nodeLister:             nodeLister,
+		configer:               configer,
+		onecloudControl:        onecloudControl,
+		onecloudClusterControl: onecloudClusterControl,
 	}
 }
 
 func (m *ComponentManager) syncService(
 	oc *v1alpha1.OnecloudCluster,
-	svcFactory func(*v1alpha1.OnecloudCluster) *corev1.Service,
+	svcFactory func(*v1alpha1.OnecloudCluster) []*corev1.Service,
 ) error {
 	ns := oc.GetNamespace()
-	newSvc := svcFactory(oc)
-	if newSvc == nil {
+	newSvcs := svcFactory(oc)
+	if len(newSvcs) == 0 {
 		return nil
 	}
-	oldSvcTmp, err := m.svcLister.Services(ns).Get(newSvc.GetName())
-	if errors.IsNotFound(err) {
-		err = SetServiceLastAppliedConfigAnnotation(newSvc)
+	for _, newSvc := range newSvcs {
+		oldSvcTmp, err := m.svcLister.Services(ns).Get(newSvc.GetName())
+		if errors.IsNotFound(err) {
+			err = SetServiceLastAppliedConfigAnnotation(newSvc)
+			if err != nil {
+				return err
+			}
+			return m.svcControl.CreateService(oc, newSvc)
+		}
 		if err != nil {
 			return err
 		}
-		return m.svcControl.CreateService(oc, newSvc)
-	}
-	if err != nil {
-		return err
-	}
 
-	oldSvc := oldSvcTmp.DeepCopy()
+		oldSvc := oldSvcTmp.DeepCopy()
 
-	equal, err := serviceEqual(newSvc, oldSvc)
-	if err != nil {
-		return err
-	}
-	if !equal {
-		svc := *oldSvc
-		svc.Spec = newSvc.Spec
-		svc.Spec.ClusterIP = oldSvc.Spec.ClusterIP
-		err = SetServiceLastAppliedConfigAnnotation(&svc)
+		equal, err := serviceEqual(newSvc, oldSvc)
 		if err != nil {
 			return err
 		}
-		_, err = m.svcControl.UpdateService(oc, &svc)
-		return err
+		if !equal {
+			svc := *oldSvc
+			svc.Spec = newSvc.Spec
+			svc.Spec.ClusterIP = oldSvc.Spec.ClusterIP
+			err = SetServiceLastAppliedConfigAnnotation(&svc)
+			if err != nil {
+				return err
+			}
+			_, err = m.svcControl.UpdateService(oc, &svc)
+			return err
+		}
 	}
-
 	return nil
 }
 
@@ -205,13 +211,12 @@ func (m *ComponentManager) syncConfigMap(
 	if svcAccountFactory != nil {
 		account := svcAccountFactory(clustercfg)
 		if account != nil {
-			s, err := m.onecloudControl.GetSession(oc)
-			if err != nil {
-				return errorswrap.Wrap(err, "get cloud session")
-			}
-			if err := EnsureServiceAccount(s, *account); err != nil {
-				return errorswrap.Wrapf(err, "ensure service account %#v", *account)
-			}
+			m.onecloudControl.RunWithSession(oc, func(s *mcclient.ClientSession) error {
+				if err := EnsureServiceAccount(s, *account); err != nil {
+					return errorswrap.Wrapf(err, "ensure service account %#v", *account)
+				}
+				return nil
+			})
 		}
 	}
 	cfgMap, err := cfgMapFactory(oc, clustercfg)
@@ -224,13 +229,18 @@ func (m *ComponentManager) syncConfigMap(
 	if err := SetConfigMapLastAppliedConfigAnnotation(cfgMap); err != nil {
 		return err
 	}
-	oldCfgMap, _ := m.configer.Lister().ConfigMaps(oc.GetNamespace()).Get(cfgMap.GetName())
+	oldCfgMap, err := m.configer.Lister().ConfigMaps(oc.GetNamespace()).Get(cfgMap.GetName())
+	if err != nil && !errors.IsNotFound(err) {
+		return err
+	}
 	if oldCfgMap != nil {
-		if equal, err := configMapEqual(cfgMap, oldCfgMap); err != nil {
-			return err
-		} else if equal {
-			return nil
-		}
+		//if equal, err := configMapEqual(cfgMap, oldCfgMap); err != nil {
+		//	return err
+		//} else if equal {
+		//	return nil
+		//}
+		// if cfgmap exist do not update
+		return nil
 	}
 	return m.configer.CreateOrUpdateConfigMap(oc, cfgMap)
 }
@@ -435,11 +445,11 @@ func (m *ComponentManager) newDefaultDeploymentWithCloudAffinity(
 		spec.Affinity.NodeAffinity = &corev1.NodeAffinity{}
 	}
 	spec.Affinity.NodeAffinity.PreferredDuringSchedulingIgnoredDuringExecution = []corev1.PreferredSchedulingTerm{
-		corev1.PreferredSchedulingTerm{
+		{
 			Weight: 1,
 			Preference: corev1.NodeSelectorTerm{
 				MatchExpressions: []corev1.NodeSelectorRequirement{
-					corev1.NodeSelectorRequirement{
+					{
 						Key:      constants.OnecloudControllerLabelKey,
 						Operator: corev1.NodeSelectorOpIn,
 						Values:   []string{"enable"},
@@ -526,6 +536,29 @@ func (m *ComponentManager) newService(
 	return svc
 }
 
+func (m *ComponentManager) newServiceWithClusterIp(
+	componentType v1alpha1.ComponentType,
+	oc *v1alpha1.OnecloudCluster,
+	serviceType corev1.ServiceType,
+	ports []corev1.ServicePort,
+	clusterIp string,
+) *corev1.Service {
+	ocName := oc.GetName()
+	svcName := controller.NewClusterComponentName(ocName, componentType)
+	appLabel := m.getComponentLabel(oc, componentType)
+
+	svc := &corev1.Service{
+		ObjectMeta: m.getObjectMeta(oc, svcName, appLabel),
+		Spec: corev1.ServiceSpec{
+			Type:      serviceType,
+			Selector:  appLabel,
+			Ports:     ports,
+			ClusterIP: clusterIp,
+		},
+	}
+	return svc
+}
+
 func (m *ComponentManager) newNodePortService(cType v1alpha1.ComponentType, oc *v1alpha1.OnecloudCluster, ports []corev1.ServicePort) *corev1.Service {
 	return m.newService(cType, oc, corev1.ServiceTypeNodePort, ports)
 }
@@ -535,6 +568,36 @@ func (m *ComponentManager) newSingleNodePortService(cType v1alpha1.ComponentType
 		NewServiceNodePort("api", port),
 	}
 	return m.newNodePortService(cType, oc, ports)
+}
+
+func (m *ComponentManager) newEtcdClientService(
+	cType v1alpha1.ComponentType, oc *v1alpha1.OnecloudCluster,
+) *corev1.Service {
+	ports := []corev1.ServicePort{{
+		Name:       "client",
+		Port:       constants.EtcdClientPort,
+		TargetPort: intstr.FromInt(constants.EtcdClientPort),
+		Protocol:   corev1.ProtocolTCP,
+	}}
+	return m.newService(cType, oc, corev1.ServiceTypeClusterIP, ports)
+}
+
+func (m *ComponentManager) newEtcdService(
+	cType v1alpha1.ComponentType, oc *v1alpha1.OnecloudCluster,
+) *corev1.Service {
+	ports := []corev1.ServicePort{{
+		Name:       "client",
+		Port:       constants.EtcdClientPort,
+		TargetPort: intstr.FromInt(constants.EtcdClientPort),
+		Protocol:   corev1.ProtocolTCP,
+	}, {
+		Name:       "peer",
+		Port:       constants.EtcdPeerPort,
+		TargetPort: intstr.FromInt(constants.EtcdPeerPort),
+		Protocol:   corev1.ProtocolTCP,
+	}}
+	return m.newServiceWithClusterIp(
+		cType, oc, corev1.ServiceTypeClusterIP, ports, corev1.ClusterIPNone)
 }
 
 func (m *ComponentManager) newDeployment(
@@ -607,6 +670,7 @@ func (m *ComponentManager) newCloudServiceDeployment(
 	deployCfg v1alpha1.DeploymentSpec,
 	initContainersF func([]corev1.VolumeMount) []corev1.Container,
 	ports []corev1.ContainerPort,
+	mountEtcdTLS bool,
 ) (*apps.Deployment, error) {
 	configMap := controller.ComponentConfigMapName(oc, cType)
 	containersF := func(volMounts []corev1.VolumeMount) []corev1.Container {
@@ -626,7 +690,14 @@ func (m *ComponentManager) newCloudServiceDeployment(
 		}
 	}
 
-	return m.newDefaultDeployment(cType, oc, NewVolumeHelper(oc, configMap, cType),
+	var h *VolumeHelper
+	if mountEtcdTLS {
+		h = NewVolumeHelperWithEtcdTLS(oc, configMap, cType)
+	} else {
+		h = NewVolumeHelper(oc, configMap, cType)
+	}
+
+	return m.newDefaultDeployment(cType, oc, h,
 		deployCfg, initContainersF, containersF)
 }
 
@@ -635,12 +706,14 @@ func (m *ComponentManager) newCloudServiceDeploymentWithInit(
 	oc *v1alpha1.OnecloudCluster,
 	deployCfg v1alpha1.DeploymentSpec,
 	ports []corev1.ContainerPort,
+	mountEtcdTLS bool,
 ) (*apps.Deployment, error) {
 	initContainersF := func(volMounts []corev1.VolumeMount) []corev1.Container {
 		return []corev1.Container{
 			{
-				Name:  "init",
-				Image: deployCfg.Image,
+				Name:            "init",
+				Image:           deployCfg.Image,
+				ImagePullPolicy: deployCfg.ImagePullPolicy,
 				Command: []string{
 					fmt.Sprintf("/opt/yunion/bin/%s", cType.String()),
 					"--config",
@@ -652,7 +725,7 @@ func (m *ComponentManager) newCloudServiceDeploymentWithInit(
 			},
 		}
 	}
-	return m.newCloudServiceDeployment(cType, oc, deployCfg, initContainersF, ports)
+	return m.newCloudServiceDeployment(cType, oc, deployCfg, initContainersF, ports, mountEtcdTLS)
 }
 
 func (m *ComponentManager) newCloudServiceDeploymentNoInit(
@@ -660,8 +733,9 @@ func (m *ComponentManager) newCloudServiceDeploymentNoInit(
 	oc *v1alpha1.OnecloudCluster,
 	deployCfg v1alpha1.DeploymentSpec,
 	ports []corev1.ContainerPort,
+	mountEtcdTLS bool,
 ) (*apps.Deployment, error) {
-	return m.newCloudServiceDeployment(cType, oc, deployCfg, nil, ports)
+	return m.newCloudServiceDeployment(cType, oc, deployCfg, nil, ports, mountEtcdTLS)
 }
 
 func (m *ComponentManager) newCloudServiceSinglePortDeployment(
@@ -670,6 +744,7 @@ func (m *ComponentManager) newCloudServiceSinglePortDeployment(
 	deployCfg v1alpha1.DeploymentSpec,
 	port int32,
 	doInit bool,
+	mountEtcdTLS bool,
 ) (*apps.Deployment, error) {
 	ports := []corev1.ContainerPort{
 		{
@@ -682,7 +757,7 @@ func (m *ComponentManager) newCloudServiceSinglePortDeployment(
 	if doInit {
 		f = m.newCloudServiceDeploymentWithInit
 	}
-	return f(cType, oc, deployCfg, ports)
+	return f(cType, oc, deployCfg, ports, mountEtcdTLS)
 }
 
 func (m *ComponentManager) deploymentIsUpgrading(deploy *apps.Deployment, oc *v1alpha1.OnecloudCluster) (bool, error) {
@@ -772,6 +847,7 @@ func (m *ComponentManager) newCronJob(
 	appLabel := m.getComponentLabel(oc, componentType)
 	podAnnotations := spec.Annotations
 	cronJobName := controller.NewClusterComponentName(ocName, componentType)
+	var jobSpecBackoffLimit int32 = 1
 
 	cronJob := &batchv1.CronJob{
 		ObjectMeta: metav1.ObjectMeta{
@@ -794,6 +870,7 @@ func (m *ComponentManager) newCronJob(
 				},
 				Spec: jobbatchv1.JobSpec{
 					// Selector: appLabel.LabelSelector(),
+					BackoffLimit: &jobSpecBackoffLimit,
 					Template: corev1.PodTemplateSpec{
 						ObjectMeta: metav1.ObjectMeta{
 							Labels:      appLabel.Labels(),
@@ -830,7 +907,7 @@ func (m *ComponentManager) newDefaultCronJob(
 	containersFactory func([]corev1.VolumeMount) []corev1.Container,
 ) (*batchv1.CronJob, error) {
 	return m.newCronJob(componentType, oc, volHelper, spec, initContainersFactory,
-		containersFactory, false, corev1.DNSClusterFirst, "", nil, nil, nil, nil)
+		containersFactory, false, corev1.DNSClusterFirst, batchv1.ReplaceConcurrent, &(v1alpha1.StartingDeadlineSeconds), nil, nil, nil)
 }
 
 func (m *ComponentManager) newPVC(cType v1alpha1.ComponentType, oc *v1alpha1.OnecloudCluster, spec v1alpha1.StatefulDeploymentSpec) (*corev1.PersistentVolumeClaim, error) {
@@ -890,17 +967,13 @@ func (m *ComponentManager) syncPVC(oc *v1alpha1.OnecloudCluster,
 func (m *ComponentManager) syncPhase(oc *v1alpha1.OnecloudCluster,
 	phaseFactory func(controller.ComponentManager) controller.PhaseControl) error {
 	phase := phaseFactory(m.onecloudControl.Components(oc))
-	if _, err := m.onecloudControl.GetSession(oc); err != nil {
-		return errorswrap.Wrapf(err, "get cluster %s session", oc.GetName())
-	}
-
 	if phase == nil {
 		return nil
 	}
 	if err := phase.Setup(); err != nil {
 		return err
 	}
-	if err := phase.SystemInit(); err != nil {
+	if err := phase.SystemInit(oc); err != nil {
 		return err
 	}
 	return nil
@@ -922,7 +995,7 @@ func (m *ComponentManager) getDeploymentStatus(_ *v1alpha1.OnecloudCluster) *v1a
 	return nil
 }
 
-func (m *ComponentManager) getService(_ *v1alpha1.OnecloudCluster) *corev1.Service {
+func (m *ComponentManager) getService(_ *v1alpha1.OnecloudCluster) []*corev1.Service {
 	return nil
 }
 
@@ -953,6 +1026,10 @@ func (m *ComponentManager) getCronJob(*v1alpha1.OnecloudCluster, *v1alpha1.Onecl
 	return nil, nil
 }
 
+func (m *ComponentManager) Etcd() manager.Manager {
+	return newEtcdComponentManager(m)
+}
+
 func (m *ComponentManager) Keystone() manager.Manager {
 	return newKeystoneComponentManager(m)
 }
@@ -963,6 +1040,10 @@ func (m *ComponentManager) Logger() manager.Manager {
 
 func (m *ComponentManager) Region() manager.Manager {
 	return newRegionManager(m)
+}
+
+func (m *ComponentManager) RegionDNS() manager.Manager {
+	return newRegionDNSManager(m)
 }
 
 func (m *ComponentManager) Climc() manager.Manager {
@@ -1071,4 +1152,16 @@ func (m *ComponentManager) EsxiAgent() manager.Manager {
 
 func (m *ComponentManager) Monitor() manager.Manager {
 	return newMonitorManager(m)
+}
+
+func (m *ComponentManager) CloudmonReportServer() manager.Manager {
+	return newCloudmonReportServerManager(m)
+}
+
+func (m *ComponentManager) CloudmonReportHost() manager.Manager {
+	return newCloudmonReportHostManager(m)
+}
+
+func (m *ComponentManager) Itsm() manager.Manager {
+	return newItsmManager(m)
 }

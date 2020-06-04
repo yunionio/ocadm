@@ -27,6 +27,7 @@ const (
 	DBINSTANCE_CLONING        = "cloning"       //克隆中
 	DBINSTANCE_DELETING       = "deleting"      //删除中
 	DBINSTANCE_DELETE_FAILED  = "delete_failed" //删除失败
+	DBINSTANCE_MAINTENANCE    = "maintenance"   //维护中
 	DBINSTANCE_UNKNOWN        = "unknown"
 
 	DBINSTANCE_CHANGE_CONFIG        = "change_config"        //调整配置
@@ -35,7 +36,7 @@ const (
 	DBINSTANCE_RENEWING     = "renewing"     //续费中
 	DBINSTANCE_RENEW_FAILED = "renew_failed" //续费失败
 
-	DBINSTANCE_SYNC_STATUS = "sync_status" //同步状态
+	DBINSTANCE_SYNC_CONFIG = "sync_config" //同步配置
 
 	DBINSTANCE_REBOOT_FAILED = "reboot_failed" //重启失败
 	DBINSTANCE_CREATE_FAILED = "create_failed" //创建失败
@@ -108,10 +109,10 @@ const (
 	ALIYUN_DBINSTANCE_STORAGE_TYPE_CLOUD_SSD  = "cloud_ssd"  //SSD云盘
 
 	//华为云存储类型
-	HUAWEI_DBINSTANCE_STORAGE_TYPE_SSD  = "SSD"  //超高IO云硬盘
-	HUAWEI_DBINSTANCE_STORAGE_TYPE_SAS  = "SAS"  //高IO云硬盘
-	HUAWEI_DBINSTANCE_STORAGE_TYPE_SATA = "SATA" //普通IO云硬盘
-
+	HUAWEI_DBINSTANCE_STORAGE_TYPE_ULTRAHIGH    = "ULTRAHIGH" //超高IO云硬盘
+	HUAWEI_DBINSTANCE_STORAGE_TYPE_ULTRAHIGHPRO = "ULTRAHIGHPRO"
+	HUAWEI_DBINSTANCE_STORAGE_TYPE_COMMON       = "COMMON"
+	HUAWEI_DBINSTANCE_STORAGE_TYPE_HIGH         = "HIGH"
 )
 
 var (

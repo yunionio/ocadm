@@ -184,6 +184,8 @@ func init() {
 			"host_type", "version", "schedtags",
 			"storage_size",
 			"expired_at",
+			"domain_id", "project_domain",
+			"public_scope",
 		},
 		[]string{})}
 	registerCompute(&Hosts)

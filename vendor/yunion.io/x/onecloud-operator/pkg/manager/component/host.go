@@ -74,7 +74,7 @@ func (m *hostManager) newHostPrivilegedDaemonSet(
 					Image:           dsSpec.Image,
 					ImagePullPolicy: dsSpec.ImagePullPolicy,
 					Env: []corev1.EnvVar{
-						corev1.EnvVar{
+						{
 							Name: "HOST_OVN_SOUTH_DATABASE",
 							Value: fmt.Sprintf("tcp:%s:%d",
 								controller.NewClusterComponentName(
@@ -84,11 +84,11 @@ func (m *hostManager) newHostPrivilegedDaemonSet(
 								constants.OvnSouthDbPort,
 							),
 						},
-						corev1.EnvVar{
+						{
 							Name:  "HOST_SYSTEM_SERVICES_OFF",
 							Value: "host-deployer,host_sdnagent",
 						},
-						corev1.EnvVar{
+						{
 							Name:  "OVN_CONTAINER_IMAGE_TAG",
 							Value: v1alpha1.DefaultOvnImageTag,
 						},
@@ -138,8 +138,12 @@ func (m *hostManager) newHostPrivilegedDaemonSet(
 					Name:            "sdnagent",
 					Image:           dsSpec.SdnAgent.Image,
 					ImagePullPolicy: dsSpec.SdnAgent.ImagePullPolicy,
-					Command:         []string{"/opt/yunion/bin/sdnagent"},
-					VolumeMounts:    volMounts,
+					Command: []string{
+						"/opt/yunion/bin/sdnagent",
+						"--common-config-file",
+						"/etc/yunion/common/common.conf",
+					},
+					VolumeMounts: volMounts,
 					SecurityContext: &corev1.SecurityContext{
 						Privileged: &privileged,
 					},
