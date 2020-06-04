@@ -18,6 +18,7 @@ import (
 	csiaddon "yunion.io/x/ocadm/pkg/phases/addons/csi"
 	grafanaaddon "yunion.io/x/ocadm/pkg/phases/addons/grafana"
 	lokiaddon "yunion.io/x/ocadm/pkg/phases/addons/loki"
+	msaddon "yunion.io/x/ocadm/pkg/phases/addons/metricsserver"
 	ocaddon "yunion.io/x/ocadm/pkg/phases/addons/onecloudoperator"
 	traefikaddon "yunion.io/x/ocadm/pkg/phases/addons/traefik"
 	"yunion.io/x/ocadm/pkg/util/kubectl"
@@ -103,6 +104,7 @@ func NewOCAddonPhase() workflow.Phase {
 			newAddonPhase("csi", runCSIAddon),
 			newAddonPhase("traefik", runTraefikAddon),
 			newAddonPhase("onecloud-operator", runOCOperatorAddon),
+			newAddonPhase("metrics-server", runMetricsServerAddon),
 			//newAddonPhase("grafana", runGrafanaAddon),
 			//newAddonPhase("loki", runLokiAddon),
 			//newAddonPhase("promtail", runPromtailAddon),
@@ -145,6 +147,12 @@ func runCalicoAddon(c workflow.RunData) error {
 func runOCOperatorAddon(c workflow.RunData) error {
 	return kubectlApplyAddon(c, func(cfg *kubeadmapi.ClusterConfiguration) addons.Configer {
 		return ocaddon.NewOperatorConfig(cfg, c.(InitData).OperatorVersion())
+	})
+}
+
+func runMetricsServerAddon(c workflow.RunData) error {
+	return kubectlApplyAddon(c, func(cfg *kubeadmapi.ClusterConfiguration) addons.Configer {
+		return msaddon.NewMetricsServerConfig(cfg)
 	})
 }
 
