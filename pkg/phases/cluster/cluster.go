@@ -421,6 +421,14 @@ data:
     host:
       username: %s
       password: %s
+    itsm:
+      db:
+        database: %s
+        password: %s
+        username: %s
+      encryptionKey: %s
+      password: %s
+      username: %s
 `,
 		// yunionapi
 		cfg["YUNIONAPI_ADMIN_USER"], cfg["YUNIONAPI_ADMIN_PASS"],
@@ -456,6 +464,9 @@ data:
 		cfg["ESXIAGENT_ADMIN_USER"], cfg["ESXIAGENT_ADMIN_PASS"],
 		// host
 		cfg["HOST_ADMIN_USER"], cfg["HOST_ADMIN_PASS"],
+		// itsm
+		cfg["MYSQL_DB_ITSM_SECONDARY"], cfg["MYSQL_PASS_ITSM"], cfg["MYSQL_DB_ITSM_SECONDARY"],
+		cfg["ITSM_ENCRYPTION_KEY"], cfg["YUNION_ITSM_DOCKER_PSWD"], cfg["YUNION_ITSM_DOCKER_USER"],
 	)
 }
 
