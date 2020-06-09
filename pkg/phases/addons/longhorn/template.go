@@ -338,6 +338,55 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    app: longhorn-ui
+  name: longhorn-ui
+  namespace: longhorn-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: longhorn-ui
+  template:
+    metadata:
+      labels:
+        app: longhorn-ui
+    spec:
+      containers:
+      - name: longhorn-ui
+        image: {{.LonghornUiImage}}
+        imagePullPolicy: Always
+        securityContext:
+          runAsUser: 0
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+          - name: LONGHORN_MANAGER_IP
+            value: "http://longhorn-backend:9500"
+#      imagePullSecrets:
+#      - name:
+---
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app: longhorn-ui
+  name: longhorn-frontend
+  namespace: longhorn-system
+spec:
+  type: ClusterIP
+  selector:
+    app: longhorn-ui
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+    nodePort: null
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: longhorn-driver-deployer
   namespace: longhorn-system
 spec:
@@ -409,7 +458,7 @@ spec:
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: longhorn
+  name: {{.LonghornStorageClass}}
 provisioner: driver.longhorn.io
 allowVolumeExpansion: true
 parameters:

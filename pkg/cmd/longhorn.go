@@ -2,26 +2,21 @@ package cmd
 
 import (
 	"io"
-	"os"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/tools/clientcmd"
-	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
-	"k8s.io/klog"
+	clientset "k8s.io/client-go/kubernetes"
 	"k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/workflow"
 	kubeadmconstants "k8s.io/kubernetes/cmd/kubeadm/app/constants"
 	kubeadmutil "k8s.io/kubernetes/cmd/kubeadm/app/util"
-	"yunion.io/x/ocadm/pkg/util/kubectl"
+	kubeconfigutil "k8s.io/kubernetes/cmd/kubeadm/app/util/kubeconfig"
 
 	"yunion.io/x/ocadm/pkg/apis/constants"
 	v1 "yunion.io/x/ocadm/pkg/apis/v1"
 	"yunion.io/x/ocadm/pkg/options"
-	"yunion.io/x/ocadm/pkg/phases/cluster"
 	"yunion.io/x/ocadm/pkg/phases/longhorn"
-	"yunion.io/x/onecloud-operator/pkg/client/clientset/versioned"
 )
 
 func NewCmdLonghorn(out io.Writer) *cobra.Command {
@@ -31,6 +26,7 @@ func NewCmdLonghorn(out io.Writer) *cobra.Command {
 	}
 
 	cmds.AddCommand(cmdLonghornEnable())
+	cmds.AddCommand(cmdMigratePvToLonghorn())
 	return cmds
 }
 
@@ -76,13 +72,11 @@ func cmdLonghornEnable() *cobra.Command {
 
 type longHornConfig struct {
 	nodesBaseData
+	kubectlCli
 	DataPath                   string
 	OverProvisioningPercentage int
 	ReplicaCount               int
 	ImageRepository            string
-	client                     versioned.Interface
-	kubectlClient              *kubectl.Client
-	kubeconfigPath             string
 }
 
 func AddLonghornFlags(flagSet *flag.FlagSet, o *longHornConfig) {
@@ -112,37 +106,6 @@ func (d *longHornConfig) GetImageRepository() string {
 	return d.ImageRepository
 }
 
-func (d *longHornConfig) VersionedClient() (versioned.Interface, error) {
-	if d.client != nil {
-		return d.client, nil
-	}
-
-	var tlsBootstrapCfg *clientcmdapi.Config
-	var err error
-
-	kubeConfigFile := constants.GetAdminKubeConfigPath()
-	if _, err := os.Stat(kubeConfigFile); err == nil {
-		// use the admin.conf as tlsBootstrapCfg, that is the kubeconfig file used for reading the ocadm-config during dicovery
-		klog.V(1).Infof("[preflight] found %s. Use it for skipping discovery", kubeConfigFile)
-		tlsBootstrapCfg, err = clientcmd.LoadFromFile(kubeConfigFile)
-		if err != nil {
-			return nil, errors.Wrapf(err, "Error loading %s", kubeConfigFile)
-		}
-	} else {
-		return nil, err
-	}
-
-	if tlsBootstrapCfg == nil {
-		return nil, errors.Errorf("Not found valid %s, please run this command at controlplane", kubeConfigFile)
-	}
-	cli, err := cluster.NewClusterClient(tlsBootstrapCfg)
-	if err != nil {
-		return nil, err
-	}
-	d.client = cli
-	return cli, nil
-}
-
 func (d *longHornConfig) LonghornConfig() *longhorn.LonghornConfig {
 	return &longhorn.LonghornConfig{
 		DataPath:                    d.DataPath,
@@ -169,19 +132,81 @@ func (d *longHornConfig) VerifyNode() error {
 	}
 }
 
-// KubeConfigPath returns the path to the kubeconfig file to use for connecting to Kubernetes
-func (d *longHornConfig) KubeConfigPath() string {
-	return d.kubeconfigPath
+type migratePvConfig struct {
+	kubectlCli
+	sourcePVC string
+	component string
+
+	ImageRepository          string
+	clientSet                *clientset.Clientset
+	deleteMigartePodInTheEnd bool
 }
 
-func (d *longHornConfig) KubectlClient() (*kubectl.Client, error) {
-	if d.kubectlClient != nil {
-		return d.kubectlClient, nil
+func (d *migratePvConfig) SourcePVC() string {
+	return d.sourcePVC
+}
+
+func (d *migratePvConfig) GetImageRepository() string {
+	return d.ImageRepository
+}
+
+func (d *migratePvConfig) DeleteMigartePodInTheEnd() bool {
+	return d.deleteMigartePodInTheEnd
+}
+
+// ClientSet returns the ClientSet for accessing the cluster with the identity defined in admin.conf.
+func (d *migratePvConfig) ClientSet() (*clientset.Clientset, error) {
+	if d.clientSet != nil {
+		return d.clientSet, nil
 	}
-	cli, err := kubectl.NewClientFormKubeconfigFile(d.KubeConfigPath())
+	path := constants.GetAdminKubeConfigPath()
+	client, err := kubeconfigutil.ClientSetFromFile(path)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "[preflight] couldn't create Kubernetes client")
 	}
-	d.kubectlClient = cli
-	return d.kubectlClient, nil
+	d.clientSet = client
+	return client, nil
+}
+
+// migrate data from a pv to new pv which created by longhorn
+func cmdMigratePvToLonghorn() *cobra.Command {
+	opt := &migratePvConfig{}
+	runner := workflow.NewRunner()
+	cmd := &cobra.Command{
+		Use:   "migrate-from",
+		Short: "Run this command to migrate pv to longhorn",
+		PreRun: func(cmd *cobra.Command, args []string) {
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			_, err := runner.InitData(args)
+			kubeadmutil.CheckErr(err)
+
+			err = runner.Run(args)
+			kubeadmutil.CheckErr(err)
+		},
+		Args: cobra.NoArgs,
+	}
+	AddMigrateToLonghornFlags(cmd.Flags(), opt)
+	runner.AppendPhase(longhorn.MigrateToLonghornPhase())
+	runner.SetDataInitializer(func(cmd *cobra.Command, args []string) (workflow.RunData, error) {
+		if len(opt.sourcePVC) == 0 {
+			return nil, errors.New("missing source pvc")
+		}
+		return opt, nil
+	})
+	runner.BindToCommand(cmd)
+	return cmd
+}
+
+func AddMigrateToLonghornFlags(flagSet *flag.FlagSet, o *migratePvConfig) {
+	flagSet.StringVar(
+		&o.sourcePVC, options.PVCMigrateToLonghorn,
+		o.sourcePVC, "PVC migrate to longhorn",
+	)
+	flagSet.StringVar(
+		&o.ImageRepository, options.ImageRepository,
+		v1.DefaultImageRepository, "Image repository",
+	)
+	flagSet.BoolVar(&o.deleteMigartePodInTheEnd, "delete-migrate-pod",
+		true, "Delete migrate pod in the end")
 }

@@ -72,11 +72,12 @@ const (
 	NetworkTypeServer    = "server"
 
 	// longhorn
-	DefaultLonghornVersion                    = "v1.0.0" // TODO: change version to v1.0.0
+	LonghornStorageClass                      = "longhorn"
+	DefaultLonghornVersion                    = "v1.0.0"
 	LonghornManager                           = "longhorn-manager"
 	LonghornEngine                            = "longhorn-engine"
 	LonghornUi                                = "longhorn-ui"
-	LonghornDefaultDataPath                   = "/var/lib/longhorn"
+	LonghornDefaultDataPath                   = "/opt/longhorn"
 	LonghornDefaultOverProvisioningPercentage = 100
 	LonghornDefaultReplicaCount               = 3
 	// longhorn-instance-manager image name must be no more than 63 characters

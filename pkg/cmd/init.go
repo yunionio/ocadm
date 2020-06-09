@@ -19,6 +19,7 @@ import (
 	clientset "k8s.io/client-go/kubernetes"
 	kubeadmapi "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm"
 	"k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/validation"
+	kubeadminitphases "k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/init"
 	"k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/workflow"
 	cmdutil "k8s.io/kubernetes/cmd/kubeadm/app/cmd/util"
 	kubeadmconstants "k8s.io/kubernetes/cmd/kubeadm/app/constants"
@@ -189,19 +190,19 @@ func NewCmdInit(out io.Writer, initOptions *initOptions) *cobra.Command {
 			&externalKubeadmCfg.Scheduler.ExtraArgs)
 	})
 
-	//initRunner.AppendPhase(initphases.NewPreflightPhase())
-	//initRunner.AppendPhase(kubeadminitphases.NewKubeletStartPhase())
-	//initRunner.AppendPhase(kubeadminitphases.NewCertsPhase())
-	//initRunner.AppendPhase(kubeadminitphases.NewKubeConfigPhase())
-	//initRunner.AppendPhase(kubeadminitphases.NewControlPlanePhase())
-	//initRunner.AppendPhase(kubeadminitphases.NewEtcdPhase())
-	//initRunner.AppendPhase(kubeadminitphases.NewWaitControlPlanePhase())
-	//initRunner.AppendPhase(kubeadminitphases.NewUploadConfigPhase())
-	//initRunner.AppendPhase(kubeadminitphases.NewUploadCertsPhase())
-	//initRunner.AppendPhase(kubeadminitphases.NewMarkControlPlanePhase())
-	//initRunner.AppendPhase(kubeadminitphases.NewBootstrapTokenPhase())
+	initRunner.AppendPhase(initphases.NewPreflightPhase())
+	initRunner.AppendPhase(kubeadminitphases.NewKubeletStartPhase())
+	initRunner.AppendPhase(kubeadminitphases.NewCertsPhase())
+	initRunner.AppendPhase(kubeadminitphases.NewKubeConfigPhase())
+	initRunner.AppendPhase(kubeadminitphases.NewControlPlanePhase())
+	initRunner.AppendPhase(kubeadminitphases.NewEtcdPhase())
+	initRunner.AppendPhase(kubeadminitphases.NewWaitControlPlanePhase())
+	initRunner.AppendPhase(kubeadminitphases.NewUploadConfigPhase())
+	initRunner.AppendPhase(kubeadminitphases.NewUploadCertsPhase())
+	initRunner.AppendPhase(kubeadminitphases.NewMarkControlPlanePhase())
+	initRunner.AppendPhase(kubeadminitphases.NewBootstrapTokenPhase())
 	initRunner.AppendPhase(initphases.NewUploadConfigPhase())
-	//initRunner.AppendPhase(kubeadminitphases.NewAddonPhase())
+	initRunner.AppendPhase(kubeadminitphases.NewAddonPhase())
 	initRunner.AppendPhase(initphases.NewOCAddonPhase())
 	initRunner.AppendPhase(initphases.NodeEnableHostAgent())
 

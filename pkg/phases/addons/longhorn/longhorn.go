@@ -11,10 +11,11 @@ type LonghornConfig struct {
 	OverProvisioningPercentage int
 	ReplicaCount               int
 
+	LonghornStorageClass         string
 	LonghornManagerImage         string
 	LonghornEngineImage          string
 	LonghornInstanceManagerImage string
-	// LonghornUiImage              string
+	LonghornUiImage              string
 }
 
 func NewLonghornConfig(repo, dataPath string, overProvisioningPercentage, replicaCount int) addons.Configer {
@@ -25,7 +26,8 @@ func NewLonghornConfig(repo, dataPath string, overProvisioningPercentage, replic
 		LonghornManagerImage:         images.GetGenericImage(repo, constants.LonghornManager, constants.DefaultLonghornVersion),
 		LonghornEngineImage:          images.GetGenericImage(repo, constants.LonghornEngine, constants.DefaultLonghornVersion),
 		LonghornInstanceManagerImage: images.GetGenericImage(repo, constants.LonghornInstanceManager, constants.DefaultLonghornVersion),
-		// LonghornUiImage:              images.GetGenericImage(repo, constants.LonghornUi, constants.DefaultLonghornVersion),
+		LonghornUiImage:              images.GetGenericImage(repo, constants.LonghornUi, constants.DefaultLonghornVersion),
+		LonghornStorageClass:         constants.LonghornStorageClass,
 	}
 }
 

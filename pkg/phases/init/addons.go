@@ -148,7 +148,6 @@ func runOCOperatorAddon(c workflow.RunData) error {
 }
 
 func runCSIAddon(c workflow.RunData) error {
-	// TODO: do a judgment use localpathprovisioner or longhorn
 	return kubectlApplyAddon(c, csiaddon.NewLocalPathProvisionerConfig)
 }
 

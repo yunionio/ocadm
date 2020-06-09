@@ -107,6 +107,86 @@ func (c *Client) Apply(manifest string) error {
 	return c.waitForKubectlApply(manifest)
 }
 
+func (c *Client) Describe(resourceType, resource, namespace string) ([]byte, error) {
+	args := []string{"kubectl", "describe", resourceType, resource}
+	if c.kubeconfigFile != "" {
+		args = append(args, "--kubeconfig", c.kubeconfigFile)
+	}
+	if c.configOverrides.Context.Cluster != "" {
+		args = append(args, "--cluster", c.configOverrides.Context.Cluster)
+	}
+	if namespace != "" {
+		args = append(args, "--namespace", namespace)
+	} else if c.configOverrides.Context.Namespace != "" {
+		args = append(args, "--namespace", c.configOverrides.Context.Namespace)
+	}
+	if c.configOverrides.Context.AuthInfo != "" {
+		args = append(args, "--user", c.configOverrides.Context.AuthInfo)
+	}
+	output, err := exec.Command(args[0], args[1:]...).CombinedOutput()
+	if err != nil {
+		return nil, fmt.Errorf("couldn't kubectl describe, output: %s, error: %v", string(output), err)
+	}
+	return output, nil
+}
+
+func (c *Client) Logs(podName, container, namespace string, follow bool) *exec.Cmd {
+	args := []string{"kubectl", "logs", podName}
+	if follow {
+		args = append(args, "-f")
+	}
+	if namespace != "" {
+		args = append(args, "--namespace", namespace)
+	} else if c.configOverrides.Context.Namespace != "" {
+		args = append(args, "--namespace", c.configOverrides.Context.Namespace)
+	}
+	if container != "" {
+		args = append(args, "-c", container)
+	}
+
+	if c.kubeconfigFile != "" {
+		args = append(args, "--kubeconfig", c.kubeconfigFile)
+	}
+	if c.configOverrides.Context.Cluster != "" {
+		args = append(args, "--cluster", c.configOverrides.Context.Cluster)
+	}
+	if c.configOverrides.Context.AuthInfo != "" {
+		args = append(args, "--user", c.configOverrides.Context.AuthInfo)
+	}
+	cmd := exec.Command(args[0], args[1:]...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd
+}
+
+func (c *Client) Exec(podName, container, namespace string, commands []string) *exec.Cmd {
+	args := []string{"kubectl", "exec", podName}
+	if namespace != "" {
+		args = append(args, "--namespace", namespace)
+	} else if c.configOverrides.Context.Namespace != "" {
+		args = append(args, "--namespace", c.configOverrides.Context.Namespace)
+	}
+	if container != "" {
+		args = append(args, "-c", container)
+	}
+
+	if c.kubeconfigFile != "" {
+		args = append(args, "--kubeconfig", c.kubeconfigFile)
+	}
+	if c.configOverrides.Context.Cluster != "" {
+		args = append(args, "--cluster", c.configOverrides.Context.Cluster)
+	}
+	if c.configOverrides.Context.AuthInfo != "" {
+		args = append(args, "--user", c.configOverrides.Context.AuthInfo)
+	}
+	args = append(args, "--")
+	args = append(args, commands...)
+	cmd := exec.Command(args[0], args[1:]...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd
+}
+
 func (c *Client) kubectlDelete(manifest string) error {
 	return c.kubectlManifestCmd("delete", manifest)
 }

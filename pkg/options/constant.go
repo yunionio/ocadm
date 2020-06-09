@@ -32,6 +32,7 @@ const (
 	LonghornDataPath                   = "longhorn-data-path"
 	LonghornOverProvisioningPercentage = "longhorn-over-provisioning-percentage"
 	LonghornReplicaCount               = "longhorn-replica-count"
+	PVCMigrateToLonghorn               = "source-pvc"
 )
 
 const (
