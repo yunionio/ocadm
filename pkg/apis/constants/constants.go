@@ -72,6 +72,21 @@ const (
 
 	NetworkTypeBaremetal = "baremetal"
 	NetworkTypeServer    = "server"
+
+	// longhorn
+	LonghornStorageClass                      = "longhorn"
+	DefaultLonghornVersion                    = "v1.0.0"
+	LonghornManager                           = "longhorn-manager"
+	LonghornEngine                            = "longhorn-engine"
+	LonghornUi                                = "longhorn-ui"
+	LonghornDefaultDataPath                   = "/opt/longhorn"
+	LonghornDefaultOverProvisioningPercentage = 100
+	LonghornDefaultReplicaCount               = 3
+	// longhorn-instance-manager image name must be no more than 63 characters
+	// https://github.com/longhorn/longhorn/issues/1106
+	// registry.cn-beijing.aliyuncs.com/yunionio/longhorn-instance-manager is too long
+	LonghornInstanceManager = "longhorn-im"
+	LonghornCreateDiskLable = "node.longhorn.io/create-default-disk"
 )
 
 const (

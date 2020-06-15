@@ -334,6 +334,7 @@ func AddInitOtherFlags(flagSet *flag.FlagSet, initOptions *initOptions) {
 		&initOptions.printAddonYaml, options.PrintAddonYaml, initOptions.printAddonYaml,
 		"Print addon yaml manifest",
 	)
+
 	options.AddOperatorVersionFlags(flagSet, &initOptions.operatorVersion)
 	options.AddGlanceNodeLabelFlag(flagSet, &initOptions.glanceNode, &initOptions.baremetalNode, &initOptions.esxiNode)
 	options.AddUpgradeFromV2Flags(flagSet, &initOptions.upgradeFromV2)
