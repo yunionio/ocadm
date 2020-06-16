@@ -12,4 +12,6 @@ type JoinData interface {
 	phases.JoinData
 	OnecloudInitCfg() (*apiv1.InitConfiguration, error)
 	OnecloudJoinCfg() *apiv1.JoinConfiguration
+	GetHighAvailabilityVIP() string
+	GetKeepalivedVersionTag() string
 }

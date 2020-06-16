@@ -16,6 +16,7 @@ package v1alpha1
 
 import (
 	"fmt"
+
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/rand"
@@ -47,6 +48,11 @@ const (
 	DefaultOvnImageTag  = DefaultOvnVersion + "-0"
 
 	DefaultInfluxdbImageVersion = "1.7.7"
+
+	DefaultTelegrafImageName     = "telegraf"
+	DefaultTelegrafImageTag      = "release-1.5"
+	DefaultTelegrafInitImageName = "telegraf-init"
+	DefaultTelegrafInitImageTag  = "release-1.5"
 )
 
 func addDefaultingFuncs(scheme *runtime.Scheme) error {
@@ -114,6 +120,7 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
 		MonitorComponentType:         &obj.Monitor,
 		ServiceOperatorComponentType: &obj.ServiceOperator,
 		ItsmComponentType:            &obj.Itsm,
+		CloudIdComponentType:         &obj.CloudId,
 	} {
 		SetDefaults_DeploymentSpec(spec, getImage(obj.ImageRepository, spec.Repository, cType, spec.ImageName, obj.Version, spec.Tag))
 	}
@@ -149,6 +156,20 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
 		DefaultOvnImageTag, obj.OvnNorth.Tag,
 	)
 	obj.OvnNorth.ImagePullPolicy = corev1.PullIfNotPresent
+
+	// telegraf spec
+	obj.Telegraf.InitContainerImage = getImage(
+		obj.ImageRepository, obj.Telegraf.Repository,
+		DefaultTelegrafInitImageName, "",
+		DefaultTelegrafInitImageTag, "",
+	)
+	SetDefaults_DaemonSetSpec(
+		&obj.Telegraf.DaemonSetSpec,
+		getImage(obj.ImageRepository, obj.Telegraf.Repository,
+			DefaultTelegrafImageName, obj.Telegraf.ImageName,
+			DefaultTelegrafImageTag, obj.Telegraf.Tag,
+		),
+	)
 
 	type stateDeploy struct {
 		obj     *StatefulDeploymentSpec
@@ -362,6 +383,7 @@ func SetDefaults_OnecloudClusterConfig(obj *OnecloudClusterConfig) {
 		&obj.Meter.ServiceDBCommonOptions:        {constants.MeterAdminUser, constants.MeterPort, constants.MeterDB, constants.MeterDBUser},
 		&obj.Monitor:                             {constants.MonitorAdminUser, constants.MonitorPort, constants.MonitorDB, constants.MonitorDBUser},
 		&obj.Itsm.ServiceDBCommonOptions:         {constants.ItsmAdminUser, constants.ItsmPort, constants.ItsmDB, constants.ItsmDBUser},
+		&obj.CloudId:                             {constants.CloudIdAdminUser, constants.CloudIdPort, constants.CloudIdDB, constants.CloudIdDBUser},
 	} {
 		if user, ok := registryPorts[tmp.port]; ok {
 			log.Fatalf("port %d has been registered by %s", tmp.port, user)

@@ -29,6 +29,8 @@ const (
 	OperatorVersion                    = "operator-version"
 	NodeIP                             = "node-ip"
 	AddonCalicoIpAutodetectionMethod   = "addon-calico-ip-autodetection-method"
+	HighAvailabilityVIP                = "high-availability-vip"
+	KeepalivedVersionTag               = "keepalived-version-tag"
 	LonghornDataPath                   = "longhorn-data-path"
 	LonghornOverProvisioningPercentage = "longhorn-over-provisioning-percentage"
 	LonghornReplicaCount               = "longhorn-replica-count"
