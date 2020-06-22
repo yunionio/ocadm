@@ -24,7 +24,7 @@ const (
 	CalicoKubeControllers          = "calico-kube-controllers"
 	CalicoNode                     = "calico-node"
 	CalicoCNI                      = "calico-cni"
-	DefaultCalicoVersion           = "v3.7.2"
+	DefaultCalicoVersion           = "v3.12.1"
 	Loki                           = "loki"
 	DefaultLokiVersion             = "v1.2.0"
 	Promtail                       = "promtail"
