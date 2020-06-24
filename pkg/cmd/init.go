@@ -30,11 +30,13 @@ import (
 	"k8s.io/kubernetes/cmd/kubeadm/app/util/apiclient"
 	kubeconfigutil "k8s.io/kubernetes/cmd/kubeadm/app/util/kubeconfig"
 
+	"yunion.io/x/ocadm/pkg/apis/constants"
 	ocadmscheme "yunion.io/x/ocadm/pkg/apis/scheme"
 	v1 "yunion.io/x/ocadm/pkg/apis/v1"
 	occmdutil "yunion.io/x/ocadm/pkg/cmd/util"
 	"yunion.io/x/ocadm/pkg/occonfig"
 	"yunion.io/x/ocadm/pkg/options"
+	"yunion.io/x/ocadm/pkg/phases/addons/keepalived"
 	initphases "yunion.io/x/ocadm/pkg/phases/init"
 	configutil "yunion.io/x/ocadm/pkg/util/config"
 	"yunion.io/x/ocadm/pkg/util/kubectl"
@@ -103,6 +105,8 @@ type initOptions struct {
 	operatorVersion                  string
 	nodeIP                           string
 	addonCalicoIpAutodetectionMethod string
+	highAvailabilityVIP              string
+	keepalivedVersionTag             string
 	glanceNode                       bool
 	baremetalNode                    bool
 	esxiNode                         bool
@@ -134,6 +138,8 @@ type initData struct {
 	operatorVersion                  string
 	nodeIP                           string
 	addonCalicoIpAutodetectionMethod string
+	highAvailabilityVIP              string
+	keepalivedVersionTag             string
 }
 
 // NewCmdInit returns "deployer init" command
@@ -192,6 +198,7 @@ func NewCmdInit(out io.Writer, initOptions *initOptions) *cobra.Command {
 	})
 
 	initRunner.AppendPhase(initphases.NewPreflightPhase())
+	initRunner.AppendPhase(keepalived.NewKeepalivedPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewKubeletStartPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewCertsPhase())
 	initRunner.AppendPhase(kubeadminitphases.NewKubeConfigPhase())
@@ -325,6 +332,14 @@ func AddInitOtherFlags(flagSet *flag.FlagSet, initOptions *initOptions) {
 	flagSet.StringVar(
 		&initOptions.addonCalicoIpAutodetectionMethod, options.AddonCalicoIpAutodetectionMethod, initOptions.addonCalicoIpAutodetectionMethod,
 		"Calico IP Autodetection Method",
+	)
+	flagSet.StringVar(
+		&initOptions.highAvailabilityVIP, options.HighAvailabilityVIP, initOptions.highAvailabilityVIP,
+		"high availability VIP",
+	)
+	flagSet.StringVar(
+		&initOptions.keepalivedVersionTag, options.KeepalivedVersionTag, initOptions.keepalivedVersionTag,
+		fmt.Sprintf(`keepalived docker image tag within yunion aliyun registry. (default: "%s")`, constants.DefaultKeepalivedVersionTag),
 	)
 	flagSet.BoolVar(
 		&initOptions.dryRun, options.DryRun, initOptions.dryRun,
@@ -480,6 +495,9 @@ func newInitData(cmd *cobra.Command, args []string, options *initOptions, out io
 		printAddonYaml:                   options.printAddonYaml,
 		operatorVersion:                  options.operatorVersion,
 		addonCalicoIpAutodetectionMethod: options.addonCalicoIpAutodetectionMethod,
+		nodeIP:                           options.nodeIP,
+		highAvailabilityVIP:              options.highAvailabilityVIP,
+		keepalivedVersionTag:             options.keepalivedVersionTag,
 	}
 	return data, nil
 }
@@ -494,8 +512,19 @@ func (d *initData) PrintAddonYaml() bool {
 	return d.printAddonYaml
 }
 
+// AddonCalicoIpAutodetectionMethod return addonCalicoIpAutodetectionMethod
 func (d *initData) AddonCalicoIpAutodetectionMethod() string {
 	return d.addonCalicoIpAutodetectionMethod
+}
+
+// GetHighAvailabilityVIP return highAvailabilityVIP
+func (d *initData) GetHighAvailabilityVIP() string {
+	return d.highAvailabilityVIP
+}
+
+// GetKeepalivedVersionTag return keepalivedVersionTag
+func (d *initData) GetKeepalivedVersionTag() string {
+	return d.keepalivedVersionTag
 }
 
 // UploadCerts returns Uploadcerts flag.

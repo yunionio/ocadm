@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"io"
-
 	"os"
 	"text/template"
 
@@ -30,6 +29,7 @@ import (
 	ocadmscheme "yunion.io/x/ocadm/pkg/apis/scheme"
 	apiv1 "yunion.io/x/ocadm/pkg/apis/v1"
 	"yunion.io/x/ocadm/pkg/options"
+	"yunion.io/x/ocadm/pkg/phases/addons/keepalived"
 	joinphases "yunion.io/x/ocadm/pkg/phases/join"
 	configutil "yunion.io/x/ocadm/pkg/util/config"
 	"yunion.io/x/ocadm/pkg/util/onecloud"
@@ -78,6 +78,8 @@ type joinOptions struct {
 	certificateKey        string
 	asOnecloudController  bool
 	nodeIP                string
+	highAvailabilityVIP   string
+	keepalivedVersionTag  string
 	glanceNode            bool
 	baremetalNode         bool
 	esxiNode              bool
@@ -101,6 +103,8 @@ type joinData struct {
 	enableHostAgent       bool
 	asOnecloudController  bool
 	nodeIP                string
+	highAvailabilityVIP   string
+	keepalivedVersionTag  string
 	glanceNode            bool
 	baremetalNode         bool
 	esxiNode              bool
@@ -167,8 +171,8 @@ func NewCmdJoin(out io.Writer, joinOptions *joinOptions) *cobra.Command {
 	addJoinConfigFlags(cmd.Flags(), joinOptions.externalcfg)
 	addJoinOtherFlags(cmd.Flags(), joinOptions)
 	AddHostConfigFlags(cmd.Flags(), joinOptions.hostCfg)
-
 	joinRunner.AppendPhase(kubeadmjoinphases.NewPreflightPhase())
+	joinRunner.AppendPhase(keepalived.NewKeepalivedPhase())
 	joinRunner.AppendPhase(kubeadmjoinphases.NewControlPlanePreparePhase())
 	// joinRunner.AppendPhase(joinphases.NewNodePreparePhase())
 	joinRunner.AppendPhase(kubeadmjoinphases.NewCheckEtcdPhase())
@@ -259,6 +263,14 @@ func addJoinOtherFlags(flagSet *flag.FlagSet, joinOptions *joinOptions) {
 	flagSet.StringVar(
 		&joinOptions.nodeIP, options.NodeIP, joinOptions.nodeIP,
 		"Join node IP",
+	)
+	flagSet.StringVar(
+		&joinOptions.highAvailabilityVIP, options.HighAvailabilityVIP, joinOptions.highAvailabilityVIP,
+		"high Availability VIP",
+	)
+	flagSet.StringVar(
+		&joinOptions.keepalivedVersionTag, options.KeepalivedVersionTag, joinOptions.keepalivedVersionTag,
+		fmt.Sprintf(`keepalived docker image tag within yunion aliyun registry. (default: "%s")`, constants.DefaultKeepalivedVersionTag),
 	)
 	options.AddGlanceNodeLabelFlag(flagSet, &joinOptions.glanceNode, &joinOptions.baremetalNode, &joinOptions.esxiNode)
 	options.AddUpgradeFromV2Flags(flagSet, &joinOptions.upgradeFromV2)
@@ -392,7 +404,19 @@ func newJoinData(cmd *cobra.Command, args []string, opt *joinOptions, out io.Wri
 		outputWriter:          out,
 		certificateKey:        opt.certificateKey,
 		nodeIP:                opt.nodeIP,
+		highAvailabilityVIP:   opt.highAvailabilityVIP,
+		keepalivedVersionTag:  opt.keepalivedVersionTag,
 	}, nil
+}
+
+// GetHighAvailabilityVIP return the highAvailabilityVIP
+func (j *joinData) GetHighAvailabilityVIP() string {
+	return j.highAvailabilityVIP
+}
+
+// GetKeepalivedVersionTag return the keepalivedVersionTag
+func (j *joinData) GetKeepalivedVersionTag() string {
+	return j.keepalivedVersionTag
 }
 
 // EnableHostAgent return is enable host agent

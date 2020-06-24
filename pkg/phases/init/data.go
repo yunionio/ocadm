@@ -24,4 +24,6 @@ type InitData interface {
 	EnabledHostAgent() bool
 	PrintAddonYaml() bool
 	AddonCalicoIpAutodetectionMethod() string
+	GetHighAvailabilityVIP() string
+	GetKeepalivedVersionTag() string
 }

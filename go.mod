@@ -32,7 +32,6 @@ require (
 	github.com/spf13/pflag v1.0.3
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 	golang.org/x/sys v0.0.0-20200124204421-9fbb57f87de9 // indirect
-	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/square/go-jose.v2 v2.3.1 // indirect
 	k8s.io/api v0.17.3
 	k8s.io/apiextensions-apiserver v0.0.0
@@ -47,11 +46,11 @@ require (
 	sigs.k8s.io/cluster-api v0.1.4
 	sigs.k8s.io/controller-runtime v0.1.11 // indirect
 	sigs.k8s.io/testing_frameworks v0.1.1 // indirect
-	yunion.io/x/jsonutils v0.0.0-20200601015434-d61aefddfe79
+	yunion.io/x/jsonutils v0.0.0-20200615014624-f9c3576579c9
 	yunion.io/x/log v0.0.0-20200313080802-57a4ce5966b3
-	yunion.io/x/onecloud v0.0.0-20200604070413-0d759322af47
-	yunion.io/x/onecloud-operator v0.0.2-0.20200603144436-0fb80066243b
-	yunion.io/x/pkg v0.0.0-20200603123312-ad58e621aec0
+	yunion.io/x/onecloud v0.0.0-20200622154103-af3dbfdc82cd
+	yunion.io/x/onecloud-operator v0.0.2-0.20200622151845-22d8340299d4
+	yunion.io/x/pkg v0.0.0-20200615071345-60a252beb982
 )
 
 replace (
