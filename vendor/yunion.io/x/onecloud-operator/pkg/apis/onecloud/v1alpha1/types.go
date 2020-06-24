@@ -84,6 +84,7 @@ const (
 	NotifyComponentType         ComponentType = "notify"
 	HostComponentType           ComponentType = "host"
 	HostDeployerComponentType   ComponentType = "host-deployer"
+	HostImageComponentType      ComponentType = "host-image"
 	BaremetalAgentComponentType ComponentType = "baremetal-agent"
 	// S3gatewayComponentType is multi-cloud S3 object storage gateway
 	S3gatewayComponentType ComponentType = "s3gateway"
@@ -117,6 +118,9 @@ const (
 	EtcdClientComponentType ComponentType = "etcd-client"
 
 	ItsmComponentType ComponentType = "itsm"
+	// Telegraf is monitor agent component type
+	TelegrafComponentType ComponentType = "telegraf"
+	CloudIdComponentType  ComponentType = "cloudid"
 )
 
 // ComponentPhase is the current state of component
@@ -193,6 +197,8 @@ type OnecloudClusterSpec struct {
 	Yunionagent DaemonSetSpec `json:"yunionagent"`
 	// Influxdb holds configuration for influxdb
 	Influxdb StatefulDeploymentSpec `json:"influxdb"`
+	// Telegraf holds configuration for telegraf
+	Telegraf TelegrafSpec `json:"telegraf"`
 	// Monitor holds configuration for monitor service
 	Monitor DeploymentSpec `json:"monitor"`
 	// LoadBalancerEndpoint is upstream loadbalancer virtual ip address or DNS domain
@@ -215,6 +221,8 @@ type OnecloudClusterSpec struct {
 	HostAgent HostAgentSpec `json:"hostagent"`
 	// HostDeployer holds configuration for host-deployer
 	HostDeployer DaemonSetSpec `json:"hostdeployer"`
+	// HostImage holds configration for host-image
+	HostImage DaemonSetSpec `json:"hostimage"`
 	// BaremetalAgent holds configuration for baremetal agent
 	BaremetalAgent StatefulDeploymentSpec `json:"baremetalagent"`
 	// S3gateway holds configuration for s3gateway service
@@ -243,6 +251,9 @@ type OnecloudClusterSpec struct {
 
 	OvnNorth DeploymentSpec `json:"ovnNorth"`
 	VpcAgent DeploymentSpec `json:"vpcAgent"`
+
+	// Cloudid holds configuration for cloudid service
+	CloudId DeploymentSpec `json:"cloudid"`
 }
 
 // OnecloudClusterStatus describes cluster status
@@ -274,6 +285,7 @@ type OnecloudClusterStatus struct {
 	VpcAgent       DeploymentStatus `json:"vpcAgent,omitempty"`
 	Etcd           EctdStatus       `json:"etcd,omitempty"`
 	Itsm           DeploymentStatus `json:"itsm,omitempty"`
+	CloudId        DeploymentStatus `json:"cloudid,omitempty"`
 }
 
 type Etcd struct {
@@ -463,6 +475,11 @@ type HostAgentSpec struct {
 	OvnController ContainerSpec
 }
 
+type TelegrafSpec struct {
+	DaemonSetSpec
+	InitContainerImage string
+}
+
 // ContainerSpec is the container spec of a pod
 type ContainerSpec struct {
 	Image           string               `json:"image"`
@@ -585,4 +602,5 @@ type OnecloudClusterConfig struct {
 	VpcAgent        VpcAgentConfig         `json:"vpcagent"`
 	ServiceOperator ServiceCommonOptions   `json:"onecloudServiceOperator"`
 	Itsm            ItsmConfig             `json:"itsm"`
+	CloudId         ServiceDBCommonOptions `json:"cloudid"`
 }
