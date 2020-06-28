@@ -111,6 +111,8 @@ type createOptions struct {
 	wait    bool
 
 	// cluster upgrade from onecloud 2.x
+	region        string
+	zone          string
 	upgradeFromV2 bool
 }
 
@@ -124,6 +126,15 @@ func NewCmdCreate(out io.Writer) *cobra.Command {
 		Use:   "create",
 		Short: "Run this command to create onecloud cluster",
 		Run: func(cmd *cobra.Command, args []string) {
+			if opt.upgradeFromV2 {
+				if len(opt.zone) == 0 {
+					kubeadmutil.CheckErr(errors.New("missing onecloud cluster zone id "))
+				}
+				if len(opt.region) == 0 {
+					kubeadmutil.CheckErr(errors.New("misssing onecloud cluster region id"))
+				}
+			}
+
 			data, err := newClusterData(cmd, args)
 			kubeadmutil.CheckErr(err)
 
@@ -142,6 +153,8 @@ func AddCreateOptions(flagSet *flag.FlagSet, opt *createOptions) {
 	flagSet.BoolVar(&opt.useEE, "use-ee", opt.useEE, "Use EE edition")
 	flagSet.StringVar(&opt.version, "version", opt.version, "onecloud cluster version")
 	flagSet.BoolVar(&opt.wait, "wait", opt.wait, "wait until workload created")
+	flagSet.StringVar(&opt.region, "cluster-region-id", "", "For upgrade from v2, onecloud cluster region id, climc region-list get region ids")
+	flagSet.StringVar(&opt.zone, "cluster-zone-id", "", "For upgrade from v2, onecloud cluster zone id, climc zone-list get zone ids")
 	flagSet.BoolVar(&opt.upgradeFromV2, "upgrade-from-v2", opt.upgradeFromV2, "cluster upgrade from onecloud 2.x")
 }
 
@@ -255,8 +268,8 @@ func newCluster2(env map[string]string, cfg *apiv1.InitConfiguration, opt *creat
 			LoadBalancerEndpoint: env["MANAGEMENT_IP"],
 			ImageRepository:      cfg.ImageRepository,
 			Version:              cfg.OnecloudVersion,
-			Region:               env["REGION"],
-			Zone:                 env["ZONE"],
+			Region:               opt.region,
+			Zone:                 opt.zone,
 			Keystone: v1alpha1.KeystoneSpec{
 				BootstrapPassword: env["SYSADMIN_PASSWORD"],
 			},
@@ -280,6 +293,13 @@ func newCluster2(env map[string]string, cfg *apiv1.InitConfiguration, opt *creat
 						"onecloud.yunion.io/esxi": "enable",
 					},
 				},
+			},
+		},
+		Status: v1alpha1.OnecloudClusterStatus{
+			RegionServer: v1alpha1.RegionStatus{
+				RegionId:     opt.region,
+				RegionZoneId: opt.region,
+				ZoneId:       opt.zone,
 			},
 		},
 	}
