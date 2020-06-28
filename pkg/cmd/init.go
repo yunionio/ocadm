@@ -106,6 +106,8 @@ type initOptions struct {
 	glanceNode                       bool
 	baremetalNode                    bool
 	esxiNode                         bool
+	region                           string
+	zone                             string
 	upgradeFromV2                    bool
 }
 
