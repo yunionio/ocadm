@@ -1171,8 +1171,8 @@ yunion.io/x/log v0.0.0-20190629062853-9f6483a7103d/go.mod h1:LC6f/4FozL0iaAbnFt2
 yunion.io/x/log v0.0.0-20200313080802-57a4ce5966b3 h1:5Wc5hkB8PtMudmHuzCyok960RuOa9I55imIGrigSdjs=
 yunion.io/x/log v0.0.0-20200313080802-57a4ce5966b3/go.mod h1:LC6f/4FozL0iaAbnFt2eDX9jlsyo3WiOUPm03d7+U4U=
 yunion.io/x/onecloud v0.0.0-20200621051013-c991cdc76afc/go.mod h1:RO/cADECa8JNOlWKxCGo22GPSD2ZoHKqq0E9ZSloiAU=
-yunion.io/x/onecloud v0.0.0-20200622154103-af3dbfdc82cd h1:NdR40HXx9JJY2XJXRGJk7gSBr2Ugwz5uKQePeBHIyCY=
-yunion.io/x/onecloud v0.0.0-20200622154103-af3dbfdc82cd/go.mod h1:8DnwheUIqiu3p24sCyPLIIKYHnXqzrvKT4T6kYxjEng=
+yunion.io/x/onecloud v0.0.0-20200628010115-a6ec5e28d054 h1:Xwx231DvCuYH3+Zn4eRQyJQbZtkPQxRLhXU3FPo+O1w=
+yunion.io/x/onecloud v0.0.0-20200628010115-a6ec5e28d054/go.mod h1:8DnwheUIqiu3p24sCyPLIIKYHnXqzrvKT4T6kYxjEng=
 yunion.io/x/onecloud-operator v0.0.2-0.20200622151845-22d8340299d4 h1:xMrpQ5NG/EFESp5X0FqO+mC9fTakJ81cd9qkrcspjnw=
 yunion.io/x/onecloud-operator v0.0.2-0.20200622151845-22d8340299d4/go.mod h1:Jt9Sr0CUMgeEvRApyhvhoHksStwHSxLH1Yb2mwHct1k=
 yunion.io/x/ovsdb v0.0.0-20200526071744-27bf0940cbc7/go.mod h1:0vLkNEhlmA64HViPBAnSTUMrx5QP1CLsxXmxDKQ80tc=
