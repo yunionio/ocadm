@@ -138,6 +138,7 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
 		HostComponentType:         &obj.HostAgent.DaemonSetSpec,
 		HostDeployerComponentType: &obj.HostDeployer,
 		YunionagentComponentType:  &obj.Yunionagent,
+		HostImageComponentType:    &obj.HostImage,
 	} {
 		SetDefaults_DaemonSetSpec(spec, getImage(obj.ImageRepository, spec.Repository, cType, spec.ImageName, obj.Version, spec.Tag))
 	}
@@ -187,21 +188,22 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
 		SetDefaults_StatefulDeploymentSpec(cType, spec.obj, spec.size, obj.ImageRepository, spec.version)
 	}
 
-	SetDefaults_CronJobSpec(&obj.CloudmonPing,
-		getImage(obj.ImageRepository, obj.CloudmonPing.Repository, APIGatewayComponentTypeEE,
-			obj.CloudmonPing.ImageName, obj.Version, obj.APIGateway.Tag))
-
-	SetDefaults_CronJobSpec(&obj.CloudmonReportUsage,
-		getImage(obj.ImageRepository, obj.CloudmonReportUsage.Repository, APIGatewayComponentTypeEE,
-			obj.CloudmonReportUsage.ImageName, obj.Version, obj.APIGateway.Tag))
-
-	SetDefaults_CronJobSpec(&obj.CloudmonReportServer,
-		getImage(obj.ImageRepository, obj.CloudmonReportServer.Repository, APIGatewayComponentTypeEE,
-			obj.CloudmonReportServer.ImageName, obj.Version, obj.APIGateway.Tag))
-
-	SetDefaults_CronJobSpec(&obj.CloudmonReportHost,
-		getImage(obj.ImageRepository, obj.CloudmonReportHost.Repository, APIGatewayComponentTypeEE,
-			obj.CloudmonReportHost.ImageName, obj.Version, obj.APIGateway.Tag))
+	// cloudmon spec
+	SetDefaults_DeploymentSpec(&obj.Cloudmon.DeploymentSpec,
+		getImage(obj.ImageRepository, obj.Cloudmon.Repository, APIGatewayComponentTypeEE,
+			obj.Cloudmon.ImageName, obj.Version, obj.APIGateway.Tag))
+	if obj.Cloudmon.CloudmonReportUsageDuration == 0 {
+		obj.Cloudmon.CloudmonReportUsageDuration = 15
+	}
+	if obj.Cloudmon.CloudmonReportServerDuration == 0 {
+		obj.Cloudmon.CloudmonReportServerDuration = 4
+	}
+	if obj.Cloudmon.CloudmonReportHostDuration == 0 {
+		obj.Cloudmon.CloudmonReportHostDuration = 4
+	}
+	if obj.Cloudmon.CloudmonPingDuration == 0 {
+		obj.Cloudmon.CloudmonPingDuration = 5
+	}
 }
 
 func SetDefaults_Mysql(obj *Mysql) {
