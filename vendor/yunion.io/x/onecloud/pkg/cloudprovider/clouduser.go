@@ -12,22 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package identity
+package cloudprovider
 
-import "yunion.io/x/pkg/tristate"
-
-type SCASIdpConfigOptions struct {
-	// https://cas.example.org/cas/
-	CASServerURL string `json:"cas_server_url"`
-	Service      string `json:"service"`
-
-	CasProjectAttribute string `json:"cas_project_attribute"`
-
-	AutoCreateCasProject tristate.TriState `json:"auto_create_cas_project"`
-
-	DefaultCasProjectId string `json:"default_cas_project_id"`
-
-	CasRoleAttribute string `json:"cas_role_attribute"`
-
-	DefaultCasRoleId string `json:"default_cas_role_id"`
+type SClouduserCreateConfig struct {
+	Name              string
+	Desc              string
+	Password          string
+	IsConsoleLogin    bool
+	Email             string
+	MobilePhone       string
+	ExternalPolicyIds []string
 }

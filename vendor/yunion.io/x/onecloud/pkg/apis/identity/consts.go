@@ -34,8 +34,6 @@ const (
 	AUTH_METHOD_TOKEN    = "token"
 	AUTH_METHOD_AKSK     = "aksk"
 	AUTH_METHOD_CAS      = "cas"
-	AUTH_METHOD_SAML     = "saml"
-	AUTH_METHOD_OIDC     = "oidc"
 
 	// AUTH_METHOD_ID_PASSWORD = 1
 	// AUTH_METHOD_ID_TOKEN    = 2
@@ -62,8 +60,6 @@ const (
 	IdentityDriverSQL  = "sql"
 	IdentityDriverLDAP = "ldap"
 	IdentityDriverCAS  = "cas"
-	IdentityDriverSAML = "saml"
-	IdentityDriverOIDC = "oidc" // OpenID Connect
 
 	IdentityDriverStatusConnected    = "connected"
 	IdentityDriverStatusDisconnected = "disconnected"

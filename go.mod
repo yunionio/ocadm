@@ -30,6 +30,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.3
+	github.com/stretchr/testify v1.5.1 // indirect
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 	golang.org/x/sys v0.0.0-20200124204421-9fbb57f87de9 // indirect
 	gopkg.in/square/go-jose.v2 v2.3.1 // indirect
@@ -48,9 +49,10 @@ require (
 	sigs.k8s.io/testing_frameworks v0.1.1 // indirect
 	yunion.io/x/jsonutils v0.0.0-20200701074723-fea7ff9d66b6
 	yunion.io/x/log v0.0.0-20200313080802-57a4ce5966b3
-	yunion.io/x/onecloud v0.0.0-20200706035048-57cbc8305be3
-	yunion.io/x/onecloud-operator v0.0.2-0.20200703104632-84f5864bb6da
+	yunion.io/x/onecloud v0.0.0-20200707064903-adc50ec8640d
+	yunion.io/x/onecloud-operator v0.0.2-0.20200703104641-93c57a85d730
 	yunion.io/x/pkg v0.0.0-20200702065158-82d1bf2beb3a
+	yunion.io/x/sqlchemy v0.0.0-20200702064124-195445bc4b11 // indirect
 )
 
 replace (

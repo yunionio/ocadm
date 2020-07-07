@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"yunion.io/x/jsonutils"
+	"yunion.io/x/log"
 	"yunion.io/x/pkg/errors"
 	"yunion.io/x/pkg/utils"
 
@@ -276,6 +277,7 @@ func GetProviderFactory(provider string) (ICloudProviderFactory, error) {
 	if ok {
 		return factory, nil
 	}
+	log.Errorf("Provider %s not registered", provider)
 	return nil, fmt.Errorf("No such provider %s", provider)
 }
 

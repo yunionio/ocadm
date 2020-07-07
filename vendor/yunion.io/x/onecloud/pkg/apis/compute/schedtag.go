@@ -21,9 +21,13 @@ type SchedtagShortDescDetails struct {
 	Default string `json:"default"`
 }
 
+type ScopedResourceCreateInput struct {
+	Scope string `json:"scope"`
+}
+
 type SchedtagCreateInput struct {
 	apis.StandaloneResourceCreateInput
-	apis.ScopedResourceCreateInput
+	ScopedResourceCreateInput
 
 	// 动态标签策略
 	// enum: exclude, prefer, avoid

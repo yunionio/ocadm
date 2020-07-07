@@ -898,7 +898,7 @@ yunion.io/x/jsonutils
 # yunion.io/x/log v0.0.0-20200313080802-57a4ce5966b3
 yunion.io/x/log
 yunion.io/x/log/hooks
-# yunion.io/x/onecloud v0.0.0-20200706035048-57cbc8305be3
+# yunion.io/x/onecloud v0.0.0-20200707064903-adc50ec8640d
 yunion.io/x/onecloud/pkg/ansibleserver/options
 yunion.io/x/onecloud/pkg/apis
 yunion.io/x/onecloud/pkg/apis/ansible
@@ -954,7 +954,7 @@ yunion.io/x/onecloud/pkg/util/stringutils2
 yunion.io/x/onecloud/pkg/vpcagent/options
 yunion.io/x/onecloud/pkg/webconsole/options
 yunion.io/x/onecloud/pkg/yunionconf/options
-# yunion.io/x/onecloud-operator v0.0.2-0.20200703104632-84f5864bb6da
+# yunion.io/x/onecloud-operator v0.0.2-0.20200703104641-93c57a85d730
 yunion.io/x/onecloud-operator/pkg/apis/constants
 yunion.io/x/onecloud-operator/pkg/apis/onecloud/scheme
 yunion.io/x/onecloud-operator/pkg/apis/onecloud/v1alpha1
