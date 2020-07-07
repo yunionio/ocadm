@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package identity
+package modules
 
-import "yunion.io/x/pkg/tristate"
+import "yunion.io/x/onecloud/pkg/mcclient/modulebase"
 
-type SCASIdpConfigOptions struct {
-	// https://cas.example.org/cas/
-	CASServerURL string `json:"cas_server_url"`
-	Service      string `json:"service"`
+var (
+	Clouduserpolicies modulebase.JointResourceManager
+)
 
-	CasProjectAttribute string `json:"cas_project_attribute"`
-
-	AutoCreateCasProject tristate.TriState `json:"auto_create_cas_project"`
-
-	DefaultCasProjectId string `json:"default_cas_project_id"`
-
-	CasRoleAttribute string `json:"cas_role_attribute"`
-
-	DefaultCasRoleId string `json:"default_cas_role_id"`
+func init() {
+	Clouduserpolicies = NewJointCloudIdManager(
+		"clouduser_policy",
+		"clouduser_policies",
+		[]string{"Clouduser_ID", "Clouduser",
+			"Cloudpolicy_ID", "Cloudpolicy", "Cloudaccount", "Cloudaccount_ID", "Cloudprovider_ID", "Cloudprovider"},
+		[]string{},
+		&Cloudusers,
+		&Cloudpolicies)
+	register(&Clouduserpolicies)
 }

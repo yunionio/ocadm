@@ -18,8 +18,6 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"yunion.io/x/jsonutils"
-	"yunion.io/x/pkg/errors"
-
 	"yunion.io/x/onecloud/pkg/mcclient"
 	"yunion.io/x/onecloud/pkg/mcclient/modules"
 
@@ -167,17 +165,8 @@ func PoliciesPublic(s *mcclient.ClientSession, types []string) error {
 	for _, t := range types {
 		pt := t
 		errgrp.Go(func() error {
-			policyJson, err := modules.Policies.Get(s, pt, nil)
-			if err != nil {
-				return errors.Wrapf(err, "modules.Policies.Get %s", pt)
-			}
-			if !jsonutils.QueryBoolean(policyJson, "is_public", false) {
-				_, err = modules.Policies.PerformAction(s, pt, "public", nil)
-				if err != nil {
-					return errors.Wrap(err, "Policies.PerformAction")
-				}
-			}
-			return nil
+			_, err := modules.Policies.PerformAction(s, pt, "public", nil)
+			return err
 		})
 	}
 	if err := errgrp.Wait(); err != nil {
@@ -191,17 +180,8 @@ func RolesPublic(s *mcclient.ClientSession, roles []string) error {
 	for _, t := range roles {
 		pt := t
 		errgrp.Go(func() error {
-			roleJson, err := modules.RolesV3.Get(s, pt, nil)
-			if err != nil {
-				return errors.Wrapf(err, "modules.RolesV3.Get %s", pt)
-			}
-			if !jsonutils.QueryBoolean(roleJson, "is_public", false) {
-				_, err := modules.RolesV3.PerformAction(s, pt, "public", nil)
-				if err != nil {
-					return errors.Wrap(err, "RolesV3.PerformAction")
-				}
-			}
-			return nil
+			_, err := modules.RolesV3.PerformAction(s, pt, "public", nil)
+			return err
 		})
 	}
 	if err := errgrp.Wait(); err != nil {
