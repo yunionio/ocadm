@@ -6,10 +6,15 @@ import (
 	"yunion.io/x/ocadm/pkg/phases/addons"
 )
 
+const (
+	TolerationTrains = ":NoSchedule"
+)
+
 type LonghornConfig struct {
 	DataPath                   string
 	OverProvisioningPercentage int
 	ReplicaCount               int
+	TaintToleration            string
 
 	LonghornStorageClass         string
 	LonghornManagerImage         string
@@ -23,6 +28,7 @@ func NewLonghornConfig(repo, dataPath string, overProvisioningPercentage, replic
 		DataPath:                     dataPath,
 		OverProvisioningPercentage:   overProvisioningPercentage,
 		ReplicaCount:                 replicaCount,
+		TaintToleration:              TolerationTrains,
 		LonghornManagerImage:         images.GetGenericImage(repo, constants.LonghornManager, constants.DefaultLonghornVersion),
 		LonghornEngineImage:          images.GetGenericImage(repo, constants.LonghornEngine, constants.DefaultLonghornVersion),
 		LonghornInstanceManagerImage: images.GetGenericImage(repo, constants.LonghornInstanceManager, constants.DefaultLonghornVersion),
