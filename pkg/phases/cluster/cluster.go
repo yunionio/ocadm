@@ -106,9 +106,10 @@ func (data *clusterData) GetOperator() (*appv1.Deployment, error) {
 }
 
 type createOptions struct {
-	useEE   bool
-	version string
-	wait    bool
+	useEE       bool
+	version     string
+	wait        bool
+	useLonghorn bool
 
 	// cluster upgrade from onecloud 2.x
 	region        string
@@ -156,6 +157,7 @@ func AddCreateOptions(flagSet *flag.FlagSet, opt *createOptions) {
 	flagSet.StringVar(&opt.region, "cluster-region-id", "", "For upgrade from v2, onecloud cluster region id, climc region-list get region ids")
 	flagSet.StringVar(&opt.zone, "cluster-zone-id", "", "For upgrade from v2, onecloud cluster zone id, climc zone-list get zone ids")
 	flagSet.BoolVar(&opt.upgradeFromV2, "upgrade-from-v2", opt.upgradeFromV2, "cluster upgrade from onecloud 2.x")
+	flagSet.BoolVar(&opt.useLonghorn, "use-longhorn", opt.useLonghorn, "Use longhorn as glanc and influxdb storage class, but you should enable longhorn by `ocadm longhorn enable` at first.")
 }
 
 func NewCmdConfig() *cobra.Command {
@@ -194,6 +196,10 @@ func CreateCluster(data *clusterData, opt *createOptions) (*v1alpha1.OnecloudClu
 		}
 	} else {
 		cluster = newCluster(cfg, opt)
+		if opt.useLonghorn {
+			cluster.Spec.Glance.StorageClassName = constants.LonghornStorageClass
+			cluster.Spec.Influxdb.StorageClassName = constants.LonghornStorageClass
+		}
 	}
 	oc, err := cli.OnecloudV1alpha1().OnecloudClusters(constants.OnecloudNamespace).Create(cluster)
 	if err != nil {

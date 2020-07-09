@@ -190,6 +190,16 @@ func runMigrateDataToLonghorn(c workflow.RunData) error {
 				},
 			},
 			RestartPolicy: corev1.RestartPolicyNever,
+			Tolerations: []corev1.Toleration{
+				{
+					Key:    "node-role.kubernetes.io/master",
+					Effect: corev1.TaintEffectNoSchedule,
+				},
+				{
+					Key:    "node-role.kubernetes.io/controlplane",
+					Effect: corev1.TaintEffectNoSchedule,
+				},
+			},
 		},
 	}
 	_, err = cli.CoreV1().Pods(constants.OnecloudNamespace).Create(migratePod)
