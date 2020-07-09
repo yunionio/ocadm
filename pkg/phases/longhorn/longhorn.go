@@ -6,8 +6,8 @@ import (
 	clientset "k8s.io/client-go/kubernetes"
 	"k8s.io/klog"
 	"k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/workflow"
-	"yunion.io/x/ocadm/pkg/apis/constants"
 
+	"yunion.io/x/ocadm/pkg/apis/constants"
 	"yunion.io/x/ocadm/pkg/phases/addons"
 	"yunion.io/x/ocadm/pkg/phases/addons/longhorn"
 	"yunion.io/x/ocadm/pkg/util/kubectl"
@@ -74,10 +74,10 @@ func lableLonghornNodes(cli *clientset.Clientset, nodes []string) (int, error) {
 		if err != nil {
 			return 0, err
 		}
-		if len(nodelist.Items) < 3 {
-			replicaCount = 1
+		if len(nodelist.Items) < constants.LonghornDefaultReplicaCount {
+			replicaCount = len(nodelist.Items)
 		} else {
-			replicaCount = 3
+			replicaCount = constants.LonghornDefaultReplicaCount
 		}
 		for i := 0; i < len(nodelist.Items); i++ {
 			if nodelist.Items[i].Labels == nil {
@@ -86,22 +86,20 @@ func lableLonghornNodes(cli *clientset.Clientset, nodes []string) (int, error) {
 			nodelist.Items[i].Labels[constants.LonghornCreateDiskLable] = "true"
 			_, err = cli.CoreV1().Nodes().Update(&nodelist.Items[i])
 			if err != nil {
-				klog.Errorf("Node %s enable default disk failed on update: %s", nodes[i], err)
-				continue
+				return 0, errors.Errorf("Node %s enable default disk failed on update: %s", nodes[i], err)
 			}
 			klog.Infof("Enable default disk for node %s", nodelist.Items[i].Name)
 		}
 	} else {
-		if len(nodes) < 3 {
-			replicaCount = 1
+		if len(nodes) < constants.LonghornDefaultReplicaCount {
+			replicaCount = len(nodes)
 		} else {
-			replicaCount = 3
+			replicaCount = constants.LonghornDefaultReplicaCount
 		}
 		for i := 0; i < len(nodes); i++ {
 			node, err := cli.CoreV1().Nodes().Get(nodes[i], metav1.GetOptions{})
 			if err != nil {
-				klog.Errorf("Node %s enable default disk failed on get: %s", nodes[i], err)
-				continue
+				return 0, errors.Errorf("Node %s enable default disk failed on get: %s", nodes[i], err)
 			}
 			if node.Labels == nil {
 				node.Labels = make(map[string]string)
@@ -109,8 +107,7 @@ func lableLonghornNodes(cli *clientset.Clientset, nodes []string) (int, error) {
 			node.Labels[constants.LonghornCreateDiskLable] = "true"
 			_, err = cli.CoreV1().Nodes().Update(node)
 			if err != nil {
-				klog.Errorf("Node %s enable default disk failed on update: %s", nodes[i], err)
-				continue
+				return 0, errors.Errorf("Node %s enable default disk failed on update: %s", nodes[i], err)
 			}
 			klog.Infof("Enable default disk for node %s", nodes[i])
 		}

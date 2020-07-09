@@ -219,7 +219,7 @@ data:
     guaranteed-engine-cpu:
     default-longhorn-static-storage-class:
     backupstore-poll-interval:
-    taint-toleration:
+    taint-toleration: {{.TaintToleration}}
     registry-secret:
     auto-salvage:
     disable-scheduling-on-cordoned-node:
@@ -462,7 +462,7 @@ metadata:
 provisioner: driver.longhorn.io
 allowVolumeExpansion: true
 parameters:
-  numberOfReplicas: "3"
+  numberOfReplicas: "{{.ReplicaCount}}"
   staleReplicaTimeout: "2880"
   fromBackup: ""
 #  diskSelector: "ssd,fast"
