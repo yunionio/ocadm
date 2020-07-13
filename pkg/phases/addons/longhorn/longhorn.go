@@ -15,6 +15,7 @@ type LonghornConfig struct {
 	OverProvisioningPercentage int
 	ReplicaCount               int
 	TaintToleration            string
+	Registry                   string
 
 	LonghornStorageClass         string
 	LonghornManagerImage         string
@@ -29,6 +30,7 @@ func NewLonghornConfig(repo, dataPath string, overProvisioningPercentage, replic
 		OverProvisioningPercentage:   overProvisioningPercentage,
 		ReplicaCount:                 replicaCount,
 		TaintToleration:              TolerationTrains,
+		Registry:                     repo,
 		LonghornManagerImage:         images.GetGenericImage(repo, constants.LonghornManager, constants.DefaultLonghornVersion),
 		LonghornEngineImage:          images.GetGenericImage(repo, constants.LonghornEngine, constants.DefaultLonghornVersion),
 		LonghornInstanceManagerImage: images.GetGenericImage(repo, constants.LonghornInstanceManager, constants.DefaultLonghornVersion),

@@ -224,7 +224,7 @@ data:
     auto-salvage:
     disable-scheduling-on-cordoned-node:
     replica-zone-soft-anti-affinity:
-    volume-attachment-recovery-policy:
+    volume-attachment-recovery-policy: immediate
     mkfs-ext4-parameters:
 ---
 apiVersion: apps/v1
@@ -243,6 +243,13 @@ spec:
       labels:
         app: longhorn-manager
     spec:
+      nodeSelector:
+        node.longhorn.io/create-default-disk: "true"
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/controlplane
+        effect: NoSchedule
       containers:
       - name: longhorn-manager
         image: {{.LonghornManagerImage}}
@@ -352,6 +359,11 @@ spec:
       labels:
         app: longhorn-ui
     spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/controlplane
+        effect: NoSchedule
       containers:
       - name: longhorn-ui
         image: {{.LonghornUiImage}}
@@ -399,6 +411,11 @@ spec:
       labels:
         app: longhorn-driver-deployer
     spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/controlplane
+        effect: NoSchedule
       initContainers:
         - name: wait-longhorn-manager
           image: {{.LonghornManagerImage}}
@@ -428,6 +445,12 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: spec.serviceAccountName
+          - name: CSI_ATTACHER_IMAGE
+            value: {{.Registry}}/csi-attacher:v2.0.0
+          - name: CSI_PROVISIONER_IMAGE
+            value: {{.Registry}}/csi-provisioner:v1.4.0
+          - name: CSI_NODE_DRIVER_REGISTRAR_IMAGE
+            value: {{.Registry}}/csi-node-driver-registrar:v1.2.0
           # Manually set root directory for csi
           #- name: KUBELET_ROOT_DIR
           #  value: /var/lib/rancher/k3s/agent/kubelet
