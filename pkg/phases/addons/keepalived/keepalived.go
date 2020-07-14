@@ -2,9 +2,12 @@ package keepalived
 
 import (
 	// "errors"
+	"crypto/md5"
 	b64 "encoding/base64"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 
 	"yunion.io/x/ocadm/pkg/apis/constants"
 
@@ -120,16 +123,34 @@ func CreateLocalKeepalivedStaticPodManifestFile(ip, keepalivedVersionTag, role s
 	return nil
 }
 
+func md5ize(str string) string {
+	data := []byte(str)
+	has := md5.Sum(data)
+	md5str := fmt.Sprintf("%x", has)
+	return md5str
+}
+
 func GetKeepalivedPodSpec(vip, keepalivedVersionTag, role string) v1.Pod {
 	privileged := true
 	priority := "100"
-	vipB64 := b64.StdEncoding.EncodeToString([]byte(vip))
+	vipPswd := md5ize(b64.StdEncoding.EncodeToString([]byte(vip)))
+	if len(vipPswd) > 8 {
+		vipPswd = vipPswd[0:8]
+	}
 	// registry.cn-beijing.aliyuncs.com/yunionio/keepalived:v2.0.22
 	containerName := "keepalived"
 	imageUrl := fmt.Sprintf("%s/%s:%s", ocadm_defaults.DefaultImageRepository, containerName, keepalivedVersionTag)
 	if role != "MASTER" {
 		priority = "90"
 	}
+
+	vid, err := strconv.Atoi(strings.ReplaceAll(vip, ".", ""))
+	if err == nil {
+		fmt.Println(vid)
+	}
+
+	vid = vid % 255
+	svid := fmt.Sprintf("%d", vid)
 
 	return staticpodutil.ComponentPod(v1.Container{
 		Name:            containerName,
@@ -162,7 +183,11 @@ func GetKeepalivedPodSpec(vip, keepalivedVersionTag, role string) v1.Pod {
 			},
 			{
 				Name:  "KEEPALIVED_PASSWORD",
-				Value: vipB64,
+				Value: vipPswd,
+			},
+			{
+				Name:  "KEEPALIVED_ROUTER_ID",
+				Value: svid,
 			},
 		},
 	}, nil)
