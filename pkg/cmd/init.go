@@ -697,6 +697,11 @@ func (d *initData) OperatorVersion() string {
 	return d.operatorVersion
 }
 
+// GetNodeIP returns current node ip for init mode
+func (d *initData) GetNodeIP() string {
+	return d.nodeIP
+}
+
 func printJoinCommand(out io.Writer, adminKubeConfigPath, token string, i *initData) error {
 	joinControlPlaneCommand, err := occmdutil.GetJoinControlPlaneCommand(adminKubeConfigPath, token, i.certificateKey, i.skipTokenPrint, i.skipCertificateKeyPrint)
 	if err != nil {
