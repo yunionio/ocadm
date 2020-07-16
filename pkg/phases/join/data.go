@@ -14,4 +14,5 @@ type JoinData interface {
 	OnecloudJoinCfg() *apiv1.JoinConfiguration
 	GetHighAvailabilityVIP() string
 	GetKeepalivedVersionTag() string
+	GetNodeIP() string
 }

@@ -75,6 +75,7 @@ func runKeepalivedPhaseLocal() func(c workflow.RunData) error {
 		role := "MASTER"
 		idata, ok := c.(ocadm_init.InitData)
 		keepalivedVersionTag := ""
+		nodeIP := ""
 		if !ok {
 			jdata, ok := c.(ocadm_join.JoinData)
 			if !ok {
@@ -86,9 +87,11 @@ func runKeepalivedPhaseLocal() func(c workflow.RunData) error {
 			role = "BACKUP"
 			vip = jdata.GetHighAvailabilityVIP()
 			keepalivedVersionTag = jdata.GetKeepalivedVersionTag()
+			nodeIP = jdata.GetNodeIP()
 		} else {
 			vip = idata.GetHighAvailabilityVIP()
 			keepalivedVersionTag = idata.GetKeepalivedVersionTag()
+			nodeIP = idata.GetNodeIP()
 		}
 		if len(vip) == 0 {
 			fmt.Println("vip is empty. no need to install keepalived.")
@@ -101,22 +104,22 @@ func runKeepalivedPhaseLocal() func(c workflow.RunData) error {
 			fmt.Println("got Keepalived version tag from commandline: ", keepalivedVersionTag)
 		}
 
-		fmt.Printf("[PASS] Installing Keepalived:%s as %s", keepalivedVersionTag, role)
+		fmt.Printf("[PASS] Installing Keepalived:%s as %s, nodeIP[%s]", keepalivedVersionTag, role, nodeIP)
 		dataPath := "/var/lib/keepalived"
 		if err := os.MkdirAll(dataPath, 0700); err != nil {
 			return errors.Wrapf(err, "failed to create Keepalived directory %q", dataPath)
 		} else {
 			fmt.Println("[PASS] keepalived path created.")
 		}
-		if err := CreateLocalKeepalivedStaticPodManifestFile(vip, keepalivedVersionTag, role); err != nil {
+		if err := CreateLocalKeepalivedStaticPodManifestFile(vip, keepalivedVersionTag, role, nodeIP); err != nil {
 			return errors.Wrap(err, "error creating local keepalived static pod manifest file")
 		}
 		return nil
 	}
 }
 
-func CreateLocalKeepalivedStaticPodManifestFile(ip, keepalivedVersionTag, role string) error {
-	spec := GetKeepalivedPodSpec(ip, keepalivedVersionTag, role)
+func CreateLocalKeepalivedStaticPodManifestFile(vip, keepalivedVersionTag, role, nodeIP string) error {
+	spec := GetKeepalivedPodSpec(vip, keepalivedVersionTag, role, nodeIP)
 	if err := staticpodutil.WriteStaticPodToDisk("keepalived", "/etc/kubernetes/manifests", spec); err != nil {
 		return err
 	}
@@ -130,7 +133,7 @@ func md5ize(str string) string {
 	return md5str
 }
 
-func GetKeepalivedPodSpec(vip, keepalivedVersionTag, role string) v1.Pod {
+func GetKeepalivedPodSpec(vip, keepalivedVersionTag, role, nodeIP string) v1.Pod {
 	privileged := true
 	priority := "100"
 	vipPswd := md5ize(b64.StdEncoding.EncodeToString([]byte(vip)))
@@ -188,6 +191,10 @@ func GetKeepalivedPodSpec(vip, keepalivedVersionTag, role string) v1.Pod {
 			{
 				Name:  "KEEPALIVED_ROUTER_ID",
 				Value: svid,
+			},
+			{
+				Name:  "KEEPALIVED_NODE_IP",
+				Value: nodeIP,
 			},
 		},
 	}, nil)

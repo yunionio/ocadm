@@ -558,6 +558,11 @@ func (j *joinData) OutputWriter() io.Writer {
 	return j.outputWriter
 }
 
+// GetNodeIP returns current node ip for join mode
+func (j *joinData) GetNodeIP() string {
+	return j.nodeIP
+}
+
 // fetchInitConfigurationFromJoinConfiguration retrieves the init configuration from a join configuration, performing the discovery
 func fetchInitConfigurationFromJoinConfiguration(cfg *apiv1.JoinConfiguration, tlsBootstrapCfg *clientcmdapi.Config) (*apiv1.InitConfiguration, error) {
 	// Retrieves the kubeadm configuration
