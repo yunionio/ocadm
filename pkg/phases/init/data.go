@@ -26,4 +26,5 @@ type InitData interface {
 	AddonCalicoIpAutodetectionMethod() string
 	GetHighAvailabilityVIP() string
 	GetKeepalivedVersionTag() string
+	GetNodeIP() string
 }
