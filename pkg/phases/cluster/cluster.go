@@ -186,7 +186,13 @@ func CreateCluster(data *clusterData, opt *createOptions) (*v1alpha1.OnecloudClu
 		return nil, errors.Wrap(err, "list onecloud cluster")
 	}
 	if len(ret.Items) != 0 {
-		return nil, errors.Errorf("Cluster already create")
+		oc := ret.Items[0]
+		if opt.wait {
+			if err := ocutil.WaitOnecloudDeploymentUpdated(data.client, oc.GetName(), oc.GetNamespace(), 30*time.Minute, nil); err != nil {
+				return &oc, errors.Wrap(err, "wait onecloud cluster services running")
+			}
+		}
+		return &oc, nil
 	}
 	var cluster *v1alpha1.OnecloudCluster
 	if opt.upgradeFromV2 {
