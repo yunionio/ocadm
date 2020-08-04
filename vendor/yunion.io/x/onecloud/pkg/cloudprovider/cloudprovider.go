@@ -191,6 +191,8 @@ type ICloudProviderFactory interface {
 	GetMaxCloudEventSyncDays() int
 	GetMaxCloudEventKeepDays() int
 
+	IsNeedForceAutoCreateProject() bool
+
 	IsSupportClouduser() bool
 	IsSupportClouduserPolicy() bool
 	IsSupportResetClouduserPassword() bool
@@ -224,6 +226,8 @@ type ICloudProvider interface {
 	GetCloudRegionExternalIdPrefix() string
 
 	GetStorageClasses(regionId string) []string
+	GetBucketCannedAcls(regionId string) []string
+	GetObjectCannedAcls(regionId string) []string
 
 	GetCapabilities() []string
 	GetICloudQuotas() ([]ICloudQuota, error)
@@ -470,6 +474,10 @@ func (factory *baseProviderFactory) GetMaxCloudEventSyncDays() int {
 
 func (factory *baseProviderFactory) GetMaxCloudEventKeepDays() int {
 	return 7
+}
+
+func (factory *baseProviderFactory) IsNeedForceAutoCreateProject() bool {
+	return false
 }
 
 func (factory *baseProviderFactory) IsSupportClouduser() bool {

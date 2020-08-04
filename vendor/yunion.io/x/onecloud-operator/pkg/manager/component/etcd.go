@@ -13,19 +13,16 @@ import (
 
 	"yunion.io/x/log"
 
-	etcdapi "github.com/coreos/etcd-operator/pkg/apis/etcd/v1beta2"
-	"github.com/coreos/etcd-operator/pkg/util/etcdutil"
-	"github.com/coreos/etcd-operator/pkg/util/k8sutil"
-	"github.com/coreos/etcd-operator/pkg/util/retryutil"
-	"github.com/coreos/etcd/clientv3"
-	"github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes"
-	"github.com/coreos/etcd/etcdserver/etcdserverpb"
 	"github.com/pborman/uuid"
 	"github.com/pkg/errors"
+	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
+	"go.etcd.io/etcd/etcdserver/etcdserverpb"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/selection"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes"
@@ -34,6 +31,9 @@ import (
 	"yunion.io/x/onecloud-operator/pkg/apis/onecloud/v1alpha1"
 	"yunion.io/x/onecloud-operator/pkg/controller"
 	"yunion.io/x/onecloud-operator/pkg/manager"
+	"yunion.io/x/onecloud-operator/pkg/util/etcdutil"
+	"yunion.io/x/onecloud-operator/pkg/util/k8sutil"
+	"yunion.io/x/onecloud-operator/pkg/util/retryutil"
 )
 
 type etcdManager struct {
@@ -107,13 +107,29 @@ func (m *etcdManager) setUnsync() {
 }
 
 func (m *etcdManager) fixEtcdSize(oc *v1alpha1.OnecloudCluster) (bool, error) {
-	nodes, err := m.nodeLister.List(labels.NewSelector())
+	// list nodes by master node selector
+	masterNodeSelector := labels.NewSelector()
+	r, err := labels.NewRequirement(
+		constants.LabelNodeRoleMaster, selection.Exists, nil)
 	if err != nil {
 		return false, err
 	}
+	masterNodeSelector = masterNodeSelector.Add(*r)
+
+	nodes, err := m.nodeLister.List(masterNodeSelector)
+	if err != nil {
+		return false, err
+	}
+	readyMasterCount := 0
+	for _, node := range nodes {
+		if k8sutil.IsNodeReady(*node) {
+			readyMasterCount += 1
+		}
+	}
+	log.Infof("Ready master node count %d", readyMasterCount)
 
 	oldSize := oc.Spec.Etcd.Size
-	if len(nodes) < 3 {
+	if readyMasterCount < 3 {
 		oc.Spec.Etcd.Size = 1
 	} else {
 		if oc.Spec.Etcd.Size < constants.EtcdDefaultClusterSize {
@@ -477,7 +493,7 @@ func (m *etcdManager) pollPods() (running, pending []*corev1.Pod, err error) {
 	return running, pending, nil
 }
 
-func (m *etcdManager) customEtcdSpec() etcdapi.ClusterSpec {
+func (m *etcdManager) customEtcdSpec() v1alpha1.EtcdClusterSpec {
 	spec := m.oc.Spec.Etcd.DeepCopy()
 	if len(spec.Repository) == 0 {
 		spec.Repository = path.Join("quay.io/coreos/etcd")
@@ -491,15 +507,15 @@ func (m *etcdManager) customEtcdSpec() etcdapi.ClusterSpec {
 	}
 	if m.isSecure() {
 		//certSecretName := controller.ClustercertSecretName(m.oc)
-		spec.TLS = new(etcdapi.TLSPolicy)
-		spec.TLS.Static = new(etcdapi.StaticTLS)
+		spec.TLS = new(v1alpha1.TLSPolicy)
+		spec.TLS.Static = new(v1alpha1.StaticTLS)
 		spec.TLS.Static.OperatorSecret = constants.EtcdClientSecret
-		spec.TLS.Static.Member = &etcdapi.MemberSecret{
+		spec.TLS.Static.Member = &v1alpha1.MemberSecret{
 			PeerSecret:   constants.EtcdPeerSecret,
 			ServerSecret: constants.EtcdServerSecret,
 		}
 	}
-	return spec.ClusterSpec
+	return spec.EtcdClusterSpec
 }
 
 func (m *etcdManager) updateEtcdStatus() error {
@@ -758,7 +774,7 @@ func (m *etcdManager) reconcile(pods []*corev1.Pod) error {
 		return m.reconcileMembers(running)
 	}
 
-	if needUpgrade(pods, sp.ClusterSpec) {
+	if needUpgrade(pods, sp.EtcdClusterSpec) {
 		m.status.TargetVersion = sp.Version
 		mb := pickOneOldMember(pods, sp.Version)
 		return m.upgradeOneMember(mb.Name)
@@ -978,7 +994,7 @@ func (m *etcdManager) upgradeOneMember(memberName string) error {
 	log.Infof("finished upgrading the etcd member %v", memberName)
 	return nil
 }
-func needUpgrade(pods []*corev1.Pod, cs etcdapi.ClusterSpec) bool {
+func needUpgrade(pods []*corev1.Pod, cs v1alpha1.EtcdClusterSpec) bool {
 	return len(pods) == cs.Size && pickOneOldMember(pods, cs.Version) != nil
 }
 
