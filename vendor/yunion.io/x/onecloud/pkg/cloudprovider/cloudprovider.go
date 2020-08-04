@@ -190,6 +190,8 @@ type ICloudProviderFactory interface {
 	GetMaxCloudEventSyncDays() int
 	GetMaxCloudEventKeepDays() int
 
+	IsNeedForceAutoCreateProject() bool
+
 	IsSupportClouduser() bool
 	IsSupportClouduserPolicy() bool
 	IsSupportResetClouduserPassword() bool
@@ -223,6 +225,8 @@ type ICloudProvider interface {
 	GetCloudRegionExternalIdPrefix() string
 
 	GetStorageClasses(regionId string) []string
+	GetBucketCannedAcls(regionId string) []string
+	GetObjectCannedAcls(regionId string) []string
 
 	GetCapabilities() []string
 	GetICloudQuotas() ([]ICloudQuota, error)
@@ -235,6 +239,9 @@ type ICloudProvider interface {
 	CreateICloudgroup(name, desc string) (ICloudgroup, error)
 	GetIClouduserByName(name string) (IClouduser, error)
 	CreateIClouduser(conf *SClouduserCreateConfig) (IClouduser, error)
+
+	GetEnrollmentAccounts() ([]SEnrollmentAccount, error)
+	CreateSubscription(SubscriptionCreateInput) error
 }
 
 func IsSupportProject(prod ICloudProvider) bool {
@@ -373,6 +380,14 @@ func (self *SBaseProvider) CreateIClouduser(conf *SClouduserCreateConfig) (IClou
 	return nil, ErrNotImplemented
 }
 
+func (self *SBaseProvider) GetEnrollmentAccounts() ([]SEnrollmentAccount, error) {
+	return nil, ErrNotImplemented
+}
+
+func (self *SBaseProvider) CreateSubscription(SubscriptionCreateInput) error {
+	return ErrNotImplemented
+}
+
 func (self *SBaseProvider) GetCloudRegionExternalIdPrefix() string {
 	return self.factory.GetId()
 }
@@ -468,6 +483,10 @@ func (factory *baseProviderFactory) GetMaxCloudEventSyncDays() int {
 
 func (factory *baseProviderFactory) GetMaxCloudEventKeepDays() int {
 	return 7
+}
+
+func (factory *baseProviderFactory) IsNeedForceAutoCreateProject() bool {
+	return false
 }
 
 func (factory *baseProviderFactory) IsSupportClouduser() bool {

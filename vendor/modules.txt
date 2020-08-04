@@ -1,5 +1,3 @@
-# cloud.google.com/go v0.50.0
-cloud.google.com/go/compute/metadata
 # github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78
 github.com/Azure/go-ansiterm
 github.com/Azure/go-ansiterm/winterm
@@ -24,12 +22,10 @@ github.com/coreos/etcd/mvcc/mvccpb
 github.com/coreos/etcd/pkg/tlsutil
 github.com/coreos/etcd/pkg/transport
 github.com/coreos/etcd/pkg/types
-# github.com/coreos/etcd-operator v0.9.4
-github.com/coreos/etcd-operator/pkg/apis/etcd/v1beta2
-github.com/coreos/etcd-operator/pkg/util/constants
-github.com/coreos/etcd-operator/pkg/util/etcdutil
-github.com/coreos/etcd-operator/pkg/util/k8sutil
-github.com/coreos/etcd-operator/pkg/util/retryutil
+# github.com/coreos/go-systemd v0.0.0-20190620071333-e64a0ec8b42a
+github.com/coreos/go-systemd/journal
+# github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f
+github.com/coreos/pkg/capnslog
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
 # github.com/docker/distribution v2.7.1+incompatible
@@ -241,6 +237,38 @@ github.com/vishvananda/netlink
 github.com/vishvananda/netlink/nl
 # github.com/vishvananda/netns v0.0.0-20191106174202-0a2b9b5464df
 github.com/vishvananda/netns
+# go.etcd.io/etcd v0.5.0-alpha.5.0.20191023171146-3cf2f69b5738
+go.etcd.io/etcd/auth/authpb
+go.etcd.io/etcd/clientv3
+go.etcd.io/etcd/clientv3/balancer
+go.etcd.io/etcd/clientv3/balancer/connectivity
+go.etcd.io/etcd/clientv3/balancer/picker
+go.etcd.io/etcd/clientv3/balancer/resolver/endpoint
+go.etcd.io/etcd/clientv3/credentials
+go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes
+go.etcd.io/etcd/etcdserver/etcdserverpb
+go.etcd.io/etcd/mvcc/mvccpb
+go.etcd.io/etcd/pkg/logutil
+go.etcd.io/etcd/pkg/systemd
+go.etcd.io/etcd/pkg/tlsutil
+go.etcd.io/etcd/pkg/transport
+go.etcd.io/etcd/pkg/types
+go.etcd.io/etcd/raft
+go.etcd.io/etcd/raft/confchange
+go.etcd.io/etcd/raft/quorum
+go.etcd.io/etcd/raft/raftpb
+go.etcd.io/etcd/raft/tracker
+# go.uber.org/atomic v1.4.0
+go.uber.org/atomic
+# go.uber.org/multierr v1.1.0
+go.uber.org/multierr
+# go.uber.org/zap v1.10.0
+go.uber.org/zap
+go.uber.org/zap/buffer
+go.uber.org/zap/internal/bufferpool
+go.uber.org/zap/internal/color
+go.uber.org/zap/internal/exit
+go.uber.org/zap/zapcore
 # golang.org/x/crypto v0.0.0-20191206172530-e9b2fee46413
 golang.org/x/crypto/argon2
 golang.org/x/crypto/bcrypt
@@ -269,10 +297,7 @@ golang.org/x/net/publicsuffix
 golang.org/x/net/trace
 # golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6
 golang.org/x/oauth2
-golang.org/x/oauth2/google
 golang.org/x/oauth2/internal
-golang.org/x/oauth2/jws
-golang.org/x/oauth2/jwt
 # golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 golang.org/x/sync/errgroup
 # golang.org/x/sys v0.0.0-20200124204421-9fbb57f87de9
@@ -296,14 +321,11 @@ golang.org/x/text/width
 # golang.org/x/time v0.0.0-20190308202827-9d24e82272b4
 golang.org/x/time/rate
 # google.golang.org/appengine v1.6.5
-google.golang.org/appengine
 google.golang.org/appengine/cloudsql
 google.golang.org/appengine/internal
-google.golang.org/appengine/internal/app_identity
 google.golang.org/appengine/internal/base
 google.golang.org/appengine/internal/datastore
 google.golang.org/appengine/internal/log
-google.golang.org/appengine/internal/modules
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
@@ -343,6 +365,8 @@ google.golang.org/grpc/metadata
 google.golang.org/grpc/naming
 google.golang.org/grpc/peer
 google.golang.org/grpc/resolver
+google.golang.org/grpc/resolver/dns
+google.golang.org/grpc/resolver/passthrough
 google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
@@ -649,7 +673,6 @@ k8s.io/client-go/pkg/apis/clientauthentication/v1alpha1
 k8s.io/client-go/pkg/apis/clientauthentication/v1beta1
 k8s.io/client-go/pkg/version
 k8s.io/client-go/plugin/pkg/client/auth/exec
-k8s.io/client-go/plugin/pkg/client/auth/gcp
 k8s.io/client-go/rest
 k8s.io/client-go/rest/watch
 k8s.io/client-go/restmapper
@@ -893,12 +916,12 @@ sigs.k8s.io/yaml
 # yunion.io/x/executor v0.0.0-20200227030256-a18417815e74
 yunion.io/x/executor/apis
 yunion.io/x/executor/client
-# yunion.io/x/jsonutils v0.0.0-20200701074723-fea7ff9d66b6
+# yunion.io/x/jsonutils v0.0.0-20200710080709-7ca71cdb9383
 yunion.io/x/jsonutils
 # yunion.io/x/log v0.0.0-20200313080802-57a4ce5966b3
 yunion.io/x/log
 yunion.io/x/log/hooks
-# yunion.io/x/onecloud v0.0.0-20200707065357-a6c8089674ac
+# yunion.io/x/onecloud v0.0.0-20200803085823-74dd7f7618a3
 yunion.io/x/onecloud/pkg/ansibleserver/options
 yunion.io/x/onecloud/pkg/apis
 yunion.io/x/onecloud/pkg/apis/ansible
@@ -954,7 +977,7 @@ yunion.io/x/onecloud/pkg/util/stringutils2
 yunion.io/x/onecloud/pkg/vpcagent/options
 yunion.io/x/onecloud/pkg/webconsole/options
 yunion.io/x/onecloud/pkg/yunionconf/options
-# yunion.io/x/onecloud-operator v0.0.2-0.20200707081057-3dcd6532968d
+# yunion.io/x/onecloud-operator v0.0.2-0.20200804035104-8c022f3efb66
 yunion.io/x/onecloud-operator/pkg/apis/constants
 yunion.io/x/onecloud-operator/pkg/apis/onecloud/scheme
 yunion.io/x/onecloud-operator/pkg/apis/onecloud/v1alpha1
@@ -967,16 +990,20 @@ yunion.io/x/onecloud-operator/pkg/label
 yunion.io/x/onecloud-operator/pkg/manager
 yunion.io/x/onecloud-operator/pkg/manager/component
 yunion.io/x/onecloud-operator/pkg/manager/config
+yunion.io/x/onecloud-operator/pkg/util/etcdutil
 yunion.io/x/onecloud-operator/pkg/util/image
 yunion.io/x/onecloud-operator/pkg/util/k8s
+yunion.io/x/onecloud-operator/pkg/util/k8sutil
 yunion.io/x/onecloud-operator/pkg/util/mysql
 yunion.io/x/onecloud-operator/pkg/util/onecloud
 yunion.io/x/onecloud-operator/pkg/util/passwd
 yunion.io/x/onecloud-operator/pkg/util/pkiutil
 yunion.io/x/onecloud-operator/pkg/util/retry
-# yunion.io/x/pkg v0.0.0-20200702065158-82d1bf2beb3a
+yunion.io/x/onecloud-operator/pkg/util/retryutil
+# yunion.io/x/pkg v0.0.0-20200713121502-18154120c49b
 yunion.io/x/pkg/errors
 yunion.io/x/pkg/gotypes
+yunion.io/x/pkg/sortedmap
 yunion.io/x/pkg/trace
 yunion.io/x/pkg/tristate
 yunion.io/x/pkg/util/cache
@@ -997,5 +1024,5 @@ yunion.io/x/pkg/utils
 yunion.io/x/s3cli
 # yunion.io/x/sqlchemy v0.0.0-20200702064124-195445bc4b11
 yunion.io/x/sqlchemy
-# yunion.io/x/structarg v0.0.0-20200619020316-f93fbe32ffc7
+# yunion.io/x/structarg v0.0.0-20200720093445-9f850fa222ce
 yunion.io/x/structarg

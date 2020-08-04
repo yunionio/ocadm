@@ -61,8 +61,7 @@ type CachedimageListInput struct {
 }
 
 type ExternalProjectListInput struct {
-	apis.StatusStandaloneResourceListInput
-	apis.ProjectizedResourceListInput
+	apis.VirtualResourceListInput
 	apis.ExternalizedResourceBaseListInput
 
 	ManagedResourceListInput
@@ -142,10 +141,10 @@ type SchedpolicyListInput struct {
 
 type GuestTemplateFilterListInput struct {
 	// 主机镜像
-	GuestTemplate string `json:"guest_template"`
+	GuestTemplateId string `json:"guest_template_id"`
 	// swagger:ignore
 	// Deprecated
-	GuestTemplateId string `json:"guest_template_id" "yunion:deprecated-by":"guest_template"`
+	GuestTemplate string `json:"guest_template" "yunion:deprecated-by":"guest_template_id"`
 }
 
 type ServiceCatalogListInput struct {

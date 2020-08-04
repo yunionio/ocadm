@@ -589,9 +589,8 @@ type CommonAlertTem struct {
 
 	Comparator string  `json:"comparator"`
 	Threshold  float64 `json:"threshold"`
-	Tag        string  `json:"tag"`
-	TagVal     string  `json:"tag_val"`
-	FieldOpt   string  `json:"field_opt"`
+	Filters    []monitorapi.MetricQueryTag
+	FieldOpt   string `json:"field_opt"`
 	Name       string
 }
 
@@ -599,6 +598,7 @@ func GetCommonAlertOfSys(session *mcclient.ClientSession) ([]jsonutils.JSONObjec
 	param := jsonutils.NewDict()
 	param.Add(jsonutils.NewBool(true), "details")
 	param.Add(jsonutils.NewString(monitorapi.CommonAlertSystemAlertType), "alert_type")
+	param.Add(jsonutils.NewString("system"), "scope")
 
 	rtn, err := modules.CommonAlertManager.List(session, param)
 	if err != nil {
@@ -613,7 +613,7 @@ func CreateCommonAlert(s *mcclient.ClientSession, tem CommonAlertTem) (jsonutils
 		Tz:           "",
 		Database:     tem.Database,
 		Measurement:  tem.Measurement,
-		Tags:         nil,
+		Tags:         make([]monitorapi.MetricQueryTag, 0),
 		GroupBy:      nil,
 		Selects:      nil,
 		Interval:     "",
@@ -629,14 +629,11 @@ func CreateCommonAlert(s *mcclient.ClientSession, tem CommonAlertTem) (jsonutils
 		selectPart := []monitorapi.MetricQueryPart{sel}
 		metricQ.Selects = append(metricQ.Selects, selectPart)
 	}
-
-	whereTag := monitorapi.MetricQueryTag{
-		Key:       tem.Tag,
-		Operator:  "=",
-		Value:     tem.TagVal,
-		Condition: "AND",
+	if len(tem.Filters) != 0 {
+		for _, filter := range tem.Filters {
+			metricQ.Tags = append(metricQ.Tags, filter)
+		}
 	}
-	metricQ.Tags = append(metricQ.Tags, whereTag)
 
 	alertQ := new(monitorapi.AlertQuery)
 	alertQ.Model = metricQ
@@ -662,6 +659,7 @@ func CreateCommonAlert(s *mcclient.ClientSession, tem CommonAlertTem) (jsonutils
 		},
 		Recipients: []string{monitorapi.CommonAlertDefaultRecipient},
 		AlertType:  monitorapi.CommonAlertSystemAlertType,
+		Scope:      "system",
 	}
 
 	param := jsonutils.Marshal(&input)

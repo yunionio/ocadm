@@ -127,7 +127,7 @@ var (
 		STORAGE_ZSTACK_LOCAL_STORAGE, STORAGE_ZSTACK_CEPH, STORAGE_GPFS,
 	}
 
-	HOST_STORAGE_LOCAL_TYPES = []string{STORAGE_LOCAL, STORAGE_BAREMETAL, STORAGE_ZSTACK_LOCAL_STORAGE}
+	HOST_STORAGE_LOCAL_TYPES = []string{STORAGE_LOCAL, STORAGE_BAREMETAL, STORAGE_ZSTACK_LOCAL_STORAGE, STORAGE_OPENSTACK_NOVA}
 
 	STORAGE_LIMITED_TYPES = []string{STORAGE_LOCAL, STORAGE_BAREMETAL, STORAGE_NAS, STORAGE_RBD, STORAGE_NFS, STORAGE_GPFS}
 
@@ -140,11 +140,11 @@ var (
 
 type StorageResourceInput struct {
 	// 存储（ID或Name）
-	Storage string `json:"storage"`
+	StorageId string `json:"storage_id"`
 	// swagger:ignore
 	// Deprecated
 	// filter by storage_id
-	StorageId string `json:"storage_id" "yunion:deprecated-by":"storage"`
+	Storage string `json:"storage" "yunion:deprecated-by":"storage_id"`
 }
 
 type StorageFilterListInputBase struct {
