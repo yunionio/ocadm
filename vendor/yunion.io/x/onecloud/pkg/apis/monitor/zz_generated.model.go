@@ -110,6 +110,7 @@ type SSuggestSysAlert struct {
 	// 监控规则type：Rule Type
 	Type    string      `json:"type"`
 	ResMeta interface{} `json:"res_meta"`
+	// problem may have more than one ,so the problem instanceof jsonutils.jsonArray
 	Problem interface{} `json:"problem"`
 	// Suggest string               `width:"256"  list:"user" update:"user"`
 	Action       string `json:"action"`

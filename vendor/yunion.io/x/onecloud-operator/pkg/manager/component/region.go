@@ -31,6 +31,7 @@ import (
 	"yunion.io/x/onecloud-operator/pkg/apis/onecloud/v1alpha1"
 	"yunion.io/x/onecloud-operator/pkg/controller"
 	"yunion.io/x/onecloud-operator/pkg/manager"
+	"yunion.io/x/onecloud-operator/pkg/util/k8sutil"
 )
 
 type regionManager struct {
@@ -103,14 +104,11 @@ func (m *regionManager) setBaremetalPrepareConfigure(oc *v1alpha1.OnecloudCluste
 	}
 	var masterAddress string
 	for _, node := range nodes {
-		if length := len(node.Status.Conditions); length > 0 {
-			if node.Status.Conditions[length-1].Type == v1.NodeReady &&
-				node.Status.Conditions[length-1].Status == v1.ConditionTrue {
-				for _, addr := range node.Status.Addresses {
-					if addr.Type == v1.NodeInternalIP {
-						masterAddress = addr.Address
-						break
-					}
+		if k8sutil.IsNodeReady(*node) {
+			for _, addr := range node.Status.Addresses {
+				if addr.Type == v1.NodeInternalIP {
+					masterAddress = addr.Address
+					break
 				}
 			}
 		}

@@ -180,9 +180,9 @@ type CloudaccountCreateInput struct {
 	// 自动同步间隔时间
 	SyncIntervalSeconds int `json:"sync_interval_seconds"`
 
-	// 自动根据云上项目或订阅创建本地项目
+	// 自动根据云上项目或订阅创建本地项目, OpenStack此参数为true
 	// default: false
-	AutoCreateProject bool `json:"auto_create_project"`
+	AutoCreateProject *bool `json:"auto_create_project"`
 
 	// 额外信息,例如账单的access key
 	Options *jsonutils.JSONDict `json:"options"`
@@ -383,4 +383,19 @@ type CANetConf struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	CASimpleNetConf
+}
+
+type SubscriptonCreateInput struct {
+
+	// EA 账号id, 可通过 cloud-account-enrollment-accounts接口获取里面的id字段
+	EnrollmentAccountId string `json:"enrollment_account_id"`
+
+	// 订阅名称
+	Name string `json:"name"`
+
+	// 可选值: MS-AZR-0017P(生产用途), MS-AZR-0148P(开发测试)
+	OfferType string `json:"offer_type"`
+}
+
+type EnrollmentAccountQuery struct {
 }
