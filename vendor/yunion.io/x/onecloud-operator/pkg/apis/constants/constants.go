@@ -35,6 +35,10 @@ const (
 	InstanceLabelKey string = "app.kubernetes.io/instance"
 	AppLabelKey      string = "app"
 
+	// LabelNodeRoleMaster specifies that a node is a control-plane
+	// This is a duplicate definition of the constant in pkg/controller/service/service_controller.go
+	LabelNodeRoleMaster string = "node-role.kubernetes.io/master"
+
 	ServiceAccountOnecloudOperator string = "onecloud-operator"
 )
 
@@ -400,4 +404,20 @@ var (
 	EtcdPeerCACertName   = "peer-ca"
 	EtcdPeerCertName     = "peer.crt"
 	EtcdPeerKeyName      = "peer.key"
+)
+
+const (
+	DefaultDialTimeout    = 5 * time.Second
+	DefaultRequestTimeout = 5 * time.Second
+	// DefaultBackupTimeout is the default maximal allowed time of the entire backup process.
+	DefaultBackupTimeout    = 1 * time.Minute
+	DefaultSnapshotInterval = 1800 * time.Second
+
+	DefaultBackupPodHTTPPort = 19999
+
+	OperatorRoot   = "/var/tmp/etcd-operator"
+	BackupMountDir = "/var/etcd-backup"
+
+	EnvOperatorPodName      = "MY_POD_NAME"
+	EnvOperatorPodNamespace = "MY_POD_NAMESPACE"
 )

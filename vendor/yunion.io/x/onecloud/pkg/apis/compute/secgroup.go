@@ -174,12 +174,18 @@ type SecurityGroupRuleListInput struct {
 	apis.ResourceBaseListInput
 	SecgroupFilterListInput
 
+	Projects []string `json:"projects"`
+
 	// 以direction字段过滤安全组规则
 	Direction string `json:"direction"`
 	// 以action字段过滤安全组规则
 	Action string `json:"action"`
 	// 以protocol字段过滤安全组规则
 	Protocol string `json:"protocol"`
+	// 以ports字段过滤安全组规则
+	Ports string `json:"ports"`
+	// 根据ip模糊匹配安全组规则
+	Ip string `json:"ip"`
 }
 
 type SecgroupResourceInput struct {
@@ -189,6 +195,9 @@ type SecgroupResourceInput struct {
 	// Deprecated
 	// filter by secgroup_id
 	SecgroupId string `json:"secgroup_id" "yunion:deprecated-by":"secgroup"`
+
+	// 模糊匹配安全组规则名称
+	SecgroupName string `json:"secgroup_name"`
 }
 
 type SecgroupFilterListInput struct {

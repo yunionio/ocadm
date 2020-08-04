@@ -35,7 +35,9 @@ import (
 
 	"yunion.io/x/onecloud-operator/pkg/apis/constants"
 	"yunion.io/x/onecloud-operator/pkg/apis/onecloud/v1alpha1"
+	"yunion.io/x/onecloud-operator/pkg/util/k8sutil"
 	"yunion.io/x/onecloud-operator/pkg/util/onecloud"
+	"yunion.io/x/onecloud/pkg/apis/monitor"
 	"yunion.io/x/onecloud/pkg/mcclient"
 	"yunion.io/x/onecloud/pkg/mcclient/auth"
 	"yunion.io/x/onecloud/pkg/mcclient/modules"
@@ -494,14 +496,11 @@ func (c keystoneComponent) getWebAccessUrl() (string, error) {
 	}
 	var masterAddress string
 	for _, node := range nodes.Items {
-		if length := len(node.Status.Conditions); length > 0 {
-			if node.Status.Conditions[length-1].Type == v1.NodeReady &&
-				node.Status.Conditions[length-1].Status == v1.ConditionTrue {
-				for _, addr := range node.Status.Addresses {
-					if addr.Type == v1.NodeInternalIP {
-						masterAddress = addr.Address
-						break
-					}
+		if k8sutil.IsNodeReady(node) {
+			for _, addr := range node.Status.Addresses {
+				if addr.Type == v1.NodeInternalIP {
+					masterAddress = addr.Address
+					break
 				}
 			}
 		}
@@ -942,7 +941,7 @@ func (c yunionagentComponent) addWelcomeNotice() error {
 		}
 		params := jsonutils.NewDict()
 		params.Add(jsonutils.NewString("欢迎使用云管平台"), "title")
-		params.Add(jsonutils.NewString("欢迎使用OneCloud多云云管平台。这里告栏。您可以在这里发布需要告知所有用户的消息。"), "content")
+		params.Add(jsonutils.NewString("欢迎使用OneCloud多云云管平台。这是公告栏，您可以在这里发布需要告知所有用户的消息。"), "content")
 
 		_, err = modules.Notice.Create(s, params)
 		return err
@@ -1116,21 +1115,21 @@ func (c monitorComponent) getInitInfo() map[string]onecloud.CommonAlertTem {
 		FieldOpt:    "/",
 		Comparator:  "<=",
 		Threshold:   0.2,
-		Tag:         "path",
-		TagVal:      "/",
-		Name:        "disk.free/total",
-	}
-	diskAvaOptTem := onecloud.CommonAlertTem{
-		Database:    "telegraf",
-		Measurement: "disk",
-		Operator:    "",
-		Field:       []string{"free", "total"},
-		FieldOpt:    "/",
-		Comparator:  "<=",
-		Threshold:   0.2,
-		Tag:         "path",
-		TagVal:      "/opt",
-		Name:        "disk.free/total",
+		Filters: []monitor.MetricQueryTag{
+			monitor.MetricQueryTag{
+				Key:       "path",
+				Operator:  "=",
+				Value:     "/",
+				Condition: "OR",
+			},
+			monitor.MetricQueryTag{
+				Key:       "path",
+				Operator:  "=",
+				Value:     "/opt",
+				Condition: "OR",
+			},
+		},
+		Name: "disk.free/total",
 	}
 	diskNodeAvaTem := onecloud.CommonAlertTem{
 		Database:    "telegraf",
@@ -1140,15 +1139,20 @@ func (c monitorComponent) getInitInfo() map[string]onecloud.CommonAlertTem {
 		FieldOpt:    "/",
 		Comparator:  "<=",
 		Threshold:   0.15,
-		Tag:         "path",
-		TagVal:      "/",
-		Name:        "disk.inodes_free/inodes_total",
+		Filters: []monitor.MetricQueryTag{
+			monitor.MetricQueryTag{
+				Key:       "path",
+				Operator:  "=",
+				Value:     "/",
+				Condition: "AND",
+			},
+		},
+		Name: "disk.inodes_free/inodes_total",
 	}
 	speAlert := map[string]onecloud.CommonAlertTem{
 		cpuTem.Name:         cpuTem,
 		memTem.Name:         memTem,
 		diskAvaTem.Name:     diskAvaTem,
-		diskAvaOptTem.Name:  diskAvaOptTem,
 		diskNodeAvaTem.Name: diskNodeAvaTem,
 	}
 	return speAlert
