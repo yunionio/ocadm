@@ -13,15 +13,6 @@ github.com/PuerkitoBio/urlesc
 github.com/beorn7/perks/quantile
 # github.com/blang/semver v3.5.1+incompatible
 github.com/blang/semver
-# github.com/coreos/etcd v3.3.13+incompatible
-github.com/coreos/etcd/auth/authpb
-github.com/coreos/etcd/clientv3
-github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes
-github.com/coreos/etcd/etcdserver/etcdserverpb
-github.com/coreos/etcd/mvcc/mvccpb
-github.com/coreos/etcd/pkg/tlsutil
-github.com/coreos/etcd/pkg/transport
-github.com/coreos/etcd/pkg/types
 # github.com/coreos/go-systemd v0.0.0-20190620071333-e64a0ec8b42a
 github.com/coreos/go-systemd/journal
 # github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f
@@ -346,7 +337,6 @@ google.golang.org/grpc/credentials/internal
 google.golang.org/grpc/encoding
 google.golang.org/grpc/encoding/proto
 google.golang.org/grpc/grpclog
-google.golang.org/grpc/health/grpc_health_v1
 google.golang.org/grpc/internal
 google.golang.org/grpc/internal/backoff
 google.golang.org/grpc/internal/balancerload
@@ -729,7 +719,7 @@ k8s.io/kube-openapi/pkg/util/proto/validation
 k8s.io/kube-proxy/config/v1alpha1
 # k8s.io/kubelet v0.0.0 => k8s.io/kubelet v0.15.8
 k8s.io/kubelet/config/v1beta1
-# k8s.io/kubernetes v1.16.0 => k8s.io/kubernetes v1.15.8
+# k8s.io/kubernetes v1.16.0 => github.com/zexi/kubernetes v1.15.8
 k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm
 k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/scheme
 k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta1
@@ -921,7 +911,7 @@ yunion.io/x/jsonutils
 # yunion.io/x/log v0.0.0-20200313080802-57a4ce5966b3
 yunion.io/x/log
 yunion.io/x/log/hooks
-# yunion.io/x/onecloud v0.0.0-20200803085823-74dd7f7618a3
+# yunion.io/x/onecloud v0.0.0-20200804052909-716f647f7a98
 yunion.io/x/onecloud/pkg/ansibleserver/options
 yunion.io/x/onecloud/pkg/apis
 yunion.io/x/onecloud/pkg/apis/ansible
