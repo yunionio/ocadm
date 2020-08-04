@@ -28,11 +28,13 @@ import (
 	clientset "k8s.io/client-go/kubernetes"
 	"k8s.io/klog"
 	kubeadmconstants "k8s.io/kubernetes/cmd/kubeadm/app/constants"
+
 	"yunion.io/x/jsonutils"
 	"yunion.io/x/pkg/errors"
 
 	"yunion.io/x/onecloud-operator/pkg/apis/constants"
 	"yunion.io/x/onecloud-operator/pkg/apis/onecloud/v1alpha1"
+	"yunion.io/x/onecloud-operator/pkg/util/k8sutil"
 	"yunion.io/x/onecloud-operator/pkg/util/onecloud"
 	"yunion.io/x/onecloud/pkg/mcclient"
 	"yunion.io/x/onecloud/pkg/mcclient/auth"
@@ -487,14 +489,11 @@ func (c keystoneComponent) getWebAccessUrl() (string, error) {
 	}
 	var masterAddress string
 	for _, node := range nodes.Items {
-		if length := len(node.Status.Conditions); length > 0 {
-			if node.Status.Conditions[length-1].Type == v1.NodeReady &&
-				node.Status.Conditions[length-1].Status == v1.ConditionTrue {
-				for _, addr := range node.Status.Addresses {
-					if addr.Type == v1.NodeInternalIP {
-						masterAddress = addr.Address
-						break
-					}
+		if k8sutil.IsNodeReady(node) {
+			for _, addr := range node.Status.Addresses {
+				if addr.Type == v1.NodeInternalIP {
+					masterAddress = addr.Address
+					break
 				}
 			}
 		}
@@ -935,7 +934,7 @@ func (c yunionagentComponent) addWelcomeNotice() error {
 		}
 		params := jsonutils.NewDict()
 		params.Add(jsonutils.NewString("欢迎使用云管平台"), "title")
-		params.Add(jsonutils.NewString("欢迎使用OneCloud多云云管平台。这里告栏。您可以在这里发布需要告知所有用户的消息。"), "content")
+		params.Add(jsonutils.NewString("欢迎使用OneCloud多云云管平台。这是公告栏，您可以在这里发布需要告知所有用户的消息。"), "content")
 
 		_, err = modules.Notice.Create(s, params)
 		return err
