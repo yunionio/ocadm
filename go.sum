@@ -771,6 +771,8 @@ github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2 h1:eY9dn8+vbi4tKz5
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 github.com/xlab/handysort v0.0.0-20150421192137-fb3537ed64a1/go.mod h1:QcJo0QPSfTONNIgpN5RA8prR7fF8nkF6cTWTcNerRO8=
 github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77/go.mod h1:aYKd//L2LvnjZzWKhF00oedf4jCCReLcmhLdhm1A27Q=
+github.com/zexi/kubernetes v1.15.8 h1:gLzTEd12xcI6Rv4sauhUC6m+YC60QV26DWf1boJlwTo=
+github.com/zexi/kubernetes v1.15.8/go.mod h1:/tEqRpV2w+ynfP0Sac5Ay150rNWRkS59Fe5Tf5ngWvw=
 go.etcd.io/bbolt v1.3.3 h1:MUGmc65QhB3pIlaQ5bB4LwqSj6GIonVJXpZiaKNyaKk=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/etcd v0.5.0-alpha.5.0.20191023171146-3cf2f69b5738 h1:lWF4f9Nypl1ZqSb4gLeh/DGvBYVaUYHuiB93teOmwgc=
@@ -1119,8 +1121,6 @@ k8s.io/kube-proxy v0.15.8/go.mod h1:RcXGaPeQB8150+WVLVNiBKIPr8TbEcn1AU4SkbeDnck=
 k8s.io/kube-scheduler v0.15.8/go.mod h1:pHeilgSluGMWydY3IB7ai5WOWC9x4jk2gB7iIyV2+uc=
 k8s.io/kubelet v0.15.8 h1:iErDk7rlA6dwQN+2yUY9FrUSdh25HFe+65QAkcDWMAY=
 k8s.io/kubelet v0.15.8/go.mod h1:rMMeABKCuJ/yxIS3g52eP7wOL8Oyqig7mxn6B/93ywI=
-k8s.io/kubernetes v1.15.8 h1:+Xu65Y2O//AtAKxaQUF0KAFyekqKNxBsB6SpMuc6aVw=
-k8s.io/kubernetes v1.15.8/go.mod h1:/tEqRpV2w+ynfP0Sac5Ay150rNWRkS59Fe5Tf5ngWvw=
 k8s.io/legacy-cloud-providers v0.15.8/go.mod h1:sPIWfYx5A4oQHtE1xFeWkJQtAiGKjzcqYftEUYOhhFM=
 k8s.io/metrics v0.15.8/go.mod h1:ruvUjMgc427fiBAI5G/860sYHRKI9sCOS6oeegXXxZY=
 k8s.io/repo-infra v0.0.0-20181204233714-00fe14e3d1a3/go.mod h1:+G1xBfZDfVFsm1Tj/HNCvg4QqWx8rJ2Fxpqr1rqp/gQ=
@@ -1161,6 +1161,8 @@ yunion.io/x/log v0.0.0-20200313080802-57a4ce5966b3 h1:5Wc5hkB8PtMudmHuzCyok960Ru
 yunion.io/x/log v0.0.0-20200313080802-57a4ce5966b3/go.mod h1:LC6f/4FozL0iaAbnFt2eDX9jlsyo3WiOUPm03d7+U4U=
 yunion.io/x/onecloud v0.0.0-20200803085832-44dabd9af72e h1:k9vKYOS9nYUvXeBLmnKKZctkew+nsTqTZxzoC5FXzZs=
 yunion.io/x/onecloud v0.0.0-20200803085832-44dabd9af72e/go.mod h1:1wfI4uDQ9AkKMruJaNFO2QkfOCXl9XARrkhQlSO0k8E=
+yunion.io/x/onecloud v0.0.0-20200804055121-5bcc5f1e34ac h1:ZSsfHXYIMJpU6+G7iczvK9tEVMweo316M6J7KoSizjo=
+yunion.io/x/onecloud v0.0.0-20200804055121-5bcc5f1e34ac/go.mod h1:1wfI4uDQ9AkKMruJaNFO2QkfOCXl9XARrkhQlSO0k8E=
 yunion.io/x/onecloud-operator v0.0.2-0.20200804045309-1ece80a66231 h1:z69EBBuQoJuisfd7AXDqx2LCMOa/1VC1DtqAAjP33ic=
 yunion.io/x/onecloud-operator v0.0.2-0.20200804045309-1ece80a66231/go.mod h1:IsL770VT5hROw+gGPWheTk5SWYVsATyjZn1tTlLxNQA=
 yunion.io/x/pkg v0.0.0-20190620104149-945c25821dbf h1:OsKC+2ghZHwp+Ztm/MwKlLKKRiE7QcPG8eTp0GmsHbg=
