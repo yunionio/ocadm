@@ -48,7 +48,7 @@ require (
 	sigs.k8s.io/testing_frameworks v0.1.1 // indirect
 	yunion.io/x/jsonutils v0.0.0-20200710080709-7ca71cdb9383
 	yunion.io/x/log v0.0.0-20200313080802-57a4ce5966b3
-	yunion.io/x/onecloud v0.0.0-20200803085823-74dd7f7618a3
+	yunion.io/x/onecloud v0.0.0-20200804052909-716f647f7a98
 	yunion.io/x/onecloud-operator v0.0.2-0.20200804035104-8c022f3efb66
 	yunion.io/x/pkg v0.0.0-20200713121502-18154120c49b
 )
@@ -73,7 +73,7 @@ replace (
 	k8s.io/kube-scheduler => k8s.io/kube-scheduler v0.15.8
 	k8s.io/kubectl => k8s.io/kubectl v0.15.9-beta.0
 	k8s.io/kubelet => k8s.io/kubelet v0.15.8
-	k8s.io/kubernetes => k8s.io/kubernetes v1.15.8
+	k8s.io/kubernetes => github.com/zexi/kubernetes v1.15.8
 	k8s.io/legacy-cloud-providers => k8s.io/legacy-cloud-providers v0.15.8
 	k8s.io/metrics => k8s.io/metrics v0.15.8
 	k8s.io/node-api => k8s.io/node-api v0.15.8
