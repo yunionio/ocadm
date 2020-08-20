@@ -12,30 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package identity
+package modules
 
-import "time"
+import "yunion.io/x/onecloud/pkg/mcclient/modulebase"
 
-type SUserExtended struct {
-	Id               string
-	Name             string
-	Enabled          bool
-	DefaultProjectId string
-	CreatedAt        time.Time
-	LastActiveAt     time.Time
-	DomainId         string
+var (
+	Cloudpermissions modulebase.ResourceManager
+)
 
-	IsSystemAccount bool
+func init() {
+	Cloudpermissions = NewCloudIdManager("cloudpermission", "cloudpermissions",
+		[]string{},
+		[]string{})
 
-	Displayname string
-	Email       string
-	Mobile      string
-
-	LocalId       int
-	LocalName     string
-	DomainName    string
-	DomainEnabled bool
-	// IsLocal       bool
-	// IdpId         string
-	// IdpName       string
+	register(&Cloudpermissions)
 }

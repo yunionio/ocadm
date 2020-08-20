@@ -906,12 +906,12 @@ sigs.k8s.io/yaml
 # yunion.io/x/executor v0.0.0-20200227030256-a18417815e74
 yunion.io/x/executor/apis
 yunion.io/x/executor/client
-# yunion.io/x/jsonutils v0.0.0-20200710080709-7ca71cdb9383
+# yunion.io/x/jsonutils v0.0.0-20200814075449-927b118adbd8
 yunion.io/x/jsonutils
 # yunion.io/x/log v0.0.0-20200313080802-57a4ce5966b3
 yunion.io/x/log
 yunion.io/x/log/hooks
-# yunion.io/x/onecloud v0.0.0-20200804052909-716f647f7a98
+# yunion.io/x/onecloud v0.0.0-20200820050958-dcf8183c309e
 yunion.io/x/onecloud/pkg/ansibleserver/options
 yunion.io/x/onecloud/pkg/apis
 yunion.io/x/onecloud/pkg/apis/ansible
@@ -967,7 +967,7 @@ yunion.io/x/onecloud/pkg/util/stringutils2
 yunion.io/x/onecloud/pkg/vpcagent/options
 yunion.io/x/onecloud/pkg/webconsole/options
 yunion.io/x/onecloud/pkg/yunionconf/options
-# yunion.io/x/onecloud-operator v0.0.2-0.20200804035104-8c022f3efb66
+# yunion.io/x/onecloud-operator v0.0.2-0.20200820041001-3a65ae30103f
 yunion.io/x/onecloud-operator/pkg/apis/constants
 yunion.io/x/onecloud-operator/pkg/apis/onecloud/scheme
 yunion.io/x/onecloud-operator/pkg/apis/onecloud/v1alpha1
@@ -990,7 +990,7 @@ yunion.io/x/onecloud-operator/pkg/util/passwd
 yunion.io/x/onecloud-operator/pkg/util/pkiutil
 yunion.io/x/onecloud-operator/pkg/util/retry
 yunion.io/x/onecloud-operator/pkg/util/retryutil
-# yunion.io/x/pkg v0.0.0-20200713121502-18154120c49b
+# yunion.io/x/pkg v0.0.0-20200814072949-4f1b541857d6
 yunion.io/x/pkg/errors
 yunion.io/x/pkg/gotypes
 yunion.io/x/pkg/sortedmap
@@ -1012,7 +1012,7 @@ yunion.io/x/pkg/util/version
 yunion.io/x/pkg/utils
 # yunion.io/x/s3cli v0.0.0-20190917004522-13ac36d8687e
 yunion.io/x/s3cli
-# yunion.io/x/sqlchemy v0.0.0-20200702064124-195445bc4b11
+# yunion.io/x/sqlchemy v0.0.0-20200814052348-164f1f20f8a6
 yunion.io/x/sqlchemy
 # yunion.io/x/structarg v0.0.0-20200720093445-9f850fa222ce
 yunion.io/x/structarg
