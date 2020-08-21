@@ -205,6 +205,9 @@ func CreateCluster(data *clusterData, opt *createOptions) (*v1alpha1.OnecloudClu
 		if opt.useLonghorn {
 			cluster.Spec.Glance.StorageClassName = constants.LonghornStorageClass
 			cluster.Spec.Influxdb.StorageClassName = constants.LonghornStorageClass
+			cluster.Spec.Meter.StorageClassName = constants.LonghornStorageClass
+			cluster.Spec.BaremetalAgent.StorageClassName = constants.LonghornStorageClass
+			cluster.Spec.EsxiAgent.StorageClassName = constants.LonghornStorageClass
 		}
 	}
 	oc, err := cli.OnecloudV1alpha1().OnecloudClusters(constants.OnecloudNamespace).Create(cluster)
