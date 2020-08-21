@@ -12,30 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package identity
+package modules
 
-import "time"
+import "yunion.io/x/onecloud/pkg/mcclient/modulebase"
 
-type SUserExtended struct {
-	Id               string
-	Name             string
-	Enabled          bool
-	DefaultProjectId string
-	CreatedAt        time.Time
-	LastActiveAt     time.Time
-	DomainId         string
+var (
+	Cloudpolicycaches modulebase.ResourceManager
+)
 
-	IsSystemAccount bool
+func init() {
+	Cloudpolicycaches = NewCloudIdManager("cloudpolicycache", "cloudpolicycaches",
+		[]string{},
+		[]string{})
 
-	Displayname string
-	Email       string
-	Mobile      string
-
-	LocalId       int
-	LocalName     string
-	DomainName    string
-	DomainEnabled bool
-	// IsLocal       bool
-	// IdpId         string
-	// IdpName       string
+	register(&Cloudpolicycaches)
 }

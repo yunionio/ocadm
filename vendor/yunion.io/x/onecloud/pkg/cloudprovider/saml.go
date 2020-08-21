@@ -12,30 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package identity
+package cloudprovider
 
-import "time"
-
-type SUserExtended struct {
-	Id               string
-	Name             string
-	Enabled          bool
-	DefaultProjectId string
-	CreatedAt        time.Time
-	LastActiveAt     time.Time
-	DomainId         string
-
-	IsSystemAccount bool
-
-	Displayname string
-	Email       string
-	Mobile      string
-
-	LocalId       int
-	LocalName     string
-	DomainName    string
-	DomainEnabled bool
-	// IsLocal       bool
-	// IdpId         string
-	// IdpName       string
-}
+const (
+	SAML_ENTITY_ID_ALIYUN_ROLE  = "urn:alibaba:cloudcomputing"
+	SAML_ENTITY_ID_AWS_CN       = "urn:amazon:webservices:cn-north-1"
+	SAML_ENTITY_ID_AWS          = "urn:amazon:webservices"
+	SAML_ENTITY_ID_QCLOUD       = "cloud.tencent.com"
+	SAML_ENTITY_ID_HUAWEI_CLOUD = "https://auth.huaweicloud.com/"
+	SAML_ENTITY_ID_GOOGLE       = "google.com"
+)
