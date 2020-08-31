@@ -42,6 +42,8 @@ import (
 const (
 	DefaultClusterName  = "default"
 	DefaultOperatorName = "onecloud-operator"
+	// Annotations of CE autoupdate component
+	AutoUpdateCurrentVersion = "autoupdate.onecloud.yunion.io/current-version"
 )
 
 type clusterData struct {
@@ -650,6 +652,11 @@ func updateCluster(data *clusterData, opt *updateOptions) error {
 			oc.Spec.ImageRepository = opt.imageRepository
 		}
 		updateOC = true
+	}
+	// remove autoupdate related annotation
+	{
+		delete(oc.Annotations, AutoUpdateCurrentVersion)
+		oc.Spec.AutoUpdate.Tag = ""
 	}
 	if updateOC {
 		if _, err := data.client.OnecloudV1alpha1().OnecloudClusters(constants.OnecloudNamespace).Update(oc); err != nil {
