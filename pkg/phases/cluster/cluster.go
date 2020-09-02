@@ -657,6 +657,7 @@ func updateCluster(data *clusterData, opt *updateOptions) error {
 	{
 		delete(oc.Annotations, AutoUpdateCurrentVersion)
 		oc.Spec.AutoUpdate.Tag = ""
+		oc.Spec.HostAgent.Tag = ""
 	}
 	if updateOC {
 		if _, err := data.client.OnecloudV1alpha1().OnecloudClusters(constants.OnecloudNamespace).Update(oc); err != nil {
