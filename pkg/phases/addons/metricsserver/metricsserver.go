@@ -1,6 +1,8 @@
 package metricsserver
 
 import (
+	"runtime"
+
 	kubeadmapi "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm"
 
 	"yunion.io/x/ocadm/pkg/apis/constants"
@@ -10,12 +12,19 @@ import (
 
 type MetricsServerConfig struct {
 	Image string
+	Arch  string
 }
 
 func NewMetricsServerConfig(cfg *kubeadmapi.ClusterConfiguration) addons.Configer {
+	arch := runtime.GOARCH
 	repo := cfg.ImageRepository
+	metricsServer := constants.MetricsServerAmd64
+	if arch == "arm64" {
+		metricsServer = constants.MetricsServerArm64
+	}
 	config := MetricsServerConfig{
-		Image: images.GetGenericImage(repo, constants.MetricsServer, constants.MetricsServerVersion),
+		Image: images.GetGenericImage(repo, metricsServer, constants.MetricsServerVersion),
+		Arch:  arch,
 	}
 	return config
 }
