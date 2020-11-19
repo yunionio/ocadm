@@ -111,7 +111,7 @@ spec:
           mountPath: /tmp
       nodeSelector:
         kubernetes.io/os: linux
-        kubernetes.io/arch: "amd64"
+        kubernetes.io/arch: "{{.Arch}}"
 ---
 apiVersion: v1
 kind: Service
