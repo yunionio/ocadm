@@ -23,13 +23,23 @@ import (
 type HostSpec struct {
 	apis.Meta
 
-	Cpu         int            `json:"cpu"`
-	Mem         int            `json:"mem"`
-	NicCount    int            `json:"nic_count"`
-	Manufacture string         `json:"manufacture"`
-	Model       string         `json:"model"`
-	Disk        DiskDriverSpec `json:"disk"`
-	Driver      string         `json:"driver"`
+	Cpu             int                  `json:"cpu"`
+	Mem             int                  `json:"mem"`
+	NicCount        int                  `json:"nic_count"`
+	Manufacture     string               `json:"manufacture"`
+	Model           string               `json:"model"`
+	Disk            DiskDriverSpec       `json:"disk"`
+	Driver          string               `json:"driver"`
+	IsolatedDevices []IsolatedDeviceSpec `json:"isolated_devices"`
+}
+
+type IsolatedDeviceSpec struct {
+	apis.Meta
+
+	DevType string `json:"dev_type"`
+	Model   string `json:"model"`
+	PciId   string `json:"pci_id"`
+	Vendor  string `json:"vendor"`
 }
 
 type DiskDriverSpec map[string]DiskAdapterSpec
@@ -154,6 +164,8 @@ type HostDetails struct {
 	Storage int64 `json:"storage"`
 	// 已使用存储大小
 	StorageUsed int64 `json:"storage_used"`
+	// 实际已使用存储大小
+	ActualStorageUsed int64 `json:"actual_storage_used"`
 	// 浪费存储大小(异常磁盘存储大小)
 	StorageWaste int64 `json:"storage_waste"`
 	// 虚拟存储大小
@@ -161,7 +173,8 @@ type HostDetails struct {
 	// 可用存储大小
 	StorageFree int64 `json:"storage_free"`
 	// 存储超分率
-	StorageCommitRate float64             `json:"storage_commit_rate"`
+	StorageCommitRate float64 `json:"storage_commit_rate"`
+
 	Spec              *jsonutils.JSONDict `json:"spec"`
 	IsPrepaidRecycle  bool                `json:"is_prepaid_recycle"`
 	CanPrepare        bool                `json:"can_prepare"`
@@ -243,10 +256,12 @@ type HostResourceInput struct {
 type HostRegisterMetadata struct {
 	apis.Meta
 
-	OnKubernetes bool   `json:"on_kubernetes"`
-	Hostname     string `json:"hostname"`
-	SysError     string `json:"sys_error,allowempty"`
-	SysWarn      string `json:"sys_warn,allowempty"`
+	OnKubernetes                 bool   `json:"on_kubernetes"`
+	Hostname                     string `json:"hostname"`
+	SysError                     string `json:"sys_error,allowempty"`
+	SysWarn                      string `json:"sys_warn,allowempty"`
+	RootPartitionTotalCapacityMB int64  `json:"root_partition_total_capacity_mb"`
+	RootPartitionUsedCapacityMB  int64  `json:"root_partition_used_capacity_mb"`
 }
 
 type HostAccessAttributes struct {

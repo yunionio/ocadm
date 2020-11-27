@@ -144,6 +144,9 @@ type GroupListInput struct {
 
 	// 名称过滤
 	Displayname string `json:"displayname"`
+
+	// 按IDP过滤
+	IdpId string `json:"idp_id"`
 }
 
 type ProjectListInput struct {
@@ -160,6 +163,12 @@ type DomainListInput struct {
 	apis.StandaloneResourceListInput
 
 	Enabled *bool `json:"enabled"`
+
+	// 按IDP过滤
+	IdpId string `json:"idp_id"`
+
+	// 按IDP_ENTITY_ID过滤
+	IdpEntityId string `json:"idp_entity_id"`
 }
 
 type UserListInput struct {
@@ -181,6 +190,12 @@ type UserListInput struct {
 
 	// 是否开启MFA认证
 	EnableMfa *bool `json:"enable_mfa"`
+
+	// 关联IDP
+	IdpId string `json:"idp_id"`
+
+	// 按IDP_ENTITY_ID过滤
+	IdpEntityId string `json:"idp_entity_id"`
 }
 
 type EndpointListInput struct {
@@ -420,6 +435,8 @@ type UserUpdateInput struct {
 	EnableMfa *bool `json:"enable_mfa"`
 
 	Password string `json:"password"`
+
+	SkipPasswordComplexityCheck *bool `json:"skip_password_complexity_check"`
 }
 
 type UserCreateInput struct {
