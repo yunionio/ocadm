@@ -16,6 +16,8 @@ package apis
 
 import (
 	"time"
+
+	"yunion.io/x/onecloud/pkg/httperrors"
 )
 
 type ModelBaseDetails struct {
@@ -26,7 +28,7 @@ type ModelBaseDetails struct {
 	CanDelete bool `json:"can_delete"`
 
 	// 资源不能删除的原因
-	DeleteFailReason string `json:"delete_fail_reason"`
+	DeleteFailReason httperrors.Error `json:"delete_fail_reason"`
 
 	// 资源是否可以更新, 若为false,update_fail_reason会返回资源不能删除的原因
 	// example: true
@@ -155,7 +157,7 @@ type ProjectizedResourceInfo struct {
 
 	// 资源归属项目的ID(向后兼容别名）
 	// Deprecated
-	TenantId string `json:"project_id" yunion-deprecated-by:"tenant"`
+	TenantId string `json:"project_id" yunion-deprecated-by:"tenant_id"`
 
 	// 资源归属项目的名称（向后兼容别名）
 	// Deprecated

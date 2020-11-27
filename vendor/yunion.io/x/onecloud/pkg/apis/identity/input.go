@@ -19,6 +19,7 @@ import (
 	"yunion.io/x/pkg/errors"
 
 	"yunion.io/x/onecloud/pkg/apis"
+	"yunion.io/x/onecloud/pkg/util/rbacutils"
 )
 
 type IdentityBaseResourceCreateInput struct {
@@ -144,6 +145,9 @@ type GroupListInput struct {
 
 	// 名称过滤
 	Displayname string `json:"displayname"`
+
+	// 按IDP过滤
+	IdpId string `json:"idp_id"`
 }
 
 type ProjectListInput struct {
@@ -160,6 +164,12 @@ type DomainListInput struct {
 	apis.StandaloneResourceListInput
 
 	Enabled *bool `json:"enabled"`
+
+	// 按IDP过滤
+	IdpId string `json:"idp_id"`
+
+	// 按IDP_ENTITY_ID过滤
+	IdpEntityId string `json:"idp_entity_id"`
 }
 
 type UserListInput struct {
@@ -181,6 +191,12 @@ type UserListInput struct {
 
 	// 是否开启MFA认证
 	EnableMfa *bool `json:"enable_mfa"`
+
+	// 关联IDP
+	IdpId string `json:"idp_id"`
+
+	// 按IDP_ENTITY_ID过滤
+	IdpEntityId string `json:"idp_entity_id"`
 }
 
 type EndpointListInput struct {
@@ -327,6 +343,9 @@ type PolicyListInput struct {
 
 	// 以类型查询
 	Type []string `json:"type"`
+
+	// 是否显示系统权限
+	IsSystem *bool `json:"is_system"`
 }
 
 type RegionFilterListInput struct {
@@ -388,9 +407,18 @@ type IdentityProviderUpdateInput struct {
 type PolicyUpdateInput struct {
 	EnabledIdentityBaseUpdateInput
 
+	// Deprecated
+	// swagger:ignore
 	Type string `json:"type"`
 
+	// Policy内容
 	Blob jsonutils.JSONObject `json:"blob"`
+
+	// 生效范围，project|domain|system
+	Scope rbacutils.TRbacScope `json:"scope"`
+
+	// 是否为系统权限
+	IsSystem *bool `json:"is_system"`
 }
 
 type ProjectUpdateInput struct {
@@ -420,6 +448,8 @@ type UserUpdateInput struct {
 	EnableMfa *bool `json:"enable_mfa"`
 
 	Password string `json:"password"`
+
+	SkipPasswordComplexityCheck *bool `json:"skip_password_complexity_check"`
 }
 
 type UserCreateInput struct {
@@ -464,9 +494,18 @@ type PolicyCreateInput struct {
 	EnabledIdentityBaseResourceCreateInput
 	apis.SharableResourceBaseCreateInput
 
+	// Deprecated
+	// swagger:ignore
 	Type string `json:"type"`
 
+	// policy
 	Blob jsonutils.JSONObject `json:"blob"`
+
+	// 生效范围，project|domain|system
+	Scope rbacutils.TRbacScope `json:"scope"`
+
+	// 是否为系统权限
+	IsSystem *bool `json:"is_system"`
 }
 
 type RoleCreateInput struct {
