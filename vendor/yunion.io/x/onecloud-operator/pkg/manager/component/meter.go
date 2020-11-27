@@ -38,6 +38,9 @@ func newMeterManager(man *ComponentManager) manager.Manager {
 }
 
 func (m *meterManager) Sync(oc *v1alpha1.OnecloudCluster) error {
+	if !IsEnterpriseEdition(oc) {
+		return nil
+	}
 	return syncComponent(m, oc, oc.Spec.Meter.Disable)
 }
 
@@ -104,6 +107,10 @@ func (m *meterManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg *v1alpha1
 	deploy, err := m.newCloudServiceSinglePortDeployment(v1alpha1.MeterComponentType, oc, oc.Spec.Meter.DeploymentSpec, constants.MeterPort, true, false)
 	if err != nil {
 		return nil, err
+	}
+	if oc.Spec.Meter.StorageClassName == v1alpha1.DefaultStorageClass {
+		// if use local path storage, remove cloud affinity
+		deploy = m.removeDeploymentAffinity(deploy)
 	}
 	podTemplate := &deploy.Spec.Template.Spec
 	podVols := podTemplate.Volumes

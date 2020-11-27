@@ -143,9 +143,13 @@ type ModelBaseListInput struct {
 	// 返回结果只包含指定的字段
 	Field []string `json:"field"`
 	// 用于数据导出，指定导出的数据字段
-	ExportKeys string `json:"export_keys"`
+	ExportKeys string `json:"export_keys" help:"Export field keys"`
 	// 返回结果携带delete_fail_reason和update_fail_reason字段
 	ShowFailReason *bool `json:"show_fail_reason"`
+}
+
+func (o ModelBaseListInput) GetExportKeys() string {
+	return o.ExportKeys
 }
 
 type IncrementalListInput struct {
@@ -195,8 +199,19 @@ type MetadataResourceListInput struct {
 	// 通过标签过滤
 	OrderByTag string `json:"order_by_tag"`
 
-	// 返回资源的标签不包含特定的用户标签
-	WithoutUserMeta bool `json:"without_user_meta"`
+	// deprecated
+	// 返回资源的标签不包含用户标签
+	WithoutUserMeta *bool `json:"without_user_meta"`
+
+	// 返回包含用户标签的资源
+	WithUserMeta *bool `json:"with_user_meta"`
+
+	// 返回包含外部标签的资源
+	WithCloudMeta *bool `json:"with_cloud_meta"`
+
+	// 返回包含任意标签的资源
+	WithAnyMeta *bool `json:"with_any_meta"`
+
 	// 返回列表数据中包含资源的标签数据（Metadata）
 	WithMeta *bool `json:"with_meta"`
 }
