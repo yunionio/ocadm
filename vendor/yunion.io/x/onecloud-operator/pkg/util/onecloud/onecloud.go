@@ -584,15 +584,20 @@ type CommonAlertTem struct {
 	Database    string `json:"database"`
 	Measurement string `json:"measurement"`
 	//rule operator rule [and|or]
-	Operator string   `json:"operator"`
-	Field    []string `json:"field"`
+	Operator  string   `json:"operator"`
+	Field     []string `json:"field"`
+	FieldFunc string   `json:"field_func"`
 
-	Reduce     string
-	Comparator string  `json:"comparator"`
-	Threshold  float64 `json:"threshold"`
-	Filters    []monitorapi.MetricQueryTag
-	FieldOpt   string `json:"field_opt"`
-	Name       string
+	Reduce        string
+	Comparator    string  `json:"comparator"`
+	Threshold     float64 `json:"threshold"`
+	Filters       []monitorapi.MetricQueryTag
+	FieldOpt      string `json:"field_opt"`
+	GetPointStr   bool   `json:"get_point_str"`
+	Name          string
+	ConditionType string `json:"condition_type"`
+	From          string `json:"from"`
+	Interval      string `json:"interval"`
 }
 
 func GetCommonAlertOfSys(session *mcclient.ClientSession) ([]jsonutils.JSONObject, error) {
@@ -609,6 +614,60 @@ func GetCommonAlertOfSys(session *mcclient.ClientSession) ([]jsonutils.JSONObjec
 }
 
 func CreateCommonAlert(s *mcclient.ClientSession, tem CommonAlertTem) (jsonutils.JSONObject, error) {
+	commonAlert := newCommonalertQuery(tem)
+	input := monitorapi.CommonAlertCreateInput{
+		CommonMetricInputQuery: monitorapi.CommonMetricInputQuery{
+			MetricQuery: []*monitorapi.CommonAlertQuery{&commonAlert},
+		},
+		AlertCreateInput: monitorapi.AlertCreateInput{
+			Name:  tem.Name,
+			Level: "important",
+		},
+		Recipients: []string{monitorapi.CommonAlertDefaultRecipient},
+		AlertType:  monitorapi.CommonAlertSystemAlertType,
+		Scope:      "system",
+	}
+	if len(tem.From) != 0 {
+		input.From = tem.From
+	}
+	if len(tem.Interval) != 0 {
+		input.Interval = tem.Interval
+	}
+	param := jsonutils.Marshal(&input)
+	if tem.GetPointStr {
+		param.(*jsonutils.JSONDict).Set("get_point_str", jsonutils.JSONTrue)
+	}
+	param.(*jsonutils.JSONDict).Set("meta_name", jsonutils.NewString(tem.Name))
+	return modules.CommonAlertManager.Create(s, param)
+}
+
+func UpdateCommonAlert(s *mcclient.ClientSession, tem CommonAlertTem, id string) (jsonutils.JSONObject, error) {
+	commonAlert := newCommonalertQuery(tem)
+	input := monitorapi.CommonAlertUpdateInput{
+		CommonMetricInputQuery: monitorapi.CommonMetricInputQuery{
+			MetricQuery: []*monitorapi.CommonAlertQuery{&commonAlert},
+		},
+	}
+	if len(tem.From) != 0 {
+		input.From = tem.From
+	}
+	if len(tem.Interval) != 0 {
+		input.Interval = tem.Interval
+	}
+	param := jsonutils.Marshal(&input)
+	param.(*jsonutils.JSONDict).Set("force_update", jsonutils.JSONTrue)
+	if tem.GetPointStr {
+		param.(*jsonutils.JSONDict).Set("get_point_str", jsonutils.JSONTrue)
+	}
+	param.(*jsonutils.JSONDict).Set("meta_name", jsonutils.NewString(tem.Name))
+	return modules.CommonAlertManager.Update(s, id, param)
+}
+
+func DeleteCommonAlert(s *mcclient.ClientSession, ids []string) {
+	modules.CommonAlertManager.BatchDelete(s, ids, jsonutils.NewDict())
+}
+
+func newCommonalertQuery(tem CommonAlertTem) monitorapi.CommonAlertQuery {
 	metricQ := monitorapi.MetricQuery{
 		Alias:        "",
 		Tz:           "",
@@ -628,6 +687,18 @@ func CreateCommonAlert(s *mcclient.ClientSession, tem CommonAlertTem) (jsonutils
 			Params: []string{field},
 		}
 		selectPart := []monitorapi.MetricQueryPart{sel}
+		if len(tem.FieldFunc) != 0 {
+			selectPart = append(selectPart, monitorapi.MetricQueryPart{
+				Type:   tem.FieldFunc,
+				Params: []string{},
+			})
+			if tem.GetPointStr {
+				selectPart = append(selectPart, monitorapi.MetricQueryPart{
+					Type:   "alias",
+					Params: []string{field},
+				})
+			}
+		}
 		metricQ.Selects = append(metricQ.Selects, selectPart)
 	}
 	if len(tem.Filters) != 0 {
@@ -649,20 +720,8 @@ func CreateCommonAlert(s *mcclient.ClientSession, tem CommonAlertTem) (jsonutils
 	if tem.FieldOpt != "" {
 		commonAlert.FieldOpt = monitorapi.CommonAlertFieldOpt_Division
 	}
-
-	input := monitorapi.CommonAlertCreateInput{
-		CommonMetricInputQuery: monitorapi.CommonMetricInputQuery{
-			MetricQuery: []*monitorapi.CommonAlertQuery{&commonAlert},
-		},
-		AlertCreateInput: monitorapi.AlertCreateInput{
-			Name:  tem.Name,
-			Level: "important",
-		},
-		Recipients: []string{monitorapi.CommonAlertDefaultRecipient},
-		AlertType:  monitorapi.CommonAlertSystemAlertType,
-		Scope:      "system",
+	if len(tem.ConditionType) != 0 {
+		commonAlert.ConditionType = tem.ConditionType
 	}
-
-	param := jsonutils.Marshal(&input)
-	return modules.CommonAlertManager.Create(s, param)
+	return commonAlert
 }

@@ -41,16 +41,19 @@ type SKeystoneOptions struct {
 	PasswordExpirationSeconds  int `help:"password expires after the duration in seconds"`
 	PasswordMinimalLength      int `help:"password minimal length" default:"6"`
 	PasswordUniqueHistoryCheck int `help:"password must be unique in last N passwords"`
+	PasswordCharComplexity     int `help:"password complexity policy" default:"0"`
 
 	PasswordErrorLockCount int `help:"lock user account if given number of failed auth"`
 
 	DefaultUserQuota    int `default:"500" help:"default quota for user per domain, default is 500"`
 	DefaultGroupQuota   int `default:"500" help:"default quota for group per domain, default is 500"`
-	DefaultProjectQuota int `default:"100" help:"default quota for project per domain, default is 500"`
-	DefaultRoleQuota    int `default:"100" help:"default quota for role per domain, default is 500"`
-	DefaultPolicyQuota  int `default:"100" help:"default quota for policy per domain, default is 500"`
+	DefaultProjectQuota int `default:"500" help:"default quota for project per domain, default is 500"`
+	DefaultRoleQuota    int `default:"500" help:"default quota for role per domain, default is 500"`
+	DefaultPolicyQuota  int `default:"500" help:"default quota for policy per domain, default is 500"`
 
 	SessionEndpointType string `help:"Client session end point type"`
+
+	AllowJoinProjectsAcrossDomains bool `help:"allow users/groups to join projects across domains" default:"false"`
 }
 
 var (
@@ -63,6 +66,10 @@ func OnOptionsChange(oldOptions, newOptions interface{}) bool {
 
 	changed := false
 	if options.OnBaseOptionsChange(&oldOpts.BaseOptions, &newOpts.BaseOptions) {
+		changed = true
+	}
+
+	if options.OnDBOptionsChange(&oldOpts.DBOptions, &newOpts.DBOptions) {
 		changed = true
 	}
 
