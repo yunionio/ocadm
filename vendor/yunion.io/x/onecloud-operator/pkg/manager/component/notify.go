@@ -43,6 +43,7 @@ const (
 	NotifyPluginDingtalkRobot = "dingtalk-robot"
 	NotifyPluginWorkwx        = "workwx"
 	NotifyPluginWorkwxRobot   = "workwx-robot"
+	NotifyPluginWebhook       = "webhook"
 )
 
 type notifyManager struct {
@@ -69,7 +70,7 @@ func (m *notifyManager) getPhaseControl(man controller.ComponentManager) control
 	return controller.NewRegisterEndpointComponent(
 		man, v1alpha1.NotifyComponentType,
 		constants.ServiceNameNotify, constants.ServiceTypeNotify,
-		constants.NotifyPort, "api/v1")
+		constants.NotifyPort, "")
 }
 
 type NotifyPluginBaseConfig struct {
@@ -99,7 +100,6 @@ func (m *notifyManager) getConfigMap(oc *v1alpha1.OnecloudCluster, cfg *v1alpha1
 	SetServiceCommonOptions(&opt.CommonOptions, oc, config.ServiceCommonOptions)
 	opt.SocketFileDir = NotifySocketFileDir
 	opt.UpdateInterval = 30
-	opt.VerifyEmailUrl = fmt.Sprintf("https://%s/v2/email-verification/id/{0}/token/{1}?region=%s", oc.Spec.LoadBalancerEndpoint, oc.GetRegion())
 	//opt.VerifyEmailUrlPath = fmt.Sprintf("/v2/email-verification/id/{0}/token/{1}?region=%s", oc.Spec.Region)
 	opt.ReSendScope = 30
 	opt.Port = constants.NotifyPort
@@ -139,11 +139,6 @@ func (m *notifyManager) getConfigMap(oc *v1alpha1.OnecloudCluster, cfg *v1alpha1
 
 func (m *notifyManager) getService(oc *v1alpha1.OnecloudCluster) []*corev1.Service {
 	return []*corev1.Service{m.newSingleNodePortService(v1alpha1.NotifyComponentType, oc, constants.NotifyPort)}
-}
-
-func (m *notifyManager) getPVC(oc *v1alpha1.OnecloudCluster) (*corev1.PersistentVolumeClaim, error) {
-	cfg := oc.Spec.Notify
-	return m.ComponentManager.newPVC(v1alpha1.NotifyComponentType, oc, cfg)
 }
 
 func (m *notifyManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg *v1alpha1.OnecloudClusterConfig) (*apps.Deployment, error) {
@@ -219,6 +214,7 @@ func (m *notifyManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg *v1alpha
 		newPluginC(NotifyPluginDingtalkRobot),
 		newPluginCWithoutConf(NotifyPluginWorkwx),
 		newPluginCWithoutConf(NotifyPluginWorkwxRobot),
+		newPluginCWithoutConf(NotifyPluginWebhook),
 	}
 	spec := &deploy.Spec.Template.Spec
 	cs := spec.Containers

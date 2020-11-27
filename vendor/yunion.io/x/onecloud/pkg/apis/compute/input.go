@@ -49,7 +49,7 @@ type KeypairListInput struct {
 }
 
 type CachedimageListInput struct {
-	apis.StandaloneResourceListInput
+	apis.SharableVirtualResourceListInput
 	apis.ExternalizedResourceBaseListInput
 
 	ManagedResourceListInput
@@ -58,6 +58,12 @@ type CachedimageListInput struct {
 	// 镜像类型，可能值为: system(公有云公共镜像), customized(自定义镜像)
 	// example: system
 	ImageType []string `json:"image_type"`
+
+	// filter by host schedtag
+	HostSchedtagId string `json:"host_schedtag_id"`
+
+	// valid cachedimage
+	Valid *bool `json:"valid"`
 }
 
 type ExternalProjectListInput struct {

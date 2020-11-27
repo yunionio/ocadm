@@ -44,8 +44,9 @@ import (
 )
 
 var (
-	SessionDebug bool
-	SyncUser     bool
+	SessionDebug       bool
+	SyncUser           bool
+	EtcdKeepFailedPods bool
 
 	sessionLock sync.Mutex
 )
@@ -557,29 +558,18 @@ func shouldDoPolicyRoleInit(s *mcclient.ClientSession) (bool, error) {
 }
 
 func doPolicyRoleInit(s *mcclient.ClientSession) error {
-	doInit, err := shouldDoPolicyRoleInit(s)
-	if err != nil {
-		return errors.Wrap(err, "should do policy init")
-	}
-	if !doInit {
-		return nil
-	}
-	klog.Infof("Init policy and role...")
-	for policyType, content := range DefaultPolicies {
-		if _, err := PolicyCreate(s, policyType, content, true); err != nil {
-			return errors.Wrapf(err, "create policy %s", policyType)
+	policies := generateAllPolicies()
+	for i := range policies {
+		err := createOrUpdatePolicy(s, policies[i])
+		if err != nil {
+			return errors.Wrap(err, "createOrUpdatePolicy")
 		}
 	}
-	for role, desc := range DefaultRoles {
-		if _, err := onecloud.EnsureRole(s, role, desc); err != nil {
-			return errors.Wrapf(err, "create role %s", role)
+	for i := range roleDefinitions {
+		err := createOrUpdateRole(s, roleDefinitions[i])
+		if err != nil {
+			return errors.Wrap(err, "createOrUpdateRole")
 		}
-	}
-	if err := RolesPublic(s, constants.PublicRoles); err != nil {
-		return errors.Wrap(err, "public roles")
-	}
-	if err := PoliciesPublic(s, constants.PublicPolicies); err != nil {
-		return errors.Wrap(err, "public policies")
 	}
 	return nil
 }
@@ -931,7 +921,7 @@ func (c yunionagentComponent) SystemInit(oc *v1alpha1.OnecloudCluster) error {
 }
 
 func (c yunionagentComponent) addWelcomeNotice() error {
-	return c.RunWithSession(func(s *mcclient.ClientSession) error {
+	/*return c.RunWithSession(func(s *mcclient.ClientSession) error {
 		ret, err := modules.Notice.List(s, nil)
 		if err != nil {
 			return err
@@ -941,11 +931,12 @@ func (c yunionagentComponent) addWelcomeNotice() error {
 		}
 		params := jsonutils.NewDict()
 		params.Add(jsonutils.NewString("欢迎使用云管平台"), "title")
-		params.Add(jsonutils.NewString("欢迎使用OneCloud多云云管平台。这是公告栏，您可以在这里发布需要告知所有用户的消息。"), "content")
+		params.Add(jsonutils.NewString("欢迎使用云管平台。这是公告栏，您可以在这里发布需要告知所有用户的消息。"), "content")
 
 		_, err = modules.Notice.Create(s, params)
 		return err
-	})
+	})*/
+	return nil
 }
 
 type devtoolComponent struct {
@@ -1053,41 +1044,60 @@ func (c monitorComponent) SystemInit(oc *v1alpha1.OnecloudCluster) error {
 	if err != nil {
 		return errors.Wrap(err, "monitorComponent GetCommonAlertOfSys")
 	}
+	tmpAlert := rtnAlert
 	for metric, tem := range alertInfo {
-		match := false
-	search:
-		for _, alert := range rtnAlert {
-			metricDs, err := alert.(*jsonutils.JSONDict).GetArray("common_alert_metric_details")
-			if err != nil {
-				log.Errorln(err)
-				return err
-			}
-			for _, metricD := range metricDs {
-				measurement, err := metricD.GetString("measurement")
-				if err != nil {
-					log.Errorln("get measurement", err)
-					return err
-				}
-				field, err := metricD.GetString("field")
-				if err != nil {
-					log.Errorln("get field", err)
-					return err
-				}
-				if metric == fmt.Sprintf("%s.%s", measurement, field) {
-					match = true
-					break search
-				}
-			}
+		match, id, deleteAlerts, err := c.matchFromRtnAlerts(metric, tmpAlert)
+		if err != nil {
+			return err
 		}
 		if match {
+			_, err := onecloud.UpdateCommonAlert(session, tem, id)
+			if err != nil {
+				log.Errorf("UpdateCommonAlert err:%v", err)
+			}
+			tmpAlert = deleteAlerts
 			continue
 		}
 		_, err = onecloud.CreateCommonAlert(session, tem)
 		if err != nil {
 			log.Errorln("CreateCommonAlert err:", err)
 		}
+		tmpAlert = deleteAlerts
+	}
+	ids := make([]string, 0)
+	for _, alert := range tmpAlert {
+		id, _ := alert.GetString("id")
+		ids = append(ids, id)
+	}
+	if len(ids) != 0 {
+		onecloud.DeleteCommonAlert(session, ids)
 	}
 	return nil
+}
+
+func (c monitorComponent) matchFromRtnAlerts(metric string, rtnAlert []jsonutils.JSONObject) (bool, string,
+	[]jsonutils.JSONObject, error) {
+	match := false
+	id := ""
+	deleteAlerts := make([]jsonutils.JSONObject, 0)
+	for i, alert := range rtnAlert {
+		name, _ := alert.GetString("name")
+		metadataObj, err := alert.Get("metadata")
+		if err != nil {
+			return match, id, nil, errors.Wrap(err, "cannot get metadata")
+		}
+		metaName, _ := metadataObj.GetString("meta_name")
+		if metric == name || metric == metaName {
+			match = true
+			id, _ = alert.GetString("id")
+			for start := i + 1; start < len(rtnAlert); start++ {
+				deleteAlerts = append(deleteAlerts, rtnAlert[start])
+			}
+			return match, id, deleteAlerts, nil
+		}
+		deleteAlerts = append(deleteAlerts, alert)
+	}
+	return match, id, deleteAlerts, nil
 }
 
 func (c monitorComponent) getInitInfo() map[string]onecloud.CommonAlertTem {
@@ -1103,10 +1113,10 @@ func (c monitorComponent) getInitInfo() map[string]onecloud.CommonAlertTem {
 	memTem := onecloud.CommonAlertTem{
 		Database:    "telegraf",
 		Measurement: "mem",
-		Field:       []string{"free"},
+		Field:       []string{"available"},
 		Comparator:  "<=",
 		Threshold:   524288000,
-		Name:        "mem.free",
+		Name:        "mem.available",
 		Reduce:      "avg",
 	}
 	diskAvaTem := onecloud.CommonAlertTem{
@@ -1153,6 +1163,55 @@ func (c monitorComponent) getInitInfo() map[string]onecloud.CommonAlertTem {
 		Name:   "disk.inodes_free/inodes_total",
 		Reduce: "avg",
 	}
+	smartDevTem := onecloud.CommonAlertTem{
+		Database:    "telegraf",
+		Measurement: "smart_device",
+		Field:       []string{"exit_status"},
+		FieldFunc:   "last",
+		Comparator:  "==",
+		Threshold:   0,
+		Filters: []monitor.MetricQueryTag{
+			{
+				Key:       "health_ok",
+				Operator:  "=",
+				Value:     "false",
+				Condition: "AND",
+			},
+		},
+		Name:   "smart_device.exit_status",
+		Reduce: "last",
+	}
+	genHostRaidStatusFilter := func(status ...string) []monitor.MetricQueryTag {
+		ret := make([]monitor.MetricQueryTag, 0)
+		for _, s := range status {
+			filter := monitor.MetricQueryTag{
+				Key:       "status",
+				Value:     s,
+				Operator:  "=",
+				Condition: "OR",
+			}
+			ret = append(ret, filter)
+		}
+		return ret
+	}
+	hostRaidTem := onecloud.CommonAlertTem{
+		Database:    "telegraf",
+		Measurement: "host_raid",
+		Field:       []string{"adapter", "status", "slot"},
+		FieldFunc:   "last",
+		Comparator:  ">=",
+		Threshold:   0,
+		Filters: genHostRaidStatusFilter(
+			"offline",
+			"failed",
+			"degraded",
+			"rebuilding",
+			"out of sync",
+		),
+		Name:        "host_raid.adapter",
+		GetPointStr: true,
+		Reduce:      "last",
+	}
 	cloudaccountTem := onecloud.CommonAlertTem{
 		Database:    "meter_db",
 		Measurement: "cloudaccount_balance",
@@ -1162,12 +1221,28 @@ func (c monitorComponent) getInitInfo() map[string]onecloud.CommonAlertTem {
 		Name:        "cloudaccount_balance.balance",
 		Reduce:      "last",
 	}
+	noDataTem := onecloud.CommonAlertTem{
+		Database:      "telegraf",
+		Measurement:   "system",
+		Field:         []string{"uptime"},
+		FieldFunc:     "last",
+		Comparator:    "==",
+		Threshold:     0,
+		Name:          "system.uptime",
+		Reduce:        "last",
+		ConditionType: "nodata_query",
+		From:          "3m",
+		Interval:      "1m",
+	}
 	speAlert := map[string]onecloud.CommonAlertTem{
 		cpuTem.Name:          cpuTem,
 		memTem.Name:          memTem,
 		diskAvaTem.Name:      diskAvaTem,
 		diskNodeAvaTem.Name:  diskNodeAvaTem,
 		cloudaccountTem.Name: cloudaccountTem,
+		smartDevTem.Name:     smartDevTem,
+		hostRaidTem.Name:     hostRaidTem,
+		noDataTem.Name:       noDataTem,
 	}
 	return speAlert
 }

@@ -23,9 +23,10 @@ import (
 type SchedtagConfig struct {
 	apis.Meta
 
-	Id       string `json:"id"`
-	Strategy string `json:"strategy"`
-	Weight   int    `json:"weight"`
+	Id           string `json:"id"`
+	Strategy     string `json:"strategy"`
+	Weight       int    `json:"weight"`
+	ResourceType string `json:"resource_type"`
 }
 
 type NetworkConfig struct {
@@ -140,6 +141,10 @@ type DiskConfig struct {
 	// 挂载点,必须以 '/' 开头,例如 /opt 仅KVM此参数有效
 	// requried: false
 	Mountpoint string `json:"mountpoint"`
+
+	// 操作系统CPU架构
+	// required: false
+	OsArch string `json:"os_arch"`
 
 	//后端存储类型,若指定了存储ID,此参数会根据存储设置,若不指定，则作为调度的一个参考
 	//
@@ -447,8 +452,10 @@ type ServerCreateInput struct {
 
 	// 弹性公网IP带宽
 	// 指定此参数后会创建新的弹性公网IP并绑定到新建的虚拟机
-	// 私有云不支持此参数
+	// 此参数优先级低于public_ip
 	EipBw int `json:"eip_bw,omitzero"`
+	// 弹性公网IP线路类型
+	EipBgpType string `json:"eip_bgp_type,omitzero"`
 	// 弹性公网IP计费类型
 	EipChargeType string `json:"eip_charge_type,omitempty"`
 	// 是否跟随主机删除而自动释放
@@ -458,6 +465,25 @@ type ServerCreateInput struct {
 	// 绑定已有弹性公网IP, 此参数会限制虚拟机再谈下公网IP所在的区域创建
 	// required: false
 	Eip string `json:"eip,omitempty"`
+
+	// 公网IP带宽(单位MB)
+	// 若指定此参数则忽略eip相关参数
+	// 私有云不支持此参数
+	//
+	//
+	// |平台				|支持范围	|
+	// |----				|-------	|
+	// |腾讯云				|按量计费1-100, 包年包月1-200 |
+	PublicIpBw int `json:"public_ip_bw,omitzero"`
+	// 公网IP计费类型
+	// 默认按流量计费
+	//
+	//
+	// |类别					|说明	|
+	// |----					|-------	|
+	// |traffic					|按流量计费|
+	// |bandwidth				|按带宽计费|
+	PublicIpChargeType string `json:"public_ip_charge_type,omitempty"`
 
 	// 使用主机快照创建虚拟机, 主机快照不会重置密码及秘钥信息
 	// 使用主机快照创建的虚拟机将沿用之前的密码秘钥及安全组信息
@@ -471,6 +497,8 @@ type ServerCreateInput struct {
 
 	// swagger:ignore
 	OsType string `json:"os_type"`
+	// swagger:ignore
+	OsArch string `json:"os_arch"`
 	// swagger:ignore
 	DisableUsbKbd bool `json:"disable_usb_kbd"`
 	// swagger:ignore
