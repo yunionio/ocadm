@@ -70,22 +70,26 @@ var (
 )
 
 type Error struct {
-	Id     string   `json:"id"`
-	Fields []string `json:"fields"`
+	Id     string        `json:"id,omitempty"`
+	Fields []interface{} `json:"fields,omitempty"`
 }
 
 type JSONClientError struct {
 	Request struct {
-		Method  string               `json:"method"`
-		Url     string               `json:"url"`
-		Body    jsonutils.JSONObject `json:"body"`
-		Headers map[string]string    `json:"headers"`
-	} `json:"request"`
+		Method  string               `json:"method,omitempty"`
+		Url     string               `json:"url,omitempty"`
+		Body    jsonutils.JSONObject `json:"body,omitempty"`
+		Headers map[string]string    `json:"headers,omitempty"`
+	} `json:"request,omitempty"`
 
-	Code    int    `json:"code"`
-	Class   string `json:"class"`
-	Details string `json:"details"`
-	Data    Error  `json:"data"`
+	Code    int    `json:"code,omitzero"`
+	Class   string `json:"class,omitempty"`
+	Details string `json:"details,omitempty"`
+	Data    Error  `json:"data,omitempty"`
+}
+
+type sClient interface {
+	Do(req *http.Request) (*http.Response, error)
 }
 
 // body might have been consumed, so body is provided separately
@@ -99,16 +103,25 @@ func newJsonClientErrorFromRequest2(method string, urlStr string, hdrs http.Head
 	jce.Request.Method = strings.ToUpper(method)
 	jce.Request.Url = urlStr
 	jce.Request.Headers = make(map[string]string)
-	excludeHdrs := []string{}
+	excludeHdrs := []string{
+		"Accept",
+		"Accept-Encoding",
+	}
 	authHdrs := []string{
 		http.CanonicalHeaderKey("authorization"),
 		http.CanonicalHeaderKey("x-auth-token"),
 		http.CanonicalHeaderKey("x-subject-token"),
 	}
+	const (
+		MAX_BODY   = 128
+		FIRST_PART = 100
+	)
 	switch jce.Request.Method {
 	case "PUT", "POST", "PATCH":
 		contType := hdrs.Get(http.CanonicalHeaderKey("content-type"))
-		if strings.Contains(contType, "json") {
+		if len(body) > MAX_BODY {
+			jce.Request.Body = jsonutils.NewString(body[:FIRST_PART] + "..." + body[len(body)-MAX_BODY+FIRST_PART+3:])
+		} else if strings.Contains(contType, "json") {
 			jce.Request.Body, _ = jsonutils.ParseString(body)
 		} else if strings.Contains(contType, "xml") ||
 			strings.Contains(contType, "x-www-form-urlencoded") {
@@ -137,7 +150,7 @@ type JSONClientErrorMsg struct {
 }
 
 type JsonClient struct {
-	client *http.Client
+	client sClient
 }
 
 type JsonRequest interface {
@@ -215,7 +228,7 @@ func (ce *JSONClientError) ParseErrorFromJsonResponse(statusCode int, body jsonu
 	return ce
 }
 
-func NewJsonClient(client *http.Client) *JsonClient {
+func NewJsonClient(client sClient) *JsonClient {
 	return &JsonClient{client: client}
 }
 
@@ -411,14 +424,14 @@ func GetAdaptiveTimeoutClient() *http.Client {
 var defaultHttpClient *http.Client
 
 func init() {
-	defaultHttpClient = GetClient(true, time.Second*15)
+	defaultHttpClient = GetDefaultClient()
 }
 
 func GetDefaultClient() *http.Client {
-	return defaultHttpClient
+	return GetClient(true, time.Second*15)
 }
 
-func Request(client *http.Client, ctx context.Context, method THttpMethod, urlStr string, header http.Header, body io.Reader, debug bool) (*http.Response, error) {
+func Request(client sClient, ctx context.Context, method THttpMethod, urlStr string, header http.Header, body io.Reader, debug bool) (*http.Response, error) {
 	req, resp, err := requestInternal(client, ctx, method, urlStr, header, body, debug)
 	if err != nil {
 		var reqBody string
@@ -445,7 +458,7 @@ func Request(client *http.Client, ctx context.Context, method THttpMethod, urlSt
 	return resp, nil
 }
 
-func requestInternal(client *http.Client, ctx context.Context, method THttpMethod, urlStr string, header http.Header, body io.Reader, debug bool) (*http.Request, *http.Response, error) {
+func requestInternal(client sClient, ctx context.Context, method THttpMethod, urlStr string, header http.Header, body io.Reader, debug bool) (*http.Request, *http.Response, error) {
 	if client == nil {
 		client = defaultHttpClient
 	}

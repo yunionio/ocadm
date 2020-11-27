@@ -53,8 +53,10 @@ type ServerConfig struct {
 	GuestStatus string `json:"guest_status"`
 	Cdrom       string `json:"cdrom"`
 
+	// owner project id
 	Project string `json:"project_id"`
-	Domain  string `json:"domain_id"`
+	// owner domain id
+	Domain string `json:"domain_id"`
 
 	// Deprecated
 	Metadata       map[string]string `json:"__meta__"`
@@ -78,6 +80,7 @@ type ScheduleInput struct {
 	CpuDesc      string `json:"cpu_desc"`
 	CpuMicrocode string `json:"cpu_microcode"`
 	CpuMode      string `json:"cpu_mode"`
+	OsArch       string `json:"os_arch"`
 
 	PendingUsages []jsonutils.JSONObject
 }
