@@ -56,7 +56,7 @@ type SCloudaccountCredential struct {
 	// 秘钥key (Aliyun, Aws, huawei, ucloud, ctyun, zstack, s3)
 	AccessKeySecret string `json:"access_key_secret"`
 
-	// 环境 (Azure, Aws, huawei, ctyun)
+	// 环境 (Azure, Aws, huawei, ctyun, aliyun)
 	Environment string `json:"environment"`
 
 	// 目录ID (Azure)
@@ -201,6 +201,14 @@ type ICloudProviderFactory interface {
 	GetClouduserMinPolicyCount() int
 	IsClouduserNeedInitPolicy() bool
 	IsSupportCreateCloudgroup() bool
+
+	IsSystemCloudpolicyUnified() bool // 国内国外权限是否一致
+
+	GetSupportedDnsZoneTypes() []TDnsZoneType
+	GetSupportedDnsTypes() map[TDnsZoneType][]TDnsType
+	GetSupportedDnsPolicyTypes() map[TDnsZoneType][]TDnsPolicyType
+	GetSupportedDnsPolicyValues() map[TDnsPolicyType][]TDnsPolicyValue
+	GetTTLRange(zoneType TDnsZoneType, productType TDnsProductType) TTlRange
 }
 
 type ICloudProvider interface {
@@ -250,10 +258,18 @@ type ICloudProvider interface {
 
 	GetSamlEntityId() string
 	GetSamlSpInitiatedLoginUrl(idpName string) string
+
+	GetICloudDnsZones() ([]ICloudDnsZone, error)
+	GetICloudDnsZoneById(id string) (ICloudDnsZone, error)
+	CreateICloudDnsZone(opts *SDnsZoneCreateOptions) (ICloudDnsZone, error)
 }
 
 func IsSupportProject(prod ICloudProvider) bool {
 	return utils.IsInStringArray(CLOUD_CAPABILITY_PROJECT, prod.GetCapabilities())
+}
+
+func IsSupportDnsZone(prod ICloudProvider) bool {
+	return utils.IsInStringArray(CLOUD_CAPABILITY_DNSZONE, prod.GetCapabilities())
 }
 
 func IsSupportCompute(prod ICloudProvider) bool {
@@ -402,6 +418,18 @@ func (self *SBaseProvider) GetEnrollmentAccounts() ([]SEnrollmentAccount, error)
 
 func (self *SBaseProvider) CreateSubscription(SubscriptionCreateInput) error {
 	return ErrNotImplemented
+}
+
+func (self *SBaseProvider) GetICloudDnsZones() ([]ICloudDnsZone, error) {
+	return nil, ErrNotImplemented
+}
+
+func (self *SBaseProvider) GetICloudDnsZoneById(id string) (ICloudDnsZone, error) {
+	return nil, ErrNotImplemented
+}
+
+func (self *SBaseProvider) CreateICloudDnsZone(opts *SDnsZoneCreateOptions) (ICloudDnsZone, error) {
+	return nil, ErrNotImplemented
 }
 
 func (self *SBaseProvider) GetCloudRegionExternalIdPrefix() string {
@@ -564,6 +592,50 @@ func (factory *baseProviderFactory) GetClouduserMinPolicyCount() int {
 
 func (factory *baseProviderFactory) IsSupportCreateCloudgroup() bool {
 	return false
+}
+
+func (factory *baseProviderFactory) IsSystemCloudpolicyUnified() bool {
+	return true
+}
+
+func (factory *baseProviderFactory) GetSupportedDnsZoneTypes() []TDnsZoneType {
+	return []TDnsZoneType{}
+}
+
+func (factory *baseProviderFactory) GetSupportedDnsTypes() map[TDnsZoneType][]TDnsType {
+	return map[TDnsZoneType][]TDnsType{}
+}
+
+func (factory *baseProviderFactory) GetSupportedDnsPolicyTypes() map[TDnsZoneType][]TDnsPolicyType {
+	return map[TDnsZoneType][]TDnsPolicyType{}
+}
+
+func (factory *baseProviderFactory) GetSupportedDnsPolicyValues() map[TDnsPolicyType][]TDnsPolicyValue {
+	return map[TDnsPolicyType][]TDnsPolicyValue{}
+}
+
+func (factory *baseProviderFactory) GetTTLRange(zoneType TDnsZoneType, productType TDnsProductType) TTlRange {
+	return TTlRange{}
+}
+
+type SDnsCapability struct {
+	ZoneTypes    []TDnsZoneType
+	DnsTypes     map[TDnsZoneType][]TDnsType
+	PolicyTypes  map[TDnsZoneType][]TDnsPolicyType
+	PolicyValues map[TDnsPolicyType][]TDnsPolicyValue
+}
+
+func GetDnsCapabilities() map[string]SDnsCapability {
+	capabilities := map[string]SDnsCapability{}
+	for provider, driver := range providerTable {
+		capabilities[provider] = SDnsCapability{
+			ZoneTypes:    driver.GetSupportedDnsZoneTypes(),
+			DnsTypes:     driver.GetSupportedDnsTypes(),
+			PolicyTypes:  driver.GetSupportedDnsPolicyTypes(),
+			PolicyValues: driver.GetSupportedDnsPolicyValues(),
+		}
+	}
+	return capabilities
 }
 
 type SPremiseBaseProviderFactory struct {

@@ -114,6 +114,9 @@ type NetworkListInput struct {
 	IsAutoAlloc *bool `json:"is_auto_alloc"`
 	// 是否为基础网络（underlay）
 	IsClassic *bool `json:"is_classic"`
+
+	// filter by Host schedtag
+	HostSchedtagId string `json:"host_schedtag_id"`
 }
 
 type NetworkResourceInfoBase struct {
@@ -184,6 +187,12 @@ type NetworkCreateInput struct {
 
 	// 是否加入自动分配地址池
 	IsAutoAlloc *bool `json:"is_auto_alloc"`
+
+	// VlanId
+	VlanId *int `json:"vlan_id"`
+
+	// deprecated
+	Vlan *int `json:"vlan" yunion-deprecated-by:"vlan_id"`
 }
 
 type NetworkDetails struct {
@@ -309,4 +318,14 @@ type NetworkUpdateInput struct {
 
 	// 是否加入自动分配地址池
 	IsAutoAlloc *bool `json:"is_auto_alloc"`
+}
+
+type GetNetworkAddressesInput struct {
+	// 获取资源的范围，例如 project|domain|system
+	Scope string `json:"scope"`
+}
+
+type GetNetworkAddressesOutput struct {
+	// IP子网地址记录
+	Addresses []SNetworkAddress `json:"addresses"`
 }

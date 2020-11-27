@@ -156,7 +156,7 @@ type ICloudZone interface {
 }
 
 type ICloudImage interface {
-	ICloudResource
+	IVirtualResource
 
 	Delete(ctx context.Context) error
 	GetIStoragecache() ICloudStoragecache
@@ -173,6 +173,7 @@ type ICloudImage interface {
 	GetImageFormat() string
 	GetCreatedAt() time.Time
 	UEFI() bool
+	GetPublicScope() rbacutils.TRbacScope
 }
 
 type ICloudStoragecache interface {
@@ -201,6 +202,7 @@ type ICloudStorage interface {
 	GetStorageType() string
 	GetMediumType() string
 	GetCapacityMB() int64 // MB
+	GetCapacityUsedMB() int64
 	GetStorageConf() jsonutils.JSONObject
 	GetEnabled() bool
 
@@ -247,6 +249,8 @@ type ICloudHost interface {
 
 	CreateVM(desc *SManagedVMCreateConfig) (ICloudVM, error)
 	GetIHostNics() ([]ICloudHostNetInterface, error)
+
+	GetSchedtags() ([]string, error)
 }
 
 type ICloudVM interface {
@@ -313,6 +317,8 @@ type ICloudVM interface {
 	LiveMigrateVM(hostid string) error
 
 	GetError() error
+
+	SetMetadata(tags map[string]string, replace bool) error
 }
 
 type ICloudNic interface {
@@ -487,6 +493,7 @@ type ICloudHostNetInterface interface {
 	GetIpAddr() string
 	GetMtu() int32
 	GetNicType() string
+	GetBridge() string
 }
 
 type ICloudLoadbalancer interface {
@@ -809,6 +816,9 @@ type ICloudDBInstanceBackup interface {
 	GetBackupSizeMb() int
 	GetDBNames() string
 	GetBackupMode() string
+	GetBackupMethod() TBackupMethod
+
+	CreateICloudDBInstance(opts *SManagedDBInstanceCreateConfig) (ICloudDBInstance, error)
 
 	Delete() error
 }
@@ -1013,4 +1023,38 @@ type ICloudgroup interface {
 	DetachCustomPolicy(policyName string) error
 
 	Delete() error
+}
+
+type ICloudDnsZone interface {
+	ICloudResource
+
+	GetZoneType() TDnsZoneType
+	GetOptions() *jsonutils.JSONDict
+
+	GetICloudVpcIds() ([]string, error)
+	AddVpc(*SPrivateZoneVpc) error
+	RemoveVpc(*SPrivateZoneVpc) error
+
+	GetIDnsRecordSets() ([]ICloudDnsRecordSet, error)
+	SyncDnsRecordSets(common, add, del, update []DnsRecordSet) error
+
+	Delete() error
+
+	GetDnsProductType() TDnsProductType
+}
+
+type ICloudDnsRecordSet interface {
+	GetGlobalId() string
+
+	GetDnsName() string
+	GetStatus() string
+	GetEnabled() bool
+	GetDnsType() TDnsType
+	GetDnsValue() string
+	GetTTL() int64
+	GetMxPriority() int64
+
+	GetPolicyType() TDnsPolicyType
+	GetPolicyValue() TDnsPolicyValue
+	GetPolicyOptions() *jsonutils.JSONDict
 }

@@ -17,6 +17,7 @@ package options
 import (
 	common_options "yunion.io/x/onecloud/pkg/cloudcommon/options"
 	"yunion.io/x/onecloud/pkg/cloudcommon/pending_delete"
+	"yunion.io/x/onecloud/pkg/multicloud/esxi"
 )
 
 type ComputeOptions struct {
@@ -78,6 +79,7 @@ type ComputeOptions struct {
 
 	DefaultGlobalvpcQuota    int `default:"10" help:"Common global Vpc quota per domain, default 10"`
 	DefaultCloudaccountQuota int `default:"20" help:"Common cloud account quota per domain, default 20"`
+	DefaultDnsZoneQuota      int `default:"20" help:"Common dns zone quota per domain, default 10"`
 
 	DefaultHostQuota int `default:"500" help:"Common host quota per domain, default 500"`
 	DefaultVpcQuota  int `default:"500" help:"Common vpc quota per domain, default 500"`
@@ -140,10 +142,25 @@ type ComputeOptions struct {
 
 	ReconcileGuestBackupIntervalSeconds int `help:"interval reconcile guest bakcups" default:"30"`
 
+	EnableAutoRenameProject bool `help:"when it set true, auto create project will rename when cloud project name changed" default:"false"`
+
+	SyncStorageCapacityUsedIntervalMinutes int  `help:"interval sync storage capacity used" default:"20"`
+	LockStorageFromCachedimage             bool `help:"must use storage in where selected cachedimage when creating vm"`
+
+	SyncExtDiskSnapshotIntervalMinutes int `help:"sync snapshot for external disk" default:"20"`
+
 	SCapabilityOptions
 	SASControllerOptions
 	common_options.CommonOptions
 	common_options.DBOptions
+
+	EnableAutoMergeSecurityGroup bool `help:"Enable auto merge secgroup when sync security group from cloud, default False" default:"false"`
+
+	DefaultNetworkGatewayAddressEsxi uint32 `help:"Default address for network gateway" default:"1"`
+
+	NoCheckOsTypeForCachedImage bool `help:"Don't check os type for cached image"`
+
+	esxi.EsxiOptions
 }
 
 type SCapabilityOptions struct {
@@ -173,5 +190,12 @@ func OnOptionsChange(oldO, newO interface{}) bool {
 	if common_options.OnCommonOptionsChange(&oldOpts.CommonOptions, &newOpts.CommonOptions) {
 		changed = true
 	}
+
+	if oldOpts.PendingDeleteCheckSeconds != newOpts.PendingDeleteCheckSeconds {
+		if !oldOpts.IsSlaveNode {
+			changed = true
+		}
+	}
+
 	return changed
 }

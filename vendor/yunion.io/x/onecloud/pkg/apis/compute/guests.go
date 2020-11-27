@@ -58,6 +58,9 @@ type ServerListInput struct {
 	// enum: asc,desc
 	// OrderByDisk string `json:"order_by_disk"`
 
+	// 根据ip查找机器
+	IpAddr string `json:"ip_addr"`
+
 	// 列出可以挂载指定EIP的主机
 	UsableServerForEip string `json:"usable_server_for_eip"`
 
@@ -95,6 +98,9 @@ type ServerListInput struct {
 	SrcMacCheck *bool `json:"src_mac_check"`
 
 	InstanceType []string `json:"instance_type"`
+
+	// 是否调度到宿主机上
+	WithHost *bool `json:"with_host"`
 }
 
 func (input *ServerListInput) AfterUnmarshal() {
@@ -405,4 +411,22 @@ type GuestAddSecgroupInput struct {
 	// | ZStack	     | 1					|
 	// | 其他	     | 5					|
 	SecgroupIds []string `json:"secgroup_ids"`
+}
+
+type ServerRemoteUpdateInput struct {
+	// 是否覆盖替换所有标签
+	ReplaceTags *bool `json:"replace_tags" help:"replace all remote tags"`
+}
+
+type ServerAssociateEipInput struct {
+	// swagger:ignore
+	// Deprecated
+	Eip string `json:"eip" yunion-deprecated-by:"eip_id"`
+	// 弹性公网IP的ID
+	EipId string `json:"eip_id"`
+}
+
+type ServerDissociateEipInput struct {
+	// 是否自动释放
+	AudoDelete *bool `json:"auto_delete"`
 }

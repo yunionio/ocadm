@@ -55,7 +55,8 @@ const (
 	STORAGE_LOCAL_SSD     = "local_ssd"
 	STORAGE_LOCAL_PRO     = "local_pro"
 	STORAGE_CLOUD_BASIC   = "cloud_basic"
-	STORAGE_CLOUD_PREMIUM = "cloud_premium"
+	STORAGE_CLOUD_PREMIUM = "cloud_premium" //高性能云硬盘
+	STORAGE_CLOUD_HSSD    = "cloud_hssd"    //增强型SSD云硬盘
 
 	// huawei storage type
 	STORAGE_HUAWEI_SSD  = "SSD"  // 超高IO云硬盘
@@ -81,6 +82,7 @@ const (
 	STORAGE_GOOGLE_LOCAL_SSD   = "local-ssd"   //本地SSD暂存盘 (最多8个)
 	STORAGE_GOOGLE_PD_STANDARD = "pd-standard" //标准永久性磁盘
 	STORAGE_GOOGLE_PD_SSD      = "pd-ssd"      //SSD永久性磁盘
+	STORAGE_GOOGLE_PD_BALANCED = "pd-balanced" //平衡永久性磁盘
 
 	// ctyun storage type
 	STORAGE_CTYUN_SSD  = "SSD"  // 超高IO云硬盘
@@ -106,8 +108,10 @@ const (
 )
 
 var (
-	DISK_TYPES            = []string{DISK_TYPE_ROTATE, DISK_TYPE_SSD, DISK_TYPE_HYBRID}
-	STORAGE_LOCAL_TYPES   = []string{STORAGE_LOCAL, STORAGE_BAREMETAL, STORAGE_UCLOUD_LOCAL_NORMAL, STORAGE_UCLOUD_LOCAL_SSD, STORAGE_UCLOUD_EXCLUSIVE_LOCAL_DISK}
+	DISK_TYPES          = []string{DISK_TYPE_ROTATE, DISK_TYPE_SSD, DISK_TYPE_HYBRID}
+	STORAGE_LOCAL_TYPES = []string{STORAGE_LOCAL, STORAGE_BAREMETAL, STORAGE_UCLOUD_LOCAL_NORMAL, STORAGE_UCLOUD_LOCAL_SSD, STORAGE_UCLOUD_EXCLUSIVE_LOCAL_DISK,
+		STORAGE_EPHEMERAL_SSD, STORAGE_LOCAL_BASIC, STORAGE_LOCAL_SSD, STORAGE_LOCAL_PRO, STORAGE_OPENSTACK_NOVA,
+		STORAGE_ZSTACK_LOCAL_STORAGE, STORAGE_GOOGLE_LOCAL_SSD}
 	STORAGE_SUPPORT_TYPES = STORAGE_LOCAL_TYPES
 	STORAGE_ALL_TYPES     = []string{
 		STORAGE_LOCAL, STORAGE_BAREMETAL, STORAGE_SHEEPDOG,
@@ -181,4 +185,10 @@ type StorageListInput struct {
 
 	UsableResourceListInput
 	StorageShareFilterListInput
+
+	// filter by host schedtag
+	HostSchedtagId string `json:"host_schedtag_id"`
+
+	// filter by cachedimage
+	ImageId string `json:"image_id"`
 }
