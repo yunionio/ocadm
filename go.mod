@@ -19,7 +19,7 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-logr/logr v0.1.0 // indirect
 	github.com/go-logr/zapr v0.1.1 // indirect
-	github.com/go-sql-driver/mysql v1.4.1
+	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gregjones/httpcache v0.0.0-20181110185634-c63ab54fda8f // indirect
 	github.com/joho/godotenv v1.3.0
 	github.com/kr/pretty v0.2.0 // indirect
@@ -46,11 +46,11 @@ require (
 	sigs.k8s.io/cluster-api v0.1.4
 	sigs.k8s.io/controller-runtime v0.1.11 // indirect
 	sigs.k8s.io/testing_frameworks v0.1.1 // indirect
-	yunion.io/x/jsonutils v0.0.0-20200814075449-927b118adbd8
+	yunion.io/x/jsonutils v0.0.0-20201110084044-3e4e1cb49769
 	yunion.io/x/log v0.0.0-20200313080802-57a4ce5966b3
-	yunion.io/x/onecloud v0.0.0-20200820050958-dcf8183c309e
-	yunion.io/x/onecloud-operator v0.0.2-0.20200820041001-3a65ae30103f
-	yunion.io/x/pkg v0.0.0-20200814072949-4f1b541857d6
+	yunion.io/x/onecloud v0.0.0-20201126132931-91dd66b5a83d
+	yunion.io/x/onecloud-operator v0.0.0-20201127014352-d872fce5c17d
+	yunion.io/x/pkg v0.0.0-20201123083159-ca3aea986ff2
 )
 
 replace (

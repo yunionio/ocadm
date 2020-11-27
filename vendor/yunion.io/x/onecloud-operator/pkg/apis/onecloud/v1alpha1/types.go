@@ -628,11 +628,14 @@ type HostAgentSpec struct {
 	DaemonSetSpec
 	SdnAgent      ContainerSpec
 	OvnController ContainerSpec
+
+	OvnEncapIpDetectionMethod string `json:"OvnEncapIpDetectionMethod"`
 }
 
 type TelegrafSpec struct {
 	DaemonSetSpec
 	InitContainerImage string
+	TelegrafRaidImage  string
 }
 
 // ContainerSpec is the container spec of a pod

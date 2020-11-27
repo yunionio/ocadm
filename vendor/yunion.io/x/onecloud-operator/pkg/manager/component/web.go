@@ -81,6 +81,13 @@ server {
     gzip_vary on;
     chunked_transfer_encoding off;
 
+    client_body_buffer_size 16k;
+    client_header_buffer_size 16k;
+    client_max_body_size 8m;
+    large_client_header_buffers 2 16k;
+    client_body_timeout 20s;
+    client_header_timeout 20s;
+
 {{.EditionConfig}}
 
     location /static/ {
@@ -117,6 +124,7 @@ server {
     }
 
     location /api {
+        client_body_timeout 60s;
         proxy_pass {{.APIGatewayURL}};
         proxy_redirect   off;
         proxy_set_header Host $host;
@@ -127,11 +135,22 @@ server {
         proxy_buffers   32 16k;
         proxy_busy_buffers_size 16k;
         proxy_temp_file_write_size 16k;
-
-        client_max_body_size 10g;
     }
 
     location /api/v1/imageutils/upload {
+        client_body_timeout 60s;
+        proxy_pass {{.APIGatewayURL}};
+        client_max_body_size 0;
+        proxy_http_version 1.1;
+        proxy_request_buffering off;
+        proxy_buffering off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+    }
+
+    location /api/v1/s3uploads {
+        client_body_timeout 60s;
         proxy_pass {{.APIGatewayURL}};
         client_max_body_size 0;
         proxy_http_version 1.1;

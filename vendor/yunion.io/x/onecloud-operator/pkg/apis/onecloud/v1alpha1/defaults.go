@@ -47,12 +47,17 @@ const (
 	DefaultOvnImageName = "openvswitch"
 	DefaultOvnImageTag  = DefaultOvnVersion + "-0"
 
+	DefaultHostImageName = "host-image"
+	DefaultHostImageTag  = "v1.0.1"
+
 	DefaultInfluxdbImageVersion = "1.7.7"
 
 	DefaultTelegrafImageName     = "telegraf"
-	DefaultTelegrafImageTag      = "release-1.5"
+	DefaultTelegrafImageTag      = "release-1.5.2"
 	DefaultTelegrafInitImageName = "telegraf-init"
-	DefaultTelegrafInitImageTag  = "release-1.5"
+	DefaultTelegrafInitImageTag  = "release-1.5.2"
+	DefaultTelegrafRaidImageName = "telegraf-raid-plugin"
+	DefaultTelegrafRaidImageTag  = "release-1.5.2"
 )
 
 func addDefaultingFuncs(scheme *runtime.Scheme) error {
@@ -157,12 +162,23 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
 		DefaultOvnImageTag, obj.OvnNorth.Tag,
 	)
 	obj.OvnNorth.ImagePullPolicy = corev1.PullIfNotPresent
+	// host-image
+	obj.HostImage.Image = getImage(
+		obj.ImageRepository, obj.HostImage.Repository,
+		DefaultHostImageName, obj.HostImage.ImageName,
+		DefaultHostImageTag, obj.HostImage.Tag,
+	)
 
 	// telegraf spec
 	obj.Telegraf.InitContainerImage = getImage(
 		obj.ImageRepository, obj.Telegraf.Repository,
 		DefaultTelegrafInitImageName, "",
 		DefaultTelegrafInitImageTag, "",
+	)
+	obj.Telegraf.TelegrafRaidImage = getImage(
+		obj.ImageRepository, obj.Telegraf.Repository,
+		DefaultTelegrafRaidImageName, "",
+		DefaultTelegrafRaidImageTag, "",
 	)
 	SetDefaults_DaemonSetSpec(
 		&obj.Telegraf.DaemonSetSpec,
@@ -287,7 +303,7 @@ func SetDefaults_DeploymentSpec(obj *DeploymentSpec, image string) {
 	}
 	obj.Image = image
 	if string(obj.ImagePullPolicy) == "" {
-		obj.ImagePullPolicy = corev1.PullAlways
+		obj.ImagePullPolicy = corev1.PullIfNotPresent
 	}
 	// add tolerations
 	if len(obj.Tolerations) == 0 {
@@ -307,7 +323,7 @@ func SetDefaults_DeploymentSpec(obj *DeploymentSpec, image string) {
 func SetDefaults_DaemonSetSpec(obj *DaemonSetSpec, image string) {
 	obj.Image = image
 	if string(obj.ImagePullPolicy) == "" {
-		obj.ImagePullPolicy = corev1.PullAlways
+		obj.ImagePullPolicy = corev1.PullIfNotPresent
 	}
 	if len(obj.Tolerations) == 0 {
 		obj.Tolerations = append(obj.Tolerations, []corev1.Toleration{
@@ -326,7 +342,7 @@ func SetDefaults_DaemonSetSpec(obj *DaemonSetSpec, image string) {
 func SetDefaults_CronJobSpec(obj *CronJobSpec, image string) {
 	obj.Image = image
 	if string(obj.ImagePullPolicy) == "" {
-		obj.ImagePullPolicy = corev1.PullAlways
+		obj.ImagePullPolicy = corev1.PullIfNotPresent
 	}
 	if len(obj.Tolerations) == 0 {
 		obj.Tolerations = append(obj.Tolerations, []corev1.Toleration{
