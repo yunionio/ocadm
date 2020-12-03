@@ -595,10 +595,14 @@ func updateCluster(data *clusterData, opt *updateOptions) error {
 	if err != nil {
 		return errors.Wrap(err, "get onecloud operator")
 	}
-	reg, imgName, version, err := getOperatorVersion(operator)
+	ref, err := getOperatorImage(operator)
 	if err != nil {
-		return errors.Wrap(err, "get operator version")
+		return errors.Wrap(err, "get operator image reference")
 	}
+	reg := ref.Repository
+	imgName := ref.Image
+	version := ref.Tag
+	digest := ref.Digest
 	if opt.operatorVersion != "" {
 		if opt.operatorVersion != version {
 			version = opt.operatorVersion
@@ -609,7 +613,11 @@ func updateCluster(data *clusterData, opt *updateOptions) error {
 			reg = opt.imageRepository
 		}
 	}
-	operator.Spec.Template.Spec.Containers[0].Image = fmt.Sprintf("%s/%s:%s", reg, imgName, version)
+	imgStr := fmt.Sprintf("%s/%s:%s", reg, imgName, version)
+	if version == "" && digest != "" {
+		imgStr = fmt.Sprintf("%s/%s@%s", reg, imgName, digest)
+	}
+	operator.Spec.Template.Spec.Containers[0].Image = imgStr
 	if _, err := data.k8sClient.AppsV1().Deployments(constants.OnecloudNamespace).Update(operator); err != nil {
 		return errors.Wrap(err, "update operator")
 	}
@@ -686,23 +694,14 @@ func getRepoImageName(img string) (string, string, string, error) {
 	if err != nil {
 		return "", "", "", err
 	}
-	return ret.Repository, ret.Image, ret.Tag, nil
+	tag := ret.Tag
+	if tag == "" {
+		tag = ret.Digest
+	}
+	return ret.Repository, ret.Image, tag, nil
 }
 
-func getOperatorVersion(operator *appv1.Deployment) (string, string, string, error) {
+func getOperatorImage(operator *appv1.Deployment) (*image.ImageReference, error) {
 	img := operator.Spec.Template.Spec.Containers[0].Image
-	repo, imageName, tag, err := getRepoImageName(img)
-	if err != nil {
-		return "", "", "", err
-	}
-	if repo == "" {
-		return "", "", "", errors.Errorf("Failed to get %q repo", img)
-	}
-	if imageName == "" {
-		return "", "", "", errors.Errorf("Failed to get %q image name", img)
-	}
-	if tag == "" {
-		return "", "", "", errors.Errorf("Failed to get %q tag", img)
-	}
-	return repo, imageName, tag, nil
+	return image.ParseImageReference(img)
 }

@@ -46,7 +46,7 @@ func Test_getRepoImageName(t *testing.T) {
 			args{"registry.cn-beijing.aliyuncs.com/yunionio/climc@sha256:32dcddaa6271b8c752bd6574c789771d38315076ce300c4a1d4618496e359f2d"},
 			"registry.cn-beijing.aliyuncs.com/yunionio",
 			"climc",
-			"",
+			"sha256:32dcddaa6271b8c752bd6574c789771d38315076ce300c4a1d4618496e359f2d",
 		},
 	}
 	for _, tt := range tests {
