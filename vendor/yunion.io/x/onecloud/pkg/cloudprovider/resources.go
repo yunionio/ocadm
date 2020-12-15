@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"yunion.io/x/jsonutils"
+	"yunion.io/x/pkg/errors"
 	"yunion.io/x/pkg/tristate"
 
 	"yunion.io/x/onecloud/pkg/mcclient"
@@ -76,6 +77,7 @@ type ICloudRegion interface {
 	CreateISecurityGroup(conf *SecurityGroupCreateInput) (ICloudSecurityGroup, error)
 
 	CreateIVpc(name string, desc string, cidr string) (ICloudVpc, error)
+	CreateInternetGateway() (ICloudInternetGateway, error)
 	CreateEIP(eip *SEip) (ICloudEIP, error)
 
 	GetISnapshots() ([]ICloudSnapshot, error)
@@ -329,12 +331,46 @@ type ICloudVM interface {
 }
 
 type ICloudNic interface {
+	GetId() string
 	GetIP() string
 	GetMAC() string
 	InClassicNetwork() bool
 	GetDriver() string
 	GetINetwork() ICloudNetwork
+
+	// GetSubAddress returns non-primary/secondary/alias ipv4 addresses of
+	// the network interface
+	//
+	// Implement it when any AssignXx ops methods are implemented
+	GetSubAddress() ([]string, error)
+	AssignNAddress(count int) ([]string, error)
+	AssignAddress(ipAddrs []string) error
+	// UnassignAddress should not return error if the network interface is
+	// now not present, or the addresses is not assigned to the network
+	// interface in the first place
+	UnassignAddress(ipAddrs []string) error
 }
+
+const ErrAddressCountExceed = errors.Error("ErrAddressCountExceed")
+
+type DummyICloudNic struct{}
+
+var _ ICloudNic = DummyICloudNic{}
+
+func (d DummyICloudNic) GetId() string              { panic(errors.ErrNotImplemented) }
+func (d DummyICloudNic) GetIP() string              { panic(errors.ErrNotImplemented) }
+func (d DummyICloudNic) GetMAC() string             { panic(errors.ErrNotImplemented) }
+func (d DummyICloudNic) InClassicNetwork() bool     { panic(errors.ErrNotImplemented) }
+func (d DummyICloudNic) GetDriver() string          { panic(errors.ErrNotImplemented) }
+func (d DummyICloudNic) GetINetwork() ICloudNetwork { panic(errors.ErrNotImplemented) }
+func (d DummyICloudNic) GetSubAddress() ([]string, error) {
+	return nil, nil
+}
+func (d DummyICloudNic) AssignNAddress(count int) ([]string, error) {
+	return nil, errors.ErrNotImplemented
+}
+func (d DummyICloudNic) AssignAddress(ipAddrs []string) error   { return errors.ErrNotImplemented }
+func (d DummyICloudNic) UnassignAddress(ipAddrs []string) error { return errors.ErrNotImplemented }
 
 type ICloudEIP interface {
 	IBillingResource
@@ -456,6 +492,10 @@ type ICloudVpc interface {
 	// GetGlobalId() // 若vpc属于globalvpc,此函数返回格式必须是 'region.GetGlobalId()/vpc.GetGlobalId()'
 	ICloudResource
 
+	IsSupportSetExternalAccess() bool // 是否支持Attach互联网网关.
+	GetExternalAccessMode() string
+	AttachInternetGateway(igwId string) error
+
 	GetRegion() ICloudRegion
 	GetIsDefault() bool
 	GetCidrBlock() string
@@ -479,6 +519,10 @@ type ICloudVpc interface {
 	GetAuthorityOwnerId() string
 
 	ProposeJoinICloudInterVpcNetwork(opts *SVpcJointInterVpcNetworkOption) error
+}
+
+type ICloudInternetGateway interface {
+	ICloudResource
 }
 
 type ICloudWire interface {

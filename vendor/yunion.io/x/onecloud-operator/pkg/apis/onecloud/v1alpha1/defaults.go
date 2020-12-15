@@ -53,7 +53,7 @@ const (
 	DefaultInfluxdbImageVersion = "1.7.7"
 
 	DefaultTelegrafImageName     = "telegraf"
-	DefaultTelegrafImageTag      = "release-1.5.2"
+	DefaultTelegrafImageTag      = "release-1.5.3"
 	DefaultTelegrafInitImageName = "telegraf-init"
 	DefaultTelegrafInitImageTag  = "release-1.5.2"
 	DefaultTelegrafRaidImageName = "telegraf-raid-plugin"
@@ -126,6 +126,7 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
 		ServiceOperatorComponentType: &obj.ServiceOperator,
 		ItsmComponentType:            &obj.Itsm,
 		CloudIdComponentType:         &obj.CloudId,
+		SuggestionComponentType:      &obj.Suggestion,
 	} {
 		SetDefaults_DeploymentSpec(spec, getImage(obj.ImageRepository, spec.Repository, cType, spec.ImageName, obj.Version, spec.Tag))
 	}
@@ -197,9 +198,9 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
 		GlanceComponentType:         {&obj.Glance, DefaultGlanceStorageSize, obj.Version},
 		InfluxdbComponentType:       {&obj.Influxdb, DefaultInfluxdbStorageSize, DefaultInfluxdbImageVersion},
 		NotifyComponentType:         {&obj.Notify, DefaultNotifyStorageSize, obj.Version},
-		BaremetalAgentComponentType: {&obj.BaremetalAgent, DefaultBaremetalStorageSize, obj.Version},
+		BaremetalAgentComponentType: {&obj.BaremetalAgent.StatefulDeploymentSpec, DefaultBaremetalStorageSize, obj.Version},
 		MeterComponentType:          {&obj.Meter, DefaultMeterStorageSize, obj.Version},
-		EsxiAgentComponentType:      {&obj.EsxiAgent, DefaultEsxiAgentStorageSize, obj.Version},
+		EsxiAgentComponentType:      {&obj.EsxiAgent.StatefulDeploymentSpec, DefaultEsxiAgentStorageSize, obj.Version},
 	} {
 		SetDefaults_StatefulDeploymentSpec(cType, spec.obj, spec.size, obj.ImageRepository, spec.version)
 	}
