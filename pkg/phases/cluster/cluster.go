@@ -297,17 +297,21 @@ func newCluster2(env map[string]string, cfg *apiv1.InitConfiguration, opt *creat
 					},
 				},
 			},
-			BaremetalAgent: v1alpha1.StatefulDeploymentSpec{
-				DeploymentSpec: v1alpha1.DeploymentSpec{
-					NodeSelector: map[string]string{
-						"onecloud.yunion.io/baremetal": "enable",
+			BaremetalAgent: v1alpha1.ZoneStatefulDeploymentSpec{
+				StatefulDeploymentSpec: v1alpha1.StatefulDeploymentSpec{
+					DeploymentSpec: v1alpha1.DeploymentSpec{
+						NodeSelector: map[string]string{
+							"onecloud.yunion.io/baremetal": "enable",
+						},
 					},
 				},
 			},
-			EsxiAgent: v1alpha1.StatefulDeploymentSpec{
-				DeploymentSpec: v1alpha1.DeploymentSpec{
-					NodeSelector: map[string]string{
-						"onecloud.yunion.io/esxi": "enable",
+			EsxiAgent: v1alpha1.ZoneStatefulDeploymentSpec{
+				StatefulDeploymentSpec: v1alpha1.StatefulDeploymentSpec{
+					DeploymentSpec: v1alpha1.DeploymentSpec{
+						NodeSelector: map[string]string{
+							"onecloud.yunion.io/esxi": "enable",
+						},
 					},
 				},
 			},

@@ -31,14 +31,13 @@ require (
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.3
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/sys v0.0.0-20200124204421-9fbb57f87de9 // indirect
 	gopkg.in/square/go-jose.v2 v2.3.1 // indirect
-	k8s.io/api v0.17.3
+	k8s.io/api v0.19.3
 	k8s.io/apiextensions-apiserver v0.0.0
-	k8s.io/apimachinery v0.17.3
+	k8s.io/apimachinery v0.19.3
 	k8s.io/cli-runtime v0.0.0
 	k8s.io/client-go v12.0.0+incompatible
-	k8s.io/cluster-bootstrap v0.17.3
+	k8s.io/cluster-bootstrap v0.19.3
 	k8s.io/component-base v0.15.8
 	k8s.io/klog v0.3.3
 	k8s.io/kubernetes v1.16.0
@@ -47,9 +46,9 @@ require (
 	sigs.k8s.io/controller-runtime v0.1.11 // indirect
 	sigs.k8s.io/testing_frameworks v0.1.1 // indirect
 	yunion.io/x/jsonutils v0.0.0-20201110084044-3e4e1cb49769
-	yunion.io/x/log v0.0.0-20200313080802-57a4ce5966b3
-	yunion.io/x/onecloud v0.0.0-20201127082956-4ab73f0b1ca8
-	yunion.io/x/onecloud-operator v0.0.0-20201127014358-23833018ab52
+	yunion.io/x/log v0.0.0-20201210064738-43181789dc74
+	yunion.io/x/onecloud v0.0.0-20201215035459-5f610498e8ca
+	yunion.io/x/onecloud-operator v0.0.0-20201215020536-e86b401cd0af
 	yunion.io/x/pkg v0.0.0-20201123083159-ca3aea986ff2
 )
 
