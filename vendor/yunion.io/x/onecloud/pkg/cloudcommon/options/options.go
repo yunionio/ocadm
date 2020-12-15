@@ -20,9 +20,13 @@ import (
 	"encoding/pem"
 	"fmt"
 	"io/ioutil"
+	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
+
+	"golang.org/x/net/http/httpproxy"
 
 	"yunion.io/x/log"
 	"yunion.io/x/log/hooks"
@@ -34,6 +38,7 @@ import (
 
 	"yunion.io/x/onecloud/pkg/cloudcommon/consts"
 	"yunion.io/x/onecloud/pkg/util/atexit"
+	"yunion.io/x/onecloud/pkg/util/httputils"
 )
 
 const (
@@ -78,6 +83,7 @@ type BaseOptions struct {
 	IsSlaveNode        bool `help:"Slave mode"`
 	CronJobWorkerCount int  `help:"Cron job worker count" default:"4"`
 
+	EnableQuotaCheck  bool   `help:"enable quota check" default:"false"`
 	DefaultQuotaValue string `help:"default quota value" choices:"unlimit|zero|default" default:"default"`
 
 	CalculateQuotaUsageIntervalSeconds int `help:"interval to calculate quota usages, default 30 minutes" default:"900"`
@@ -91,6 +97,9 @@ type BaseOptions struct {
 	ApiServer string `help:"URL to access frontend webconsole"`
 
 	structarg.BaseOptions
+
+	GlobalHTTPProxy  string `help:"Global http proxy"`
+	GlobalHTTPSProxy string `help:"Global https proxy"`
 }
 
 const (
@@ -300,4 +309,15 @@ func ParseOptions(optStruct interface{}, args []string, configFileName string, s
 	}
 
 	consts.SetDomainizedNamespace(optionsRef.DomainizedNamespace)
+}
+
+func (self *BaseOptions) HttpTransportProxyFunc() httputils.TransportProxyFunc {
+	cfg := &httpproxy.Config{
+		HTTPProxy:  self.GlobalHTTPProxy,
+		HTTPSProxy: self.GlobalHTTPSProxy,
+	}
+	proxyFunc := cfg.ProxyFunc()
+	return func(req *http.Request) (*url.URL, error) {
+		return proxyFunc(req.URL)
+	}
 }
