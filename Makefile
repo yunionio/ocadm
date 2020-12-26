@@ -33,7 +33,7 @@ generate:
 clean:
 	rm -rf ./_output
 
-RELEASE_BRANCH:=master
+RELEASE_BRANCH:=release/3.7
 mod:
 	go get yunion.io/x/onecloud@$(RELEASE_BRANCH)
 	go get yunion.io/x/onecloud-operator@$(RELEASE_BRANCH)
