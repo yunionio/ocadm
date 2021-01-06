@@ -134,8 +134,9 @@ func (d *longHornConfig) VerifyNode() error {
 
 type migratePvConfig struct {
 	kubectlCli
-	sourcePVC string
-	component string
+	sourcePVC          string
+	component          string
+	migrateToSourcePVC bool
 
 	ImageRepository          string
 	clientSet                *clientset.Clientset
@@ -152,6 +153,10 @@ func (d *migratePvConfig) GetImageRepository() string {
 
 func (d *migratePvConfig) DeleteMigartePodInTheEnd() bool {
 	return d.deleteMigartePodInTheEnd
+}
+
+func (d *migratePvConfig) MigrateToSourcePvc() bool {
+	return d.migrateToSourcePVC
 }
 
 // ClientSet returns the ClientSet for accessing the cluster with the identity defined in admin.conf.
@@ -187,7 +192,7 @@ func cmdMigratePvToLonghorn() *cobra.Command {
 		Args: cobra.NoArgs,
 	}
 	AddMigrateToLonghornFlags(cmd.Flags(), opt)
-	runner.AppendPhase(longhorn.MigrateToLonghornPhase())
+	runner.AppendPhase(longhorn.MigrateLonghornDataPhase())
 	runner.SetDataInitializer(func(cmd *cobra.Command, args []string) (workflow.RunData, error) {
 		if len(opt.sourcePVC) == 0 {
 			return nil, errors.New("missing source pvc")
@@ -209,4 +214,6 @@ func AddMigrateToLonghornFlags(flagSet *flag.FlagSet, o *migratePvConfig) {
 	)
 	flagSet.BoolVar(&o.deleteMigartePodInTheEnd, "delete-migrate-pod",
 		true, "Delete migrate pod in the end")
+	flagSet.BoolVar(&o.migrateToSourcePVC, "migrate-to-source-pvc", false,
+		"migrate to source pvc from longhorn pvc")
 }
