@@ -21,18 +21,18 @@ import (
 	"yunion.io/x/ocadm/pkg/util/kubectl"
 )
 
-func MigrateToLonghornPhase() workflow.Phase {
+func MigrateLonghornDataPhase() workflow.Phase {
 	return workflow.Phase{
-		Name:  "migrate-to-longhorn",
-		Short: "migrate to lognhorn",
+		Name:  "migrate-longhorn-data",
+		Short: "migrate lognhorn data",
 		Phases: []workflow.Phase{
 			{
 				Name: "longhorn-create-pvc",
-				Run:  runLonghornCreatePvc,
+				Run:  runLonghornEnsurePvc,
 			},
 			{
-				Name: "migrate-data-to-longhorn",
-				Run:  runMigrateDataToLonghorn,
+				Name: "migrate-longhorn-data",
+				Run:  runLonghornMigrateData,
 			},
 		},
 	}
@@ -44,6 +44,7 @@ type MigrateToLonghornConfig interface {
 	ClientSet() (*clientset.Clientset, error)
 	GetImageRepository() string
 	DeleteMigartePodInTheEnd() bool
+	MigrateToSourcePvc() bool
 }
 
 var destPVCName string
@@ -61,18 +62,19 @@ func isPVCMounted(desc string) bool {
 	return false
 }
 
-func runLonghornCreatePvc(c workflow.RunData) error {
+func runLonghornEnsurePvc(c workflow.RunData) error {
 	data, ok := c.(MigrateToLonghornConfig)
 	if !ok {
 		return errors.New("addon phase invoked with an invalid data struct")
 	}
+
+	migrateToSourcePvc := data.MigrateToSourcePvc()
 	cli, err := data.ClientSet()
 	if err != nil {
 		return err
 	}
 	storageClass := constants.LonghornStorageClass
 	srcPVC := data.SourcePVC()
-
 	sp, err := cli.CoreV1().PersistentVolumeClaims(constants.OnecloudNamespace).Get(srcPVC, metav1.GetOptions{})
 	if err != nil {
 		return errors.Wrapf(err, "get source pvc %s failed", srcPVC)
@@ -83,6 +85,13 @@ func runLonghornCreatePvc(c workflow.RunData) error {
 		segs := strings.Split(srcPVC, "-")
 		srcName := segs[:len(segs)-1]
 		destPVCName = fmt.Sprintf("%s-%s", srcName, storageClass)
+	}
+	if migrateToSourcePvc {
+		_, err := cli.CoreV1().PersistentVolumeClaims(constants.OnecloudNamespace).Get(destPVCName, metav1.GetOptions{})
+		if err != nil {
+			return errors.Wrapf(err, "migrate to source pvc get longhorn pvc %s failed", destPVCName)
+		}
+		return nil
 	}
 
 	kubecli, err := data.KubectlClient()
@@ -131,7 +140,7 @@ func getSyncImage(imageRepository string) string {
 	return fmt.Sprintf("%s:latest", path.Join(imageRepository, SYNC_IMAGE))
 }
 
-func runMigrateDataToLonghorn(c workflow.RunData) error {
+func runLonghornMigrateData(c workflow.RunData) error {
 	data, ok := c.(MigrateToLonghornConfig)
 	if !ok {
 		return errors.New("addon phase invoked with an invalid data struct")
@@ -145,6 +154,10 @@ func runMigrateDataToLonghorn(c workflow.RunData) error {
 		return errors.Wrap(err, "get kubectl client")
 	}
 	srcPVC := data.SourcePVC()
+	migrateDestPVC := destPVCName
+	if data.MigrateToSourcePvc() {
+		srcPVC, migrateDestPVC = migrateDestPVC, srcPVC
+	}
 
 	migratePod := &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
@@ -158,7 +171,7 @@ func runMigrateDataToLonghorn(c workflow.RunData) error {
 					VolumeSource: corev1.VolumeSource{
 						PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
 							ClaimName: srcPVC,
-							ReadOnly:  true,
+							ReadOnly:  false,
 						},
 					},
 				},
@@ -166,7 +179,7 @@ func runMigrateDataToLonghorn(c workflow.RunData) error {
 					Name: "dest",
 					VolumeSource: corev1.VolumeSource{
 						PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-							ClaimName: destPVCName,
+							ClaimName: migrateDestPVC,
 							ReadOnly:  false,
 						},
 					},
