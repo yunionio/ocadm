@@ -102,7 +102,7 @@ var SpecsStatus []SpecStatusPair = []SpecStatusPair{
 	{
 		Name: "apigateway",
 		Getter: func(oc *onecloud.OnecloudCluster) (onecloud.DeploymentSpec, onecloud.DeploymentStatus) {
-			return oc.Spec.APIGateway, oc.Status.APIGateway
+			return oc.Spec.APIGateway.DeploymentSpec, oc.Status.APIGateway
 		},
 	},
 	{
