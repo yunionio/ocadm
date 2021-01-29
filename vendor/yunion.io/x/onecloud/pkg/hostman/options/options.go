@@ -117,9 +117,12 @@ type SHostOptions struct {
 	AllowSwitchVMs bool `help:"allow machines run as switch (spoof mac)" default:"true"`
 	AllowRouterVMs bool `help:"allow machines run as router (spoof ip)" default:"true"`
 
-	SdnPidFile        string `help:"pid file for sdnagent" default:"$SDN_PID_FILE|/var/run/yunion-sdnagent.pid"`
+	SdnPidFile        string `help:"pid file for sdnagent" default:"$SDN_PID_FILE|/var/run/onecloud/sdnagent.pid"`
+	SdnSocketPath     string `help:"sdnagent listen socket path" default:"/var/run/onecloud/sdnagent.sock"`
 	SdnEnableGuestMan bool   `help:"enable guest network manager in sdnagent" default:"$SDN_ENABLE_GUEST_MAN|true"`
 	SdnEnableEipMan   bool   `help:"enable eip network manager in sdnagent" default:"$SDN_ENABLE_EIP_MAN|false"`
+
+	SdnAllowConntrackInvalid bool `help:"allow packets marked by conntrack as INVALID to pass" default:"$SDN_ALLOW_CONNTRACK_INVALID|false"`
 
 	OvnSouthDatabase          string `help:"address for accessing ovn south database" default:"$HOST_OVN_SOUTH_DATABASE|unix:/var/run/openvswitch/ovnsb_db.sock"`
 	OvnEncapIpDetectionMethod string `help:"detection method for ovn_encap_ip" default:"$HOST_OVN_ENCAP_IP_DETECTION_METHOD"`

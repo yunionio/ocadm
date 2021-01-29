@@ -54,6 +54,11 @@ type SKeystoneOptions struct {
 	SessionEndpointType string `help:"Client session end point type"`
 
 	AllowJoinProjectsAcrossDomains bool `help:"allow users/groups to join projects across domains" default:"false"`
+
+	DefaultUserLanguage string `help:"default user language, default to zh-CN" default:"zh-CN"`
+
+	DomainAdminRoleToNotify string `help:"domain admin role to notify" default:"domainadmin"`
+	AdminRoleToNotify       string `help:"admin role to notify" default:"admin"`
 }
 
 var (
@@ -70,6 +75,10 @@ func OnOptionsChange(oldOptions, newOptions interface{}) bool {
 	}
 
 	if options.OnDBOptionsChange(&oldOpts.DBOptions, &newOpts.DBOptions) {
+		changed = true
+	}
+
+	if oldOpts.DefaultUserLanguage != newOpts.DefaultUserLanguage {
 		changed = true
 	}
 
