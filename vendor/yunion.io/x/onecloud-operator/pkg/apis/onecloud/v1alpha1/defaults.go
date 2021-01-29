@@ -43,9 +43,9 @@ const (
 	// rancher local-path-provisioner: https://github.com/rancher/local-path-provisioner
 	DefaultStorageClass = "local-path"
 
-	DefaultOvnVersion   = "2.10.4"
+	DefaultOvnVersion   = "2.10.5"
 	DefaultOvnImageName = "openvswitch"
-	DefaultOvnImageTag  = DefaultOvnVersion + "-0"
+	DefaultOvnImageTag  = DefaultOvnVersion + "-1"
 
 	DefaultHostImageName = "host-image"
 	DefaultHostImageTag  = "v1.0.1"
@@ -133,7 +133,7 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
 
 	// CE or EE parts
 	for cType, spec := range map[ComponentType]*DeploymentSpec{
-		APIGatewayComponentType: &obj.APIGateway,
+		APIGatewayComponentType: &obj.APIGateway.DeploymentSpec,
 		WebComponentType:        &obj.Web,
 	} {
 		SetDefaults_DeploymentSpec(spec,
@@ -223,6 +223,9 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
 	}
 	if obj.Cloudmon.CloudmonReportCloudAccountDuration == 0 {
 		obj.Cloudmon.CloudmonReportCloudAccountDuration = 30
+	}
+	if obj.Cloudmon.CloudmonReportAlertRecordHistoryDuration == 0 {
+		obj.Cloudmon.CloudmonReportAlertRecordHistoryDuration = 1
 	}
 }
 

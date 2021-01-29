@@ -211,7 +211,7 @@ type OnecloudClusterSpec struct {
 	// LoadBalancerEndpoint is upstream loadbalancer virtual ip address or DNS domain
 	LoadBalancerEndpoint string `json:"loadBalancerEndpoint"`
 	// APIGateway holds configuration for yunoinapi
-	APIGateway DeploymentSpec `json:"apiGateway"`
+	APIGateway APIGatewaySpec `json:"apiGateway"`
 	// Web holds configuration for web
 	Web DeploymentSpec `json:"web"`
 	// KubeServer holds configuration for kube-server service
@@ -615,6 +615,13 @@ type EtcdMembersStatus struct {
 	Unready []string `json:"unready,omitempty"`
 }
 
+type APIGatewaySpec struct {
+	DeploymentSpec
+
+	// Allowed hostname in Origin header.  Default to allow all
+	CorsHosts []string `json:"corsHosts"`
+}
+
 type RegionSpec struct {
 	DeploymentSpec
 	// DNSServer is the address of DNS server
@@ -625,11 +632,12 @@ type RegionSpec struct {
 
 type CloudmonSpec struct {
 	DeploymentSpec
-	CloudmonPingDuration               uint
-	CloudmonReportHostDuration         uint
-	CloudmonReportServerDuration       uint
-	CloudmonReportUsageDuration        uint
-	CloudmonReportCloudAccountDuration uint
+	CloudmonPingDuration                     uint
+	CloudmonReportHostDuration               uint
+	CloudmonReportServerDuration             uint
+	CloudmonReportUsageDuration              uint
+	CloudmonReportCloudAccountDuration       uint
+	CloudmonReportAlertRecordHistoryDuration uint
 }
 
 type RegionDNSProxy struct {
