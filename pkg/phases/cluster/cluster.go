@@ -290,10 +290,12 @@ func newCluster2(env map[string]string, cfg *apiv1.InitConfiguration, opt *creat
 			Keystone: v1alpha1.KeystoneSpec{
 				BootstrapPassword: env["SYSADMIN_PASSWORD"],
 			},
-			Glance: v1alpha1.StatefulDeploymentSpec{
-				DeploymentSpec: v1alpha1.DeploymentSpec{
-					NodeSelector: map[string]string{
-						"onecloud.yunion.io/glance": "enable",
+			Glance: v1alpha1.GlanceSpec{
+				StatefulDeploymentSpec: v1alpha1.StatefulDeploymentSpec{
+					DeploymentSpec: v1alpha1.DeploymentSpec{
+						NodeSelector: map[string]string{
+							"onecloud.yunion.io/glance": "enable",
+						},
 					},
 				},
 			},
