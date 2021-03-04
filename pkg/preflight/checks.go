@@ -37,13 +37,13 @@ func (c MysqlCheck) Check() (warnings, errorList []error) {
 		errorList = append(errorList, err)
 		return
 	}
-	isRoot, err := conn.IsGrantPrivUser(c.Username, "%")
+	withGrant, err := conn.IsGrantPrivUser(c.Username, "%")
 	if err != nil {
 		errorList = append(errorList, err)
 		return
 	}
-	if !isRoot {
-		errorList = append(errorList, errors.Errorf("mysql user %s not root", c.Username))
+	if !withGrant {
+		errorList = append(errorList, errors.Errorf("mysql user %s not 'WITH GRANT OPTION'", c.Username))
 		return
 	}
 
