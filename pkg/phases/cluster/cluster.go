@@ -530,6 +530,7 @@ func GetClusterRCAdmin(data *clusterData) (string, error) {
 		`export OS_AUTH_URL=%s
 export OS_USERNAME=sysadmin
 export OS_PASSWORD=%s
+export OS_PROJECT_DOMAIN=default
 export OS_PROJECT_NAME=system
 export YUNION_INSECURE=true
 export OS_REGION_NAME=%s
