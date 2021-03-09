@@ -34,11 +34,10 @@ const (
 	DefaultKeepalivedVersionTag    = "v2.0.24"
 	// mirror of kiwigrid/k8s-sidecar:0.1.20
 	K8sSidecar               = "k8s-sidecar"
-	DefaultK8sSidecarVersion = "0.1.20"
+	DefaultK8sSidecarVersion = "0.1.275"
 	Busybox                  = "busybox"
 	BusyboxVersion           = "1.28.0-glibc"
-	MetricsServerAmd64       = "metrics-server-amd64"
-	MetricsServerArm64       = "metrics-server-arm64"
+	MetricsServer            = "metrics-server"
 	MetricsServerVersion     = "v0.3.6"
 
 	EndpointTypeInternal = "internal"

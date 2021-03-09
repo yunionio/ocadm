@@ -36,3 +36,4 @@ GTAGS
 
 # packages
 *.rpm
+*.deb
