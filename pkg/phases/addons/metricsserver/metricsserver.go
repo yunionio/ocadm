@@ -18,12 +18,8 @@ type MetricsServerConfig struct {
 func NewMetricsServerConfig(cfg *kubeadmapi.ClusterConfiguration) addons.Configer {
 	arch := runtime.GOARCH
 	repo := cfg.ImageRepository
-	metricsServer := constants.MetricsServerAmd64
-	if arch == "arm64" {
-		metricsServer = constants.MetricsServerArm64
-	}
 	config := MetricsServerConfig{
-		Image: images.GetGenericImage(repo, metricsServer, constants.MetricsServerVersion),
+		Image: images.GetGenericImage(repo, constants.MetricsServer, constants.MetricsServerVersion),
 		Arch:  arch,
 	}
 	return config

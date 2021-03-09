@@ -2,7 +2,7 @@ export GO111MODULE:=on
 export GOPROXY:=direct
 
 VERSION_PKG := yunion.io/x/pkg/util/version
-
+ROOT_DIR := $(CURDIR)
 GIT_COMMIT := $(shell git rev-parse --short HEAD)
 
 ifndef GIT_BRANCH
@@ -41,4 +41,6 @@ mod:
 	go mod tidy
 	go mod vendor -v
 
+deb: clean
+	DEBUG=$(DEBUG) VERSION=$(VERSION) $(ROOT_DIR)/hack/build_deb.sh
 .PHONY: generate
