@@ -63,7 +63,7 @@ spec:
       containers:
       - name: onecloud-operator
         image: {{.Image}}
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         command: ["/bin/onecloud-controller-manager"]
         env:
         - name: NAMESPACE
