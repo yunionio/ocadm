@@ -31,7 +31,7 @@ const (
 	DefaultPromtailVersion         = DefaultLokiVersion
 	Grafana                        = "grafana"
 	DefaultGrafanaVersion          = "6.5.2"
-	DefaultKeepalivedVersionTag    = "v2.0.24"
+	DefaultKeepalivedVersionTag    = "v2.0.25"
 	// mirror of kiwigrid/k8s-sidecar:0.1.20
 	K8sSidecar               = "k8s-sidecar"
 	DefaultK8sSidecarVersion = "0.1.20"
