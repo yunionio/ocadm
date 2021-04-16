@@ -15,4 +15,5 @@ type JoinData interface {
 	GetHighAvailabilityVIP() string
 	GetKeepalivedVersionTag() string
 	GetNodeIP() string
+	GetHostInterface() string
 }

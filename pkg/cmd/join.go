@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"text/template"
 
 	"github.com/lithammer/dedent"
@@ -84,6 +85,7 @@ type joinOptions struct {
 	baremetalNode         bool
 	esxiNode              bool
 	upgradeFromV2         bool
+	hostInterface         string
 }
 
 // compile-time assert that the local data object satisfies the phases data interface.
@@ -108,6 +110,7 @@ type joinData struct {
 	glanceNode            bool
 	baremetalNode         bool
 	esxiNode              bool
+	hostInterface         string
 }
 
 // NewCmdJoin returns "ocadm join" command
@@ -406,6 +409,7 @@ func newJoinData(cmd *cobra.Command, args []string, opt *joinOptions, out io.Wri
 		nodeIP:                opt.nodeIP,
 		highAvailabilityVIP:   opt.highAvailabilityVIP,
 		keepalivedVersionTag:  opt.keepalivedVersionTag,
+		hostInterface:         strings.Split(opt.hostCfg.Networks[0], "/")[0],
 	}, nil
 }
 
@@ -417,6 +421,11 @@ func (j *joinData) GetHighAvailabilityVIP() string {
 // GetKeepalivedVersionTag return the keepalivedVersionTag
 func (j *joinData) GetKeepalivedVersionTag() string {
 	return j.keepalivedVersionTag
+}
+
+// GetHostInterface return the hostInterface
+func (j *joinData) GetHostInterface() string {
+	return j.hostInterface
 }
 
 // EnableHostAgent return is enable host agent
