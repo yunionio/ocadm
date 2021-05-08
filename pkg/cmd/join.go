@@ -400,6 +400,11 @@ func newJoinData(cmd *cobra.Command, args []string, opt *joinOptions, out io.Wri
 		}
 	}
 
+	hostInterface := ""
+	if len(opt.hostCfg.Networks) >= 1 && strings.Contains(opt.hostCfg.Networks[0], "/") {
+		hostInterface = strings.Split(opt.hostCfg.Networks[0], "/")[0]
+	}
+
 	return &joinData{
 		cfg:                   cfg,
 		tlsBootstrapCfg:       tlsBootstrapCfg,
@@ -409,7 +414,7 @@ func newJoinData(cmd *cobra.Command, args []string, opt *joinOptions, out io.Wri
 		nodeIP:                opt.nodeIP,
 		highAvailabilityVIP:   opt.highAvailabilityVIP,
 		keepalivedVersionTag:  opt.keepalivedVersionTag,
-		hostInterface:         strings.Split(opt.hostCfg.Networks[0], "/")[0],
+		hostInterface:         hostInterface,
 	}, nil
 }
 
