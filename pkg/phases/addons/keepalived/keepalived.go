@@ -100,6 +100,11 @@ func runKeepalivedPhaseLocal() func(c workflow.RunData) error {
 			fmt.Println("vip is empty. no need to install keepalived.")
 			return nil
 		}
+		if len(nodeIP) == 0 {
+			msg := "error! got empty node ip for k8s HA."
+			fmt.Println(msg)
+			return fmt.Errorf(msg)
+		}
 		if len(keepalivedVersionTag) == 0 {
 			fmt.Println("Keepalived version tag is empty! using default option: ", constants.DefaultKeepalivedVersionTag)
 			keepalivedVersionTag = constants.DefaultKeepalivedVersionTag

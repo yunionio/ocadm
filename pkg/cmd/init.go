@@ -699,7 +699,13 @@ func (d *initData) OperatorVersion() string {
 
 // GetNodeIP returns current node ip for init mode
 func (d *initData) GetNodeIP() string {
-	return d.nodeIP
+	if len(d.nodeIP) > 0 {
+		return d.nodeIP
+	}
+	if strings.HasPrefix(d.addonCalicoIpAutodetectionMethod, "can-reach=") {
+		return strings.Replace(d.addonCalicoIpAutodetectionMethod, "can-reach=", "", -1)
+	}
+	return ""
 }
 
 func printJoinCommand(out io.Writer, adminKubeConfigPath, token string, i *initData) error {
