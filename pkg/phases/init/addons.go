@@ -90,6 +90,7 @@ func NewOCAddonPhase() workflow.Phase {
 		InheritFlags: []string{
 			options.PrintAddonYaml,
 			options.AddonCalicoIpAutodetectionMethod,
+			options.AddonCalicoiFelixChaininsertmode,
 			options.OperatorVersion,
 		},
 		Phases: []workflow.Phase{
@@ -139,7 +140,7 @@ func kubectlApplyAddon(c workflow.RunData, newF func(*kubeadmapi.ClusterConfigur
 
 func runCalicoAddon(c workflow.RunData) error {
 	return kubectlApplyAddon(c, func(cfg *kubeadmapi.ClusterConfiguration) addons.Configer {
-		return calicoaddon.NewCalicoConfig(cfg, c.(InitData).AddonCalicoIpAutodetectionMethod())
+		return calicoaddon.NewCalicoConfig(cfg, c.(InitData).AddonCalicoIpAutodetectionMethod(), c.(InitData).AddonCalicoiFelixChaininsertmode())
 	})
 }
 

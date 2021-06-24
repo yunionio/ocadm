@@ -29,6 +29,7 @@ const (
 	OperatorVersion                    = "operator-version"
 	NodeIP                             = "node-ip"
 	AddonCalicoIpAutodetectionMethod   = "addon-calico-ip-autodetection-method"
+	AddonCalicoiFelixChaininsertmode   = "addon-calico-felix-chaininsertmode"
 	HighAvailabilityVIP                = "high-availability-vip"
 	KeepalivedVersionTag               = "keepalived-version-tag"
 	LonghornDataPath                   = "longhorn-data-path"
