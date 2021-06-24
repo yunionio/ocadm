@@ -578,6 +578,8 @@ spec:
             # Use Kubernetes API as the backing datastore.
             - name: IP_AUTODETECTION_METHOD
               value: "{{.IPAutodetectionMethod}}"
+            - name: FELIX_CHAININSERTMODE
+              value: "{{.FelixChaininsertmode}}"
             - name: DATASTORE_TYPE
               value: "kubernetes"
             # Wait for the datastore.
