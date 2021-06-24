@@ -105,6 +105,7 @@ type initOptions struct {
 	operatorVersion                  string
 	nodeIP                           string
 	addonCalicoIpAutodetectionMethod string
+	addonCalicoiFelixChaininsertmode string
 	highAvailabilityVIP              string
 	keepalivedVersionTag             string
 	glanceNode                       bool
@@ -140,6 +141,7 @@ type initData struct {
 	operatorVersion                  string
 	nodeIP                           string
 	addonCalicoIpAutodetectionMethod string
+	addonCalicoiFelixChaininsertmode string
 	highAvailabilityVIP              string
 	keepalivedVersionTag             string
 }
@@ -336,6 +338,10 @@ func AddInitOtherFlags(flagSet *flag.FlagSet, initOptions *initOptions) {
 		"Calico IP Autodetection Method",
 	)
 	flagSet.StringVar(
+		&initOptions.addonCalicoiFelixChaininsertmode, options.AddonCalicoiFelixChaininsertmode, initOptions.addonCalicoiFelixChaininsertmode,
+		fmt.Sprintf(`Calico Felix Chaininsertmode (default: "%s")`, constants.DefaultCalicoFelixChaininsertmode),
+	)
+	flagSet.StringVar(
 		&initOptions.highAvailabilityVIP, options.HighAvailabilityVIP, initOptions.highAvailabilityVIP,
 		"high availability VIP",
 	)
@@ -497,6 +503,7 @@ func newInitData(cmd *cobra.Command, args []string, options *initOptions, out io
 		printAddonYaml:                   options.printAddonYaml,
 		operatorVersion:                  options.operatorVersion,
 		addonCalicoIpAutodetectionMethod: options.addonCalicoIpAutodetectionMethod,
+		addonCalicoiFelixChaininsertmode: options.addonCalicoiFelixChaininsertmode,
 		nodeIP:                           options.nodeIP,
 		highAvailabilityVIP:              options.highAvailabilityVIP,
 		keepalivedVersionTag:             options.keepalivedVersionTag,
@@ -517,6 +524,11 @@ func (d *initData) PrintAddonYaml() bool {
 // AddonCalicoIpAutodetectionMethod return addonCalicoIpAutodetectionMethod
 func (d *initData) AddonCalicoIpAutodetectionMethod() string {
 	return d.addonCalicoIpAutodetectionMethod
+}
+
+// AddonCalicoiFelixChaininsertmode return addonCalicoiFelixChaininsertmode
+func (d *initData) AddonCalicoiFelixChaininsertmode() string {
+	return d.addonCalicoiFelixChaininsertmode
 }
 
 // GetHighAvailabilityVIP return highAvailabilityVIP

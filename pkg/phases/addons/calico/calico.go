@@ -17,9 +17,13 @@ type CNICalicoConfig struct {
 	CNIImage              string
 	ClusterCIDR           string
 	IPAutodetectionMethod string
+	FelixChaininsertmode  string
 }
 
-func NewCalicoConfig(cfg *kubeadmapi.ClusterConfiguration, IPAutodetectionMethod string) addons.Configer {
+func NewCalicoConfig(cfg *kubeadmapi.ClusterConfiguration, IPAutodetectionMethod, FelixChaininsertmode string) addons.Configer {
+	if len(FelixChaininsertmode) == 0 {
+		FelixChaininsertmode = constants.DefaultCalicoFelixChaininsertmode
+	}
 	repo := cfg.ImageRepository
 	config := &CNICalicoConfig{
 		ControllerImage:       images.GetGenericImage(repo, constants.CalicoKubeControllers, DefaultVersion),
@@ -27,6 +31,7 @@ func NewCalicoConfig(cfg *kubeadmapi.ClusterConfiguration, IPAutodetectionMethod
 		CNIImage:              images.GetGenericImage(repo, constants.CalicoCNI, DefaultVersion),
 		ClusterCIDR:           cfg.Networking.PodSubnet,
 		IPAutodetectionMethod: IPAutodetectionMethod,
+		FelixChaininsertmode:  FelixChaininsertmode,
 	}
 	return config
 }
