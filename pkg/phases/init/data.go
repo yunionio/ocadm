@@ -24,6 +24,7 @@ type InitData interface {
 	EnabledHostAgent() bool
 	PrintAddonYaml() bool
 	AddonCalicoIpAutodetectionMethod() string
+	AddonCalicoiFelixChaininsertmode() string
 	GetHighAvailabilityVIP() string
 	GetKeepalivedVersionTag() string
 	GetNodeIP() string
