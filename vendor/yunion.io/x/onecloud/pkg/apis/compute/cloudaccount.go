@@ -309,6 +309,8 @@ type CloudaccountDetail struct {
 	StoragecacheCount int `json:"storagecache_count,allowempty"`
 
 	ProxySetting proxyapi.SProxySetting `json:"proxy_setting"`
+
+	ProjectMappingResourceInfo
 }
 
 type CloudaccountUpdateInput struct {
@@ -460,4 +462,24 @@ type GetCloudaccountSamlOutput struct {
 	MetadataUrl string `json:"metadata_url,allowempty"`
 	// initial SAML SSO login URL for this cloudaccount
 	InitLoginUrl string `json:"init_login_url,allowempty"`
+}
+
+type CloudaccountSyncSkusInput struct {
+	Resource string
+	Force    bool
+
+	CloudregionResourceInput
+	CloudproviderResourceInput
+}
+
+type CloudaccountEnableAutoSyncInput struct {
+	// 云账号状态必须是connected
+	// 最小值为region服务的minimal_sync_interval_seconds
+	SyncIntervalSeconds int `json:"sync_interval_seconds"`
+}
+
+type CloudaccountProjectMappingInput struct {
+	// 同步策略Id, 若不传此参数则解绑
+	// 绑定同步策略要求当前云账号此刻未绑定其他同步策略
+	ProjectMappingId string `json:"project_mapping_id"`
 }
