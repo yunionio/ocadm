@@ -44,18 +44,6 @@ func (m *cloudmonManager) Sync(oc *v1alpha1.OnecloudCluster) error {
 	if err := m.ensureOldCronjobsDeleted(oc); err != nil {
 		return err
 	}
-	if !IsEnterpriseEdition(oc) {
-		if _, err := m.deployLister.Deployments(oc.GetNamespace()).Get(controller.NewClusterComponentName(oc.GetName(), v1alpha1.CloudmonComponentType)); err != nil && !errors.IsNotFound(err) {
-			return err
-		} else if err == nil {
-			if err := m.deployControl.DeleteDeployment(
-				oc, controller.NewClusterComponentName(oc.GetName(), v1alpha1.CloudmonComponentType),
-			); err != nil && !errors.IsNotFound(err) {
-				return err
-			}
-		}
-		return nil
-	}
 	return syncComponent(m, oc, oc.Spec.Cloudmon.Disable, "")
 }
 
@@ -80,6 +68,8 @@ func (m *cloudmonManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg *v1alp
 			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-server", "Aliyun"))
 		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
 			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-server", "Huawei"))
+		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
+			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-server", "HuaweiCloudStack"))
 		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
 			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-server", "Qcloud"))
 		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,

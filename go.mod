@@ -15,7 +15,6 @@ require (
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/docker/libnetwork v0.8.0-dev.2.0.20200102182716-9fd385be8302 // indirect
 	github.com/evanphx/json-patch v4.5.0+incompatible // indirect
-	github.com/fatih/color v1.9.0 // indirect
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-logr/logr v0.1.0 // indirect
 	github.com/go-logr/zapr v0.1.1 // indirect
@@ -24,7 +23,6 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/lithammer/dedent v1.1.0
-	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mholt/caddy v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/pkg/errors v0.9.1
@@ -47,8 +45,8 @@ require (
 	sigs.k8s.io/testing_frameworks v0.1.1 // indirect
 	yunion.io/x/jsonutils v0.0.0-20210709075951-798a67800349
 	yunion.io/x/log v0.0.0-20201210064738-43181789dc74
-	yunion.io/x/onecloud v0.0.0-20210729112357-c7c87652567c
-	yunion.io/x/onecloud-operator v0.0.0-20210729112734-6e6268a4cea9
+	yunion.io/x/onecloud v0.0.0-20210815102934-981fad82a7f6
+	yunion.io/x/onecloud-operator v0.0.0-20210816020622-e68e8f450d06
 	yunion.io/x/pkg v0.0.0-20210721081124-55078288ca4c
 )
 

@@ -96,6 +96,9 @@ type SCloudaccountCredential struct {
 
 	// 阿里云专有云Endpoints
 	*SApsaraEndpoints
+
+	// Huawei Cloud Stack Online
+	*SHuaweiCloudStackEndpoints
 }
 
 type SCloudaccount struct {
@@ -158,6 +161,7 @@ type ProviderConfig struct {
 	AccountId string
 
 	SApsaraEndpoints
+	SHuaweiCloudStackEndpoints
 
 	ProxyFunc httputils.TransportProxyFunc
 }
@@ -190,6 +194,7 @@ type ICloudProviderFactory interface {
 
 	IsPublicCloud() bool
 	IsOnPremise() bool
+	IsMultiTenant() bool
 	IsSupportPrepaidResources() bool
 	NeedSyncSkuFromCloud() bool
 
@@ -317,6 +322,10 @@ func IsSupportObjectstore(prod ICloudProvider) bool {
 
 func IsSupportRds(prod ICloudProvider) bool {
 	return utils.IsInStringArray(CLOUD_CAPABILITY_RDS, prod.GetCapabilities())
+}
+
+func IsSupportNAT(prod ICloudProvider) bool {
+	return utils.IsInStringArray(CLOUD_CAPABILITY_NAT, prod.GetCapabilities())
 }
 
 func IsSupportElasticCache(prod ICloudProvider) bool {
@@ -620,6 +629,10 @@ func (factory *baseProviderFactory) IsOnPremise() bool {
 	return false
 }
 
+func (factory *baseProviderFactory) IsMultiTenant() bool {
+	return false
+}
+
 func (factory *baseProviderFactory) IsCloudeventRegional() bool {
 	return false
 }
@@ -758,12 +771,20 @@ func (factory *SPremiseBaseProviderFactory) IsOnPremise() bool {
 	return true
 }
 
+func (factory *SPremiseBaseProviderFactory) IsMultiTenant() bool {
+	return false
+}
+
 func (factory *SPremiseBaseProviderFactory) NeedSyncSkuFromCloud() bool {
 	return false
 }
 
 type SPublicCloudBaseProviderFactory struct {
 	baseProviderFactory
+}
+
+func (factory *SPublicCloudBaseProviderFactory) IsMultiTenant() bool {
+	return true
 }
 
 func (factory *SPublicCloudBaseProviderFactory) IsPublicCloud() bool {
@@ -780,6 +801,10 @@ func (factory *SPublicCloudBaseProviderFactory) NeedSyncSkuFromCloud() bool {
 
 type SPrivateCloudBaseProviderFactory struct {
 	baseProviderFactory
+}
+
+func (factory *SPrivateCloudBaseProviderFactory) IsMultiTenant() bool {
+	return false
 }
 
 func (factory *SPrivateCloudBaseProviderFactory) IsPublicCloud() bool {
