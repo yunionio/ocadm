@@ -57,7 +57,7 @@ const (
 	DefaultTelegrafInitImageName = "telegraf-init"
 	DefaultTelegrafInitImageTag  = "release-1.5.2"
 	DefaultTelegrafRaidImageName = "telegraf-raid-plugin"
-	DefaultTelegrafRaidImageTag  = "release-1.5.2"
+	DefaultTelegrafRaidImageTag  = "release-1.6.1"
 )
 
 func addDefaultingFuncs(scheme *runtime.Scheme) error {
@@ -89,7 +89,7 @@ func IsEnterpriseEdition(oc *OnecloudCluster) bool {
 }
 
 func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
-	SetDefaults_Mysql(&obj.Mysql)
+	setDefaults_Mysql(&obj.Mysql)
 	if obj.Region == "" {
 		obj.Region = DefaultOnecloudRegion
 	}
@@ -116,6 +116,7 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
 		KubeServerComponentType:      &obj.KubeServer,
 		AnsibleServerComponentType:   &obj.AnsibleServer,
 		CloudnetComponentType:        &obj.Cloudnet,
+		CloudproxyComponentType:      &obj.Cloudproxy,
 		CloudeventComponentType:      &obj.Cloudevent,
 		S3gatewayComponentType:       &obj.S3gateway,
 		DevtoolComponentType:         &obj.Devtool,
@@ -127,6 +128,7 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
 		ItsmComponentType:            &obj.Itsm,
 		CloudIdComponentType:         &obj.CloudId,
 		SuggestionComponentType:      &obj.Suggestion,
+		CloudmonComponentType:        &obj.Cloudmon.DeploymentSpec,
 	} {
 		SetDefaults_DeploymentSpec(spec, getImage(obj.ImageRepository, spec.Repository, cType, spec.ImageName, obj.Version, spec.Tag))
 	}
@@ -206,9 +208,9 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
 	}
 
 	// cloudmon spec
-	SetDefaults_DeploymentSpec(&obj.Cloudmon.DeploymentSpec,
-		getImage(obj.ImageRepository, obj.Cloudmon.Repository, APIGatewayComponentTypeEE,
-			obj.Cloudmon.ImageName, obj.Version, obj.APIGateway.Tag))
+	//SetDefaults_DeploymentSpec(&obj.Cloudmon.DeploymentSpec,
+	//	getImage(obj.ImageRepository, obj.Cloudmon.Repository, APIGatewayComponentTypeEE,
+	//		obj.Cloudmon.ImageName, obj.Version, obj.APIGateway.Tag))
 	if obj.Cloudmon.CloudmonReportUsageDuration == 0 {
 		obj.Cloudmon.CloudmonReportUsageDuration = 15
 	}
@@ -219,7 +221,7 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
 		obj.Cloudmon.CloudmonReportHostDuration = 4
 	}
 	if obj.Cloudmon.CloudmonPingDuration == 0 {
-		obj.Cloudmon.CloudmonPingDuration = 5
+		obj.Cloudmon.CloudmonPingDuration = 60
 	}
 	if obj.Cloudmon.CloudmonReportCloudAccountDuration == 0 {
 		obj.Cloudmon.CloudmonReportCloudAccountDuration = 30
@@ -227,9 +229,11 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
 	if obj.Cloudmon.CloudmonReportAlertRecordHistoryDuration == 0 {
 		obj.Cloudmon.CloudmonReportAlertRecordHistoryDuration = 1
 	}
+
+	setDefaults_MonitorStackSpec(&obj.MonitorStack)
 }
 
-func SetDefaults_Mysql(obj *Mysql) {
+func setDefaults_Mysql(obj *Mysql) {
 	if obj.Username == "" {
 		obj.Username = "root"
 	}
@@ -362,8 +366,60 @@ func SetDefaults_CronJobSpec(obj *CronJobSpec, image string) {
 	}
 }
 
+func setDefaults_MonitorStackSpec(obj *MonitorStackSpec) {
+	// set minio defaults
+	minio := &obj.Minio
+	if minio.AccessKey == "" {
+		minio.AccessKey = "monitor-admin"
+	}
+	if minio.SecretKey == "" {
+		minio.SecretKey = passwd.GeneratePassword()
+	}
+
+	// set grafana defaults
+	grafana := &obj.Grafana
+	if grafana.AdminUser == "" {
+		grafana.AdminUser = "admin"
+	}
+	if grafana.AdminPassword == "" {
+		grafana.AdminPassword = "admin@123"
+	}
+	if grafana.Subpath == "" {
+		grafana.Subpath = "grafana"
+	}
+	oauth := &grafana.OAuth
+	if oauth.Scopes == "" {
+		oauth.Scopes = "user"
+	}
+	if oauth.RoleAttributePath == "" {
+		oauth.RoleAttributePath = `projectName == 'system' && contains(roles, 'admin') && 'Admin' || 'Editor'`
+	}
+
+	// set loki defaults
+	loki := &obj.Loki
+	if loki.ObjectStoreConfig.Bucket == "" {
+		loki.ObjectStoreConfig.Bucket = "loki"
+	}
+
+	// set prometheus defaults
+	prom := &obj.Prometheus
+	if prom.ThanosSidecarSpec.ObjectStoreConfig.Bucket == "" {
+		prom.ThanosSidecarSpec.ObjectStoreConfig.Bucket = "thanos"
+	}
+	trueVar := true
+	if prom.Disable == nil {
+		prom.Disable = &trueVar
+	}
+
+	// set thanos defaults
+	thanos := &obj.Thanos
+	if thanos.ObjectStoreConfig.Bucket == "" {
+		thanos.ObjectStoreConfig.Bucket = "thanos"
+	}
+}
+
 func SetDefaults_OnecloudClusterConfig(obj *OnecloudClusterConfig) {
-	SetDefaults_KeystoneConfig(&obj.Keystone)
+	setDefaults_KeystoneConfig(&obj.Keystone)
 
 	type userPort struct {
 		user string
@@ -402,6 +458,7 @@ func SetDefaults_OnecloudClusterConfig(obj *OnecloudClusterConfig) {
 		&obj.KubeServer:                          {constants.KubeServerAdminUser, constants.KubeServerPort, constants.KubeServerDB, constants.KubeServerDBUser},
 		&obj.AnsibleServer:                       {constants.AnsibleServerAdminUser, constants.AnsibleServerPort, constants.AnsibleServerDB, constants.AnsibleServerDBUser},
 		&obj.Cloudnet:                            {constants.CloudnetAdminUser, constants.CloudnetPort, constants.CloudnetDB, constants.CloudnetDBUser},
+		&obj.Cloudproxy:                          {constants.CloudproxyAdminUser, constants.CloudproxyPort, constants.CloudproxyDB, constants.CloudproxyDBUser},
 		&obj.Cloudevent:                          {constants.CloudeventAdminUser, constants.CloudeventPort, constants.CloudeventDB, constants.CloudeventDBUser},
 		&obj.Notify:                              {constants.NotifyAdminUser, constants.NotifyPort, constants.NotifyDB, constants.NotifyDBUser},
 		&obj.Devtool:                             {constants.DevtoolAdminUser, constants.DevtoolPort, constants.DevtoolDB, constants.DevtoolDBUser},
@@ -416,7 +473,7 @@ func SetDefaults_OnecloudClusterConfig(obj *OnecloudClusterConfig) {
 		registryPorts[tmp.port] = tmp.user
 		SetDefaults_ServiceDBCommonOptions(opt, tmp.db, tmp.dbUser, tmp.user, tmp.port)
 	}
-	SetDefaults_ItsmConfig(&obj.Itsm)
+	setDefaults_ItsmConfig(&obj.Itsm)
 }
 
 func SetDefaults_ServiceBaseConfig(obj *ServiceBaseConfig, port int) {
@@ -425,7 +482,7 @@ func SetDefaults_ServiceBaseConfig(obj *ServiceBaseConfig, port int) {
 	}
 }
 
-func SetDefaults_KeystoneConfig(obj *KeystoneConfig) {
+func setDefaults_KeystoneConfig(obj *KeystoneConfig) {
 	SetDefaults_ServiceBaseConfig(&obj.ServiceBaseConfig, constants.KeystonePublicPort)
 	setDefaults_DBConfig(&obj.DB, constants.KeystoneDB, constants.KeystoneDBUser)
 }
@@ -461,7 +518,7 @@ func setDefaults_CloudUser(obj *CloudUser, username string) {
 	}
 }
 
-func SetDefaults_ItsmConfig(obj *ItsmConfig) {
+func setDefaults_ItsmConfig(obj *ItsmConfig) {
 	obj.SecondDatabase = fmt.Sprintf("%s_engine", obj.DB.Database)
 	obj.EncryptionKey = passwd.GeneratePassword()
 }

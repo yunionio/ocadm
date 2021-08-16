@@ -81,6 +81,7 @@ const (
 	KubeServerComponentType     ComponentType = "kubeserver"
 	AnsibleServerComponentType  ComponentType = "ansibleserver"
 	CloudnetComponentType       ComponentType = "cloudnet"
+	CloudproxyComponentType     ComponentType = "cloudproxy"
 	CloudeventComponentType     ComponentType = "cloudevent"
 	NotifyComponentType         ComponentType = "notify"
 	HostComponentType           ComponentType = "host"
@@ -171,9 +172,11 @@ type OnecloudClusterSpec struct {
 	// Version is onecloud components version
 	Version string `json:"version"`
 	// CertSANs sets extra Subject Alternative Names for the Cluster signing cert.
-	CertSANs []string
+	CertSANs []string `json:"certSANs"`
 	// Services list non-headless services type used in OnecloudCluster
 	Services []Service `json:"services,omitempty"`
+	// Minio holds configuration for minio S3 storage backend
+	Minio Minio `json:"minio"`
 	// ImageRepository defines default image registry
 	ImageRepository string `json:"imageRepository"`
 	// Region is cluster region
@@ -220,6 +223,8 @@ type OnecloudClusterSpec struct {
 	AnsibleServer DeploymentSpec `json:"ansibleserver"`
 	// Cloudnet holds configuration for cloudnet service
 	Cloudnet DeploymentSpec `json:"cloudnet"`
+	// Cloudproxy holds configuration for cloudproxy service
+	Cloudproxy DeploymentSpec `json:"cloudproxy"`
 	// Cloudevent holds configuration for cloudevent service
 	Cloudevent DeploymentSpec `json:"cloudevent"`
 	// Notify holds configuration for notify service
@@ -257,6 +262,9 @@ type OnecloudClusterSpec struct {
 	CloudId DeploymentSpec `json:"cloudid"`
 
 	Suggestion DeploymentSpec `json:"suggestion"`
+
+	// MonitorStack holds configuration for grafana, loki, prometheus and thanos services
+	MonitorStack MonitorStackSpec `json:"monitorStack"`
 }
 
 // OnecloudClusterStatus describes cluster status
@@ -276,6 +284,7 @@ type OnecloudClusterStatus struct {
 	KubeServer     DeploymentStatus     `json:"kubeserver,omitempty"`
 	AnsibleServer  DeploymentStatus     `json:"ansibleserver,omitempty"`
 	Cloudnet       DeploymentStatus     `json:"cloudnet,omitempty"`
+	Cloudproxy     DeploymentStatus     `json:"cloudproxy,omitempty"`
 	Cloudevent     DeploymentStatus     `json:"cloudevent,omitempty"`
 	Notify         DeploymentStatus     `json:"notify,omitempty"`
 	BaremetalAgent BaremetalAgentStatus `json:"baremetalagent,omitempty"`
@@ -289,6 +298,7 @@ type OnecloudClusterStatus struct {
 	Etcd           EctdStatus           `json:"etcd,omitempty"`
 	Itsm           DeploymentStatus     `json:"itsm,omitempty"`
 	CloudId        DeploymentStatus     `json:"cloudid,omitempty"`
+	MonitorStack   MonitorStackStatus   `json:"monitorStack,omitempty"`
 }
 
 type EtcdClusterSpec struct {
@@ -461,6 +471,12 @@ type Mysql struct {
 	Password string `json:"password"`
 }
 
+// Minio hols configration for minio S3 object storage backend
+type Minio struct {
+	Enable bool      `json:"enable"`
+	Mode   MinioMode `json:"mode"`
+}
+
 // DeploymentSpec constains defails of deployment resource service
 type DeploymentSpec struct {
 	ContainerSpec
@@ -512,6 +528,117 @@ type KeystoneSpec struct {
 type GlanceSpec struct {
 	StatefulDeploymentSpec
 	SwitchToS3 bool `json:"switchToS3"`
+}
+
+type MinioMode string
+
+const (
+	MinioModeStandalone  MinioMode = "standalone"
+	MinioModeDistributed MinioMode = "distributed"
+)
+
+type MonitorStackMinioSpec struct {
+	Mode MinioMode `json:"mode"`
+	/*
+	 * StorageClassName string    `json:"storageClassName,omitempty"`
+	 * StorageSizeMB    string    `json:"storageSizeMB"`
+	 */
+	AccessKey string `json:"accessKey"`
+	SecretKey string `json:"secretKey"`
+}
+
+type MonitorStackComponentStatus struct {
+	ImageStatus *ImageStatus `json:"imageStatus,omitempty"`
+}
+
+type MonitorStackMinioStatus struct {
+	MonitorStackComponentStatus
+
+	Replicas      int `json:"replicas"`
+	DrivesPerNode int `json:"drivesPerNode"`
+	// Zones         int       `json:"zones"`
+}
+
+type MonitorStackGrafanaSpecOAuth struct {
+	Enabled           bool   `json:"enabled"`
+	ClientId          string `json:"clientId"`
+	ClientSecret      string `json:"clientSecret"`
+	Scopes            string `json:"scopes"`
+	AuthURL           string `json:"authURL"`
+	TokenURL          string `json:"tokenURL"`
+	APIURL            string `json:"apiURL"`
+	AllowedDomains    string `json:"allowedDomains"`
+	AllowSignUp       bool   `json:"allowSignUp"`
+	RoleAttributePath string `json:"roleAttributePath"`
+}
+
+type MonitorStackGrafanaSpec struct {
+	Disable        bool                         `json:"disable"`
+	AdminUser      string                       `json:"adminUser"`
+	AdminPassword  string                       `json:"adminPassword"`
+	Host           string                       `json:"host"`
+	EnforceDomain  bool                         `json:"enforceDomain"`
+	DisableSubpath bool                         `json:"disableSubpath"`
+	Subpath        string                       `json:"subpath"`
+	OAuth          MonitorStackGrafanaSpecOAuth `json:"oauth"`
+}
+
+type MonitorStackGrafanaStatus struct {
+	MonitorStackComponentStatus
+}
+
+type ObjectStoreConfig struct {
+	Bucket    string `json:"bucket"`
+	Endpoint  string `json:"endpoint"`
+	AccessKey string `json:"accessKey"`
+	SecretKey string `json:"secretKey"`
+}
+
+type MonitorStackLokiSpec struct {
+	Disable           bool              `json:"disable"`
+	ObjectStoreConfig ObjectStoreConfig `json:"objectStoreConfig"`
+}
+
+type MonitorStackLokiStatus struct {
+	MonitorStackComponentStatus
+}
+
+type ThanosSidecarSpec struct {
+	ObjectStoreConfig ObjectStoreConfig `json:"objectStoreConfig"`
+}
+
+type MonitorStackPrometheusSpec struct {
+	Disable           *bool             `json:"disable,omitempty"`
+	ThanosSidecarSpec ThanosSidecarSpec `json:"thanosSidecar"`
+}
+
+type MonitorStackPrometheusStatus struct {
+	MonitorStackComponentStatus
+}
+
+type MonitorStackThanosSpec struct {
+	ObjectStoreConfig ObjectStoreConfig `json:"objectStoreConfig"`
+}
+
+type MonitorStackThanosStatus struct {
+	MonitorStackComponentStatus
+}
+
+type MonitorStackSpec struct {
+	Disable    bool                       `json:"disable"`
+	Minio      MonitorStackMinioSpec      `json:"minio"`
+	Grafana    MonitorStackGrafanaSpec    `json:"grafana"`
+	Loki       MonitorStackLokiSpec       `json:"loki"`
+	Prometheus MonitorStackPrometheusSpec `json:"prometheus"`
+	Thanos     MonitorStackThanosSpec     `json:"thanos"`
+}
+
+type MonitorStackStatus struct {
+	MinioStatus      MonitorStackMinioStatus      `json:"minioStatus"`
+	GrafanaStatus    MonitorStackGrafanaStatus    `json:"grafanaStatus"`
+	LokiStatus       MonitorStackLokiStatus       `json:"lokiStatus"`
+	PrometheusStatus MonitorStackPrometheusStatus `json:"prometheusStatus"`
+	ThanosStatus     MonitorStackThanosStatus     `json:"thanosStatus"`
 }
 
 // ImageStatus is the image status of a pod
@@ -784,6 +911,7 @@ type OnecloudClusterConfig struct {
 	AnsibleServer   ServiceDBCommonOptions `json:"ansibleserver"`
 	Monitor         ServiceDBCommonOptions `json:"monitor"`
 	Cloudnet        ServiceDBCommonOptions `json:"cloudnet"`
+	Cloudproxy      ServiceDBCommonOptions `json:"cloudproxy"`
 	Cloudevent      ServiceDBCommonOptions `json:"cloudevent"`
 	APIGateway      ServiceCommonOptions   `json:"apiGateway"`
 	Notify          ServiceDBCommonOptions `json:"notify"`
