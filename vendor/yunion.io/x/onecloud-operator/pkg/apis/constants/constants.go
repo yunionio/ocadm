@@ -71,6 +71,19 @@ const (
 )
 
 const (
+	MonitorStackNamespace = "onecloud-monitoring"
+
+	MonitorMinioName   = "monitor-minio"
+	MonitorThanosQuery = "thanos-query"
+	MonitorGrafana     = "monitor-grafana"
+	MonitorLoki        = "monitor-loki"
+	MonitorPrometheus  = "prometheus-monitor-monitor-stack-prometheus"
+
+	MonitorBucketThanos = "thanos"
+	MonitorBucketLoki   = "loki"
+)
+
+const (
 	SysAdminUsername = "sysadmin"
 	SysAdminProject  = "system"
 	DefaultDomain    = "Default"
@@ -178,6 +191,12 @@ const (
 	CloudnetDB           = "yunioncloudnet"
 	CloudnetDBUser       = "yunioncloudnet"
 
+	CloudproxyAdminUser    = "cloudproxyadmin"
+	CloudproxyAdminProject = SysAdminProject
+	CloudproxyPort         = 30882
+	CloudproxyDB           = "yunioncloudproxy"
+	CloudproxyDBUser       = "yunioncloudproxy"
+
 	CloudeventAdminUser    = "cloudeventadmin"
 	CloudeventAdminProject = SysAdminProject
 	CloudeventPort         = 30892
@@ -238,6 +257,9 @@ const (
 
 	ServiceNameCloudnet = "cloudnet"
 	ServiceTypeCloudnet = "cloudnet"
+
+	ServiceNameCloudproxy = "cloudproxy"
+	ServiceTypeCloudproxy = "cloudproxy"
 
 	ServiceNameCloudevent = "cloudevent"
 	ServiceTypeCloudevent = "cloudevent"

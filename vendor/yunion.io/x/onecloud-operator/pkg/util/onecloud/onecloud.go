@@ -18,23 +18,26 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/pkg/errors"
 	"golang.org/x/sync/errgroup"
 
 	"yunion.io/x/jsonutils"
+	"yunion.io/x/log"
 	ansibleapi "yunion.io/x/onecloud/pkg/apis/ansible"
+	devtoolapi "yunion.io/x/onecloud/pkg/apis/devtool"
 	monitorapi "yunion.io/x/onecloud/pkg/apis/monitor"
 	"yunion.io/x/onecloud/pkg/mcclient"
 	"yunion.io/x/onecloud/pkg/mcclient/modulebase"
 	"yunion.io/x/onecloud/pkg/mcclient/modules"
 	"yunion.io/x/onecloud/pkg/util/ansible"
 	"yunion.io/x/onecloud/pkg/util/httputils"
+	"yunion.io/x/pkg/errors"
 
 	"yunion.io/x/onecloud-operator/pkg/apis/constants"
 )
 
 const (
-	NotFoundMsg = "NotFoundError"
+	NotFoundMsg          = "NotFoundError"
+	K8SSystemClusterName = "system-default"
 )
 
 func IsNotFoundError(err error) bool {
@@ -599,6 +602,7 @@ type CommonAlertTem struct {
 	ConditionType string `json:"condition_type"`
 	From          string `json:"from"`
 	Interval      string `json:"interval"`
+	GroupBy       string `json:"group_by"`
 }
 
 func GetCommonAlertOfSys(session *mcclient.ClientSession) ([]jsonutils.JSONObject, error) {
@@ -703,7 +707,7 @@ func containDiffsWithRtnAlert(input monitorapi.CommonAlertUpdateInput, rtnAlert 
 		return conDiff, nil
 	}
 	inputQuery := input.CommonMetricInputQuery.MetricQuery
-	for i, _ := range setting.Conditions {
+	for i := range setting.Conditions {
 		condi := setting.Conditions[i]
 		if details[i].Comparator != inputQuery[i].Comparator {
 			return conDiff, nil
@@ -733,7 +737,7 @@ func newCommonalertQuery(tem CommonAlertTem) monitorapi.CommonAlertQuery {
 		Database:     tem.Database,
 		Measurement:  tem.Measurement,
 		Tags:         make([]monitorapi.MetricQueryTag, 0),
-		GroupBy:      nil,
+		GroupBy:      make([]monitorapi.MetricQueryPart, 0),
 		Selects:      nil,
 		Interval:     "",
 		Policy:       "",
@@ -787,5 +791,61 @@ func newCommonalertQuery(tem CommonAlertTem) monitorapi.CommonAlertQuery {
 	if len(tem.ConditionType) != 0 {
 		commonAlert.ConditionType = tem.ConditionType
 	}
+	if len(tem.GroupBy) != 0 {
+		commonAlert.Model.GroupBy = append(commonAlert.Model.GroupBy, monitorapi.MetricQueryPart{
+			Type:   "field",
+			Params: []string{tem.GroupBy},
+		})
+	}
 	return commonAlert
+}
+
+var agentName = "monitor agent"
+
+func EnsureAgentAnsiblePlaybookRef(s *mcclient.ClientSession) error {
+	log.Infof("start to EnsureAgentAnsiblePlaybookRef")
+	ctrue := true
+	data, err := modules.AnsiblePlaybookReference.GetByName(s, agentName, nil)
+	if err != nil {
+		if httputils.ErrorCode(err) != 404 {
+			return errors.Wrapf(err, "unable to get ansible playbook ref %q", agentName)
+		}
+		// create one
+		params := ansibleapi.AnsiblePlaybookReferenceCreateInput{}
+		params.SAnsiblePlaybookReference.Name = agentName
+		params.SharableVirtualResourceCreateInput.Name = agentName
+		params.Project = "system"
+		params.IsPublic = &ctrue
+		params.PublicScope = "system"
+		params.PlaybookPath = "/opt/yunion/playbook/monitor-agent/playbook.yaml"
+		params.Method = "offline"
+		params.PlaybookParams = map[string]interface{}{
+			"telegraf_agent_package_method":    "offline",
+			"telegraf_agent_package_local_dir": "/opt/yunion/ansible-install-pkg",
+		}
+		data, err = modules.AnsiblePlaybookReference.Create(s, jsonutils.Marshal(params))
+		if err != nil {
+			return errors.Wrapf(err, "unable to create ansible playbook ref %q", agentName)
+		}
+	}
+	refId, _ := data.GetString("id")
+	_, err = modules.DevToolScripts.GetByName(s, agentName, nil)
+	if err != nil {
+		if httputils.ErrorCode(err) != 404 {
+			return errors.Wrapf(err, "unable to get devtool script %q", agentName)
+		}
+		// create one
+		params := devtoolapi.ScriptCreateInput{}
+		params.Name = agentName
+		params.Project = "system"
+		params.IsPublic = &ctrue
+		params.PublicScope = "system"
+		params.PlaybookReference = refId
+		params.MaxTryTimes = 3
+		_, err := modules.DevToolScripts.Create(s, jsonutils.Marshal(params))
+		if err != nil {
+			return errors.Wrapf(err, "unable to create devtool script %q", agentName)
+		}
+	}
+	return nil
 }
