@@ -4,6 +4,7 @@ import (
 	"io"
 
 	"github.com/spf13/cobra"
+	"k8s.io/kubernetes/cmd/kubeadm/app/cmd/alpha"
 )
 
 func NewOneCloudAdminCommand(in io.Reader, out, err io.Writer) (*cobra.Command, []func() *cobra.Command) {
@@ -23,6 +24,8 @@ func NewOneCloudAdminCommand(in io.Reader, out, err io.Writer) (*cobra.Command, 
 	cmds.AddCommand(NewCmdJoin(out, nil))
 	cmds.AddCommand(NewCmdReset(in, out, nil))
 	cmds.AddCommand(NewCmdToken(out, err))
+	cmds.AddCommand(alpha.NewCmdAlpha(in, out))
+
 	cmds.AddCommand(NewCmdCluster(out))
 	cmds.AddCommand(NewCmdComponent(out))
 	cmds.AddCommand(NewCmdNode(out))

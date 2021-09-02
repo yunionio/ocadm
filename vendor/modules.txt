@@ -570,7 +570,7 @@ k8s.io/cli-runtime/pkg/kustomize/k8sdeps/transformer/patch
 k8s.io/cli-runtime/pkg/kustomize/k8sdeps/validator
 k8s.io/cli-runtime/pkg/printers
 k8s.io/cli-runtime/pkg/resource
-# k8s.io/client-go v12.0.0+incompatible => k8s.io/client-go v0.15.8
+# k8s.io/client-go v12.0.0+incompatible => github.com/zexi/client-go v0.15.9-rc.1
 k8s.io/client-go/discovery
 k8s.io/client-go/discovery/cached/disk
 k8s.io/client-go/discovery/fake
@@ -796,7 +796,7 @@ k8s.io/kube-openapi/pkg/util/proto/validation
 k8s.io/kube-proxy/config/v1alpha1
 # k8s.io/kubelet v0.0.0 => k8s.io/kubelet v0.15.8
 k8s.io/kubelet/config/v1beta1
-# k8s.io/kubernetes v1.16.0 => github.com/zexi/kubernetes v1.15.8
+# k8s.io/kubernetes v1.16.0 => github.com/zexi/kubernetes v1.15.9-rc.2
 k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm
 k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/scheme
 k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta1
