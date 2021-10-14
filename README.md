@@ -1,3 +1,9 @@
+# ocadm 作用
+
+ocadm 用于部署在 Kubernetes 集群上运行的 Cloudpods 服务。
+
+ocadm 包装了 kubeadm 的代码，用于部署 Kubernetes 集群，然后添加了额外的代码部署 cloudpods-operator，calico-cni 等关键服务，保证在部署完成的 Kubernetes 集群上运行 Cloudpods 服务。
+
 # 编译
 
 ```bash
