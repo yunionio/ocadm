@@ -67,9 +67,11 @@ func (m *cloudmonManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg *v1alp
 		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
 			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-server", "Aliyun"))
 		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
+			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-server", "Apsara"))
+		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
 			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-server", "Huawei"))
 		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
-			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-server", "HuaweiCloudStack"))
+			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-server", "HCSO"))
 		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
 			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-server", "Qcloud"))
 		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
@@ -93,23 +95,35 @@ func (m *cloudmonManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg *v1alp
 		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
 			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-rds", "Aliyun"))
 		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
+			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-rds", "Apsara"))
+		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
 			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-rds", "Huawei"))
+		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
+			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-rds", "HCSO"))
 		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
 			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-rds", "Qcloud"))
 		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
 			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-rds", "JDcloud"))
+		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
+			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-redis", "Azure"))
 
 		// report-redis
 		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
 			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-redis", "Aliyun"))
 		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
+			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-redis", "Apsara"))
+		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
 			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-redis", "Huawei"))
 		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
 			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-redis", "Qcloud"))
+		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
+			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-redis", "Azure"))
 
 		// report-oss
 		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
 			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-oss", "Aliyun"))
+		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
+			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-oss", "Apsara"))
 		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
 			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-oss", "Huawei"))
 
@@ -125,6 +139,10 @@ func (m *cloudmonManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg *v1alp
 		commandBuilder.WriteString(formateCloudmonNoProviderCommand(oc.Spec.Cloudmon.CloudmonReportCloudAccountDuration,
 			oc.Spec.Cloudmon.CloudmonReportCloudAccountDuration*60, 0, "report-storage"))
 
+		// report-elb
+		commandBuilder.WriteString(formateCloudmonProviderCommand(oc.Spec.Cloudmon.CloudmonReportServerDuration,
+			oc.Spec.Cloudmon.CloudmonReportServerDuration*60, oc.Spec.Cloudmon.CloudmonReportServerDuration*3, "report-elb", "Azure"))
+
 		return []corev1.Container{
 			{
 				Name:  v1alpha1.CloudmonComponentType.String(),
@@ -138,7 +156,7 @@ func (m *cloudmonManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg *v1alp
 			},
 		}
 	}
-	return m.newDefaultDeployment(v1alpha1.CloudmonComponentType, v1alpha1.CloudmonComponentType, oc, h, spec, nil, containersF)
+	return m.newDefaultDeployment(v1alpha1.CloudmonComponentType, v1alpha1.CloudmonComponentType, oc, h, &spec, nil, containersF)
 }
 
 func formateCloudmonProviderCommand(reportDur uint, timeout uint, reportInterval uint, command string,
@@ -154,7 +172,7 @@ func formateCloudmonNoProviderCommand(reportDur uint, timeout uint, reportInterv
 		return fmt.Sprintf("\necho '*/%d * * * * /opt/yunion/bin/cloudmon --config /etc/yunion/apigateway.conf %s --timeout %d 2>&1' > /etc/crontabs/root",
 			reportDur, command, timeout)
 	case "report-usage":
-		return fmt.Sprintf("\necho '*/%d * * * *  /opt/yunion/bin/cloudmon --config /etc/yunion/apigateway.conf %s timeout  %d  2>&1' >> /etc/crontabs/root",
+		return fmt.Sprintf("\necho '*/%d * * * *  /opt/yunion/bin/cloudmon --config /etc/yunion/apigateway.conf %s  --timeout  %d  2>&1' >> /etc/crontabs/root",
 			reportDur, command, timeout)
 	case "report-alertrecord":
 		return fmt.Sprintf("\necho '0 0 */%d * *  /opt/yunion/bin/cloudmon --config /etc/yunion/apigateway.conf %s --interval %d --timeout  %d 2>&1' >> /etc/crontabs/root",

@@ -33,14 +33,15 @@ type SApsaraEndpoints struct {
 	RamEndpoint             string `default:"$APSARA_RAM_ENDPOINT"`
 	MetricsEndpoint         string `default:"$APSRRA_METRICS_ENDPOINT"`
 	ResourcemanagerEndpoint string `default:"$APSARA_RESOURCEMANAGER_ENDPOINT"`
+	DefaultRegion           string `default:"$APSARA_DEFAULT_REGION"`
 }
 
-// SHuaweiCloudStackEndpoints 华为私有云endpoints配置
+// SHCSOEndpoints 华为私有云endpoints配置
 /*
 endpoint获取方式优先级：
 通过参数明确指定使用指定endpoint。否则，程序根据华为云endpoint命名规则自动拼接endpoint
 */
-type SHuaweiCloudStackEndpoints struct {
+type SHCSOEndpoints struct {
 	caches map[string]string
 
 	// 华为私有云Endpoint域名
@@ -102,7 +103,7 @@ type SHuaweiCloudStackEndpoints struct {
 	SfsTurbo string `default:"$HUAWEI_SFS_TURBO_ENDPOINT"`
 }
 
-func (self *SHuaweiCloudStackEndpoints) GetEndpoint(serviceName string, region string) string {
+func (self *SHCSOEndpoints) GetEndpoint(serviceName string, region string) string {
 	sn := utils.Kebab2Camel(serviceName, "-")
 	if self.caches == nil {
 		self.caches = make(map[string]string, 0)

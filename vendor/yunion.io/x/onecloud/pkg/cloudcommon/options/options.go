@@ -27,6 +27,7 @@ import (
 	"path/filepath"
 
 	"golang.org/x/net/http/httpproxy"
+	"golang.org/x/text/language"
 
 	"yunion.io/x/log"
 	"yunion.io/x/log/hooks"
@@ -102,6 +103,11 @@ type BaseOptions struct {
 
 	GlobalHTTPProxy  string `help:"Global http proxy"`
 	GlobalHTTPSProxy string `help:"Global https proxy"`
+
+	IgnoreNonrunningGuests bool `default:"true" help:"Count memory for running guests only when do scheduling. Ignore memory allocation for non-running guests"`
+
+	PlatformName  string            `help:"identity name of this platform" default:"Cloudpods"`
+	PlatformNames map[string]string `help:"identity name of this platform by language"`
 }
 
 const (
@@ -112,7 +118,7 @@ const (
 type CommonOptions struct {
 	AuthURL            string `help:"Keystone auth URL" alias:"auth-uri"`
 	AdminUser          string `help:"Admin username"`
-	AdminDomain        string `help:"Admin user domain" default:"default"`
+	AdminDomain        string `help:"Admin user domain" default:"Default"`
 	AdminPassword      string `help:"Admin password" alias:"admin-passwd"`
 	AdminProject       string `help:"Admin project" default:"system" alias:"admin-tenant-name"`
 	AdminProjectDomain string `help:"Domain of Admin project" default:"default"`
@@ -332,4 +338,13 @@ func (self *BaseOptions) HttpTransportProxyFunc() httputils.TransportProxyFunc {
 	return func(req *http.Request) (*url.URL, error) {
 		return proxyFunc(req.URL)
 	}
+}
+
+func (opt *BaseOptions) GetPlatformName(lang language.Tag) string {
+	if len(opt.PlatformNames) > 0 {
+		if name, ok := opt.PlatformNames[lang.String()]; ok {
+			return name
+		}
+	}
+	return opt.PlatformName
 }
