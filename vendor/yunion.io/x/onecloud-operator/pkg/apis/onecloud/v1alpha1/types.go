@@ -19,6 +19,7 @@ import (
 
 	apps "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -480,31 +481,34 @@ type Minio struct {
 // DeploymentSpec constains defails of deployment resource service
 type DeploymentSpec struct {
 	ContainerSpec
-	Disable      bool                `json:"disable"`
-	Replicas     int32               `json:"replicas"`
-	Affinity     *corev1.Affinity    `json:"affinity,omitempty"`
-	NodeSelector map[string]string   `json:"nodeSelector,omitempty"`
-	Tolerations  []corev1.Toleration `json:"tolerations,omitempty"`
-	Annotations  map[string]string   `json:"annotations,omitempty"`
+	Disable          bool                          `json:"disable"`
+	Replicas         int32                         `json:"replicas"`
+	Affinity         *corev1.Affinity              `json:"affinity,omitempty"`
+	NodeSelector     map[string]string             `json:"nodeSelector,omitempty"`
+	Tolerations      []corev1.Toleration           `json:"tolerations,omitempty"`
+	Annotations      map[string]string             `json:"annotations,omitempty"`
+	ImagePullSecrets []corev1.LocalObjectReference `json:"imagePullSecrets,omitempty"`
 }
 
 type CronJobSpec struct {
 	ContainerSpec
-	Disable      bool                `json:"disable"`
-	Schedule     string              `json:"schedule"`
-	Affinity     *corev1.Affinity    `json:"affinity,omitempty"`
-	NodeSelector map[string]string   `json:"nodeSelector,omitempty"`
-	Tolerations  []corev1.Toleration `json:"tolerations,omitempty"`
-	Annotations  map[string]string   `json:"annotations,omitempty"`
+	Disable          bool                          `json:"disable"`
+	Schedule         string                        `json:"schedule"`
+	Affinity         *corev1.Affinity              `json:"affinity,omitempty"`
+	NodeSelector     map[string]string             `json:"nodeSelector,omitempty"`
+	Tolerations      []corev1.Toleration           `json:"tolerations,omitempty"`
+	Annotations      map[string]string             `json:"annotations,omitempty"`
+	ImagePullSecrets []corev1.LocalObjectReference `json:"imagePullSecrets,omitempty"`
 }
 
 type DaemonSetSpec struct {
 	ContainerSpec
-	Disable      bool                `json:"disable"`
-	Affinity     *corev1.Affinity    `json:"affinity,omitempty"`
-	NodeSelector map[string]string   `json:"nodeSelector,omitempty"`
-	Tolerations  []corev1.Toleration `json:"tolerations,omitempty"`
-	Annotations  map[string]string   `json:"annotations,omitempty"`
+	Disable          bool                          `json:"disable"`
+	Affinity         *corev1.Affinity              `json:"affinity,omitempty"`
+	NodeSelector     map[string]string             `json:"nodeSelector,omitempty"`
+	Tolerations      []corev1.Toleration           `json:"tolerations,omitempty"`
+	Annotations      map[string]string             `json:"annotations,omitempty"`
+	ImagePullSecrets []corev1.LocalObjectReference `json:"imagePullSecrets,omitempty"`
 }
 
 type StatefulDeploymentSpec struct {
@@ -821,9 +825,9 @@ type Service struct {
 
 type ResourceRequirement struct {
 	// CPU is how many cores a pod requires
-	CPU string `json:"cpu,omitempty"`
+	CPU *resource.Quantity `json:"cpu,omitempty"`
 	// Memory is how much memory a pod requires
-	Memory string `json:"memory,omitempty"`
+	Memory *resource.Quantity `json:"memory,omitempty"`
 	// Storage is storage size a pod requires
 	Storage string `json:"storage,omitempty"`
 }

@@ -43,11 +43,11 @@ require (
 	sigs.k8s.io/cluster-api v0.1.4
 	sigs.k8s.io/controller-runtime v0.1.11 // indirect
 	sigs.k8s.io/testing_frameworks v0.1.1 // indirect
-	yunion.io/x/jsonutils v0.0.0-20210709075951-798a67800349
+	yunion.io/x/jsonutils v0.0.0-20211105163012-d846c05a3c9a
 	yunion.io/x/log v0.0.0-20201210064738-43181789dc74
-	yunion.io/x/onecloud v0.0.0-20210815103010-1db801181c02
-	yunion.io/x/onecloud-operator v0.0.0-20210816020622-ee849d45b8d1
-	yunion.io/x/pkg v0.0.0-20210721081124-55078288ca4c
+	yunion.io/x/onecloud v0.0.0-20211113105258-fa8a7d4a355f
+	yunion.io/x/onecloud-operator v0.0.0-20211113111739-e27d781a1561
+	yunion.io/x/pkg v0.0.0-20210918114143-ce839f862c5f
 )
 
 replace (
