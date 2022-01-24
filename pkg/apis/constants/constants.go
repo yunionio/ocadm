@@ -20,7 +20,7 @@ const (
 	RancherLocalPathProvisioner       = "local-path-provisioner"
 	DefaultLocalProvisionerVersion    = "v0.0.11"
 	IngressControllerTraefik          = "traefik"
-	DefaultTraefikVersion             = "v1.7"
+	DefaultTraefikVersion             = "v1.7.34"
 	CalicoKubeControllers             = "calico-kube-controllers"
 	CalicoNode                        = "calico-node"
 	CalicoCNI                         = "calico-cni"
