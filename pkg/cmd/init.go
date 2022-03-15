@@ -162,6 +162,7 @@ func NewCmdInit(out io.Writer, initOptions *initOptions) *cobra.Command {
 
 			data := c.(*initData)
 			data.enableHostAgent = initOptions.hostCfg.EnableHost
+			data.cfg.ComponentConfigs.KubeProxy.IPVS.StrictARP = true
 			fmt.Printf("[init] Using Kubernetes and Onecloud version: %s & %s\n", data.Cfg().KubernetesVersion, data.OnecloudCfg().OnecloudVersion)
 
 			err = initRunner.Run(args)
