@@ -79,12 +79,25 @@ metadata:
   labels:
     k8s-app: traefik-ingress-lb
 spec:
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
   template:
     metadata:
       labels:
         k8s-app: traefik-ingress-lb
         name: traefik-ingress-lb
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: onecloud.yunion.io/controller
+                operator: In
+                values:
+                - enable
       serviceAccountName: traefik-ingress-controller
       hostNetwork: true
       terminationGracePeriodSeconds: 60
