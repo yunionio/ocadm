@@ -115,7 +115,9 @@ func setDefaults_kubeadmInitConfiguration(obj *kubeadmapi.InitConfiguration) {
 	kubeadmscheme.Scheme.Convert(dvClustercfg, &obj.ClusterConfiguration, nil)
 
 	obj.KubernetesVersion = DefaultKubernetesVersion
-	obj.Networking.PodSubnet = DefaultPodSubnetCIDR
+	if obj.Networking.PodSubnet == "" {
+		obj.Networking.PodSubnet = DefaultPodSubnetCIDR
+	}
 
 	// adjust extra args
 	if obj.APIServer.ExtraArgs == nil {
