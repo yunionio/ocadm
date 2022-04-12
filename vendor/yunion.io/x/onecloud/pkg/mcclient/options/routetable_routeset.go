@@ -20,6 +20,10 @@ type RouteTableRouteSetListOptions struct {
 	BaseListOptions
 	RouteTableId string
 	VpcId        string
+	Type         string
+	NextHopType  string
+	NextHopId    string
+	Cidr         string
 }
 
 func (opts *RouteTableRouteSetListOptions) Params() (jsonutils.JSONObject, error) {

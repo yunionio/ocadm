@@ -21,6 +21,14 @@ func newSuggestionManager(man *ComponentManager) manager.Manager {
 	return &suggestionManager{man}
 }
 
+func (m *suggestionManager) getProductVersions() []v1alpha1.ProductVersion {
+	return []v1alpha1.ProductVersion{
+		v1alpha1.ProductVersionFullStack,
+		v1alpha1.ProductVersionCMP,
+		v1alpha1.ProductVersionEdge,
+	}
+}
+
 func (m *suggestionManager) Sync(oc *v1alpha1.OnecloudCluster) error {
 	if !IsEnterpriseEdition(oc) {
 		return nil
@@ -46,7 +54,7 @@ func (m *suggestionManager) getConfigMap(oc *v1alpha1.OnecloudCluster, cfg *v1al
 	}
 	config := cfg.Monitor
 	SetDBOptions(&opt.DBOptions, oc.Spec.Mysql, config.DB)
-	SetOptionsServiceTLS(&opt.BaseOptions)
+	SetOptionsServiceTLS(&opt.BaseOptions, false)
 	SetServiceCommonOptions(&opt.CommonOptions, oc, config.ServiceCommonOptions)
 	opt.AutoSyncTable = true
 	opt.SslCertfile = path.Join(constants.CertDir, constants.ServiceCertName)

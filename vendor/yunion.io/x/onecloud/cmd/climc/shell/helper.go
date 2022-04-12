@@ -240,7 +240,14 @@ func (cmd ResourceCmd) GetProperty(args IPropertyOpt) {
 		if err != nil {
 			return err
 		}
-		PrintObject(ret)
+		if _, ok := ret.(*jsonutils.JSONArray); ok {
+			data, _ := ret.GetArray()
+			PrintList(&modulebase.ListResult{
+				Data: data,
+			}, nil)
+		} else {
+			PrintObject(ret)
+		}
 		return nil
 	}
 	cmd.RunWithDesc(args.Property(), fmt.Sprintf("Get property of a %s", man.GetKeyword()), args, callback)
@@ -346,6 +353,32 @@ func (cmd ResourceCmd) Delete(args IDeleteOpt) {
 			return err
 		}
 		ret, err := man.(modulebase.Manager).Delete(s, args.GetId(), params)
+		if err != nil {
+			return err
+		}
+		PrintObject(ret)
+		return nil
+	}
+	cmd.RunWithDesc("delete", fmt.Sprintf("Delete %s", man.GetKeyword()), args, callback)
+}
+
+type IDeleteWithParamOpt interface {
+	IDeleteOpt
+	QueryParams() (jsonutils.JSONObject, error)
+}
+
+func (cmd ResourceCmd) DeleteWithParam(args IDeleteWithParamOpt) {
+	man := cmd.manager
+	callback := func(s *mcclient.ClientSession, args IDeleteWithParamOpt) error {
+		queryParams, err := args.QueryParams()
+		if err != nil {
+			return err
+		}
+		params, err := args.Params()
+		if err != nil {
+			return err
+		}
+		ret, err := man.(modulebase.Manager).DeleteWithParam(s, args.GetId(), queryParams, params)
 		if err != nil {
 			return err
 		}

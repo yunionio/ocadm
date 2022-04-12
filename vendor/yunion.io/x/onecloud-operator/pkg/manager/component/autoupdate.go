@@ -34,7 +34,18 @@ func newAutoUpdateManager(man *ComponentManager) manager.Manager {
 	return &autoUpdateManager{man}
 }
 
+func (m *autoUpdateManager) getProductVersions() []v1alpha1.ProductVersion {
+	return []v1alpha1.ProductVersion{
+		v1alpha1.ProductVersionFullStack,
+		v1alpha1.ProductVersionCMP,
+		v1alpha1.ProductVersionEdge,
+	}
+}
+
 func (m *autoUpdateManager) Sync(oc *v1alpha1.OnecloudCluster) error {
+	if !IsEnterpriseEdition(oc) {
+		return nil
+	}
 	return syncComponent(m, oc, oc.Spec.AutoUpdate.Disable, "")
 }
 
@@ -67,7 +78,7 @@ func (m *autoUpdateManager) getConfigMap(oc *v1alpha1.OnecloudCluster, cfg *v1al
 		return nil, false, err
 	}
 	config := cfg.AutoUpdate
-	SetOptionsServiceTLS(&opt.BaseOptions)
+	SetOptionsServiceTLS(&opt.BaseOptions, false)
 	SetServiceCommonOptions(&opt.CommonOptions, oc, config)
 
 	opt.UpdateServer = "https://iso.yunion.cn"

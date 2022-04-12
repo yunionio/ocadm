@@ -48,7 +48,7 @@ const (
 	DefaultOvnImageTag  = DefaultOvnVersion + "-1"
 
 	DefaultHostImageName = "host-image"
-	DefaultHostImageTag  = "v1.0.1"
+	DefaultHostImageTag  = "v1.0.3"
 
 	DefaultInfluxdbImageVersion = "1.7.7"
 
@@ -57,7 +57,7 @@ const (
 	DefaultTelegrafInitImageName = "telegraf-init"
 	DefaultTelegrafInitImageTag  = "release-1.5.2"
 	DefaultTelegrafRaidImageName = "telegraf-raid-plugin"
-	DefaultTelegrafRaidImageTag  = "release-1.6.1"
+	DefaultTelegrafRaidImageTag  = "release-1.6.3"
 )
 
 func addDefaultingFuncs(scheme *runtime.Scheme) error {
@@ -90,6 +90,9 @@ func IsEnterpriseEdition(oc *OnecloudCluster) bool {
 
 func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
 	setDefaults_Mysql(&obj.Mysql)
+	if obj.ProductVersion == "" {
+		obj.ProductVersion = ProductVersionFullStack
+	}
 	if obj.Region == "" {
 		obj.Region = DefaultOnecloudRegion
 	}
@@ -129,6 +132,7 @@ func SetDefaults_OnecloudClusterSpec(obj *OnecloudClusterSpec, isEE bool) {
 		CloudIdComponentType:         &obj.CloudId,
 		SuggestionComponentType:      &obj.Suggestion,
 		CloudmonComponentType:        &obj.Cloudmon.DeploymentSpec,
+		ScheduledtaskComponentType:   &obj.Scheduledtask,
 	} {
 		SetDefaults_DeploymentSpec(spec, getImage(obj.ImageRepository, spec.Repository, cType, spec.ImageName, obj.Version, spec.Tag))
 	}

@@ -15,9 +15,9 @@ import (
 
 	"github.com/pborman/uuid"
 	"github.com/pkg/errors"
-	"go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
-	"go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/api/v3/etcdserverpb"
+	"go.etcd.io/etcd/api/v3/v3rpc/rpctypes"
+	clientv3 "go.etcd.io/etcd/client/v3"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -70,7 +70,7 @@ const (
 )
 
 var (
-	m *etcdManager
+	etcdMan *etcdManager
 
 	reconcileInterval         = 8 * time.Second
 	podTerminationGracePeriod = int64(5)
@@ -79,13 +79,21 @@ var (
 )
 
 func newEtcdComponentManager(baseMan *ComponentManager) manager.Manager {
-	if m == nil {
-		m = &etcdManager{
+	if etcdMan == nil {
+		etcdMan = &etcdManager{
 			ComponentManager: baseMan,
 		}
-		go m.defrag()
+		go etcdMan.defrag()
 	}
-	return m
+	return etcdMan
+}
+
+func (m *etcdManager) getProductVersions() []v1alpha1.ProductVersion {
+	return []v1alpha1.ProductVersion{
+		v1alpha1.ProductVersionFullStack,
+		v1alpha1.ProductVersionCMP,
+		v1alpha1.ProductVersionEdge,
+	}
 }
 
 func (m *etcdManager) isSyncing() bool {
@@ -689,9 +697,10 @@ func newEtcdServiceManifest(
 			Annotations: annotations,
 		},
 		Spec: corev1.ServiceSpec{
-			Ports:     ports,
-			Selector:  labels,
-			ClusterIP: clusterIP,
+			PublishNotReadyAddresses: true,
+			Ports:                    ports,
+			Selector:                 labels,
+			ClusterIP:                clusterIP,
 		},
 	}
 	return svc

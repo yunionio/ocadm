@@ -36,6 +36,14 @@ func newWebconsoleManager(man *ComponentManager) manager.Manager {
 	return &webconsoleManager{man}
 }
 
+func (m *webconsoleManager) getProductVersions() []v1alpha1.ProductVersion {
+	return []v1alpha1.ProductVersion{
+		v1alpha1.ProductVersionFullStack,
+		v1alpha1.ProductVersionCMP,
+		v1alpha1.ProductVersionEdge,
+	}
+}
+
 func (m *webconsoleManager) Sync(oc *v1alpha1.OnecloudCluster) error {
 	return syncComponent(m, oc, oc.Spec.Webconsole.Disable, "")
 }
@@ -57,7 +65,7 @@ func (m *webconsoleManager) getConfigMap(oc *v1alpha1.OnecloudCluster, cfg *v1al
 		return nil, false, err
 	}
 	config := cfg.Webconsole
-	SetOptionsServiceTLS(&opt.BaseOptions)
+	SetOptionsServiceTLS(&opt.BaseOptions, false)
 	SetServiceCommonOptions(&opt.CommonOptions, oc, config)
 
 	opt.IpmitoolPath = "/usr/sbin/ipmitool"

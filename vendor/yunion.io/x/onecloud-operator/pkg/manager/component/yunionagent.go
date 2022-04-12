@@ -41,6 +41,14 @@ type yunionagentOptions struct {
 	options.DBOptions
 }
 
+func (m *yunionagentManager) getProductVersions() []v1alpha1.ProductVersion {
+	return []v1alpha1.ProductVersion{
+		v1alpha1.ProductVersionFullStack,
+		v1alpha1.ProductVersionCMP,
+		v1alpha1.ProductVersionEdge,
+	}
+}
+
 func (m *yunionagentManager) Sync(oc *v1alpha1.OnecloudCluster) error {
 	if !IsEnterpriseEdition(oc) {
 		return nil
@@ -67,7 +75,7 @@ func (m *yunionagentManager) getConfigMap(oc *v1alpha1.OnecloudCluster, cfg *v1a
 	}
 	config := cfg.Yunionagent
 	SetDBOptions(&opt.DBOptions, oc.Spec.Mysql, config.DB)
-	SetOptionsServiceTLS(&opt.BaseOptions)
+	SetOptionsServiceTLS(&opt.BaseOptions, false)
 	SetServiceCommonOptions(&opt.CommonOptions, oc, config.ServiceCommonOptions)
 	opt.AutoSyncTable = true
 	opt.Port = constants.YunionAgentPort
@@ -118,5 +126,6 @@ func (m *yunionagentManager) getDaemonSet(oc *v1alpha1.OnecloudCluster, cfg *v1a
 	if err != nil {
 		return nil, err
 	}
+	ds.Spec.Template.Spec.ServiceAccountName = constants.ServiceAccountOnecloudOperator
 	return ds, nil
 }

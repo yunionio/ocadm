@@ -17,6 +17,7 @@ package compute
 import (
 	"time"
 
+	"yunion.io/x/jsonutils"
 	"yunion.io/x/pkg/util/fileutils"
 
 	"yunion.io/x/onecloud/pkg/apis"
@@ -27,6 +28,7 @@ import (
 
 type DiskCreateInput struct {
 	apis.VirtualResourceCreateInput
+	apis.EncryptedResourceCreateInput
 
 	*DiskConfig
 
@@ -196,6 +198,7 @@ type SimpleSnapshotPolicy struct {
 type DiskDetails struct {
 	apis.VirtualResourceDetails
 	StorageResourceInfo
+	apis.EncryptedResourceDetails
 
 	SDisk
 
@@ -272,10 +275,12 @@ type DiskAllocateInput struct {
 	DiskSizeMb    int
 	ImageId       string
 	FsFormat      string
-	Encryption    bool
 	Rebuild       bool
 	BackingDiskId string
 	SnapshotId    string
+
+	BackupId string
+	Backup   *DiskAllocateFromBackupInput
 
 	SnapshotUrl        string
 	SnapshotOutOfChain bool
@@ -286,4 +291,18 @@ type DiskAllocateInput struct {
 	// vmware
 	HostIp    string
 	Datastore vcenter.SVCenterAccessInfo
+
+	// encryption
+	Encryption  bool
+	EncryptInfo apis.SEncryptInfo
+}
+
+type DiskAllocateFromBackupInput struct {
+	BackupId                string
+	BackupStorageId         string
+	BackupStorageAccessInfo *jsonutils.JSONDict
+}
+
+type DiskDeleteInput struct {
+	SkipRecycle *bool
 }

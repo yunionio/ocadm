@@ -35,9 +35,13 @@ var SIZE_REG *regexp.Regexp
 var MONTH_REG *regexp.Regexp
 var DATE_REG *regexp.Regexp
 var DATE_COMPACT_REG *regexp.Regexp
+var DATE_EXCEL_REG *regexp.Regexp
 var ISO_TIME_REG *regexp.Regexp
 var ISO_NO_SECOND_TIME_REG *regexp.Regexp
 var FULLISO_TIME_REG *regexp.Regexp
+var ISO_TIME_REG2 *regexp.Regexp
+var ISO_NO_SECOND_TIME_REG2 *regexp.Regexp
+var FULLISO_TIME_REG2 *regexp.Regexp
 var ZSTACK_TIME_REG *regexp.Regexp
 var COMPACT_TIME_REG *regexp.Regexp
 var MYSQL_TIME_REG *regexp.Regexp
@@ -65,9 +69,13 @@ func init() {
 	MONTH_REG = regexp.MustCompile(`^\d{4}-\d{2}$`)
 	DATE_REG = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`)
 	DATE_COMPACT_REG = regexp.MustCompile(`^\d{8}$`)
+	DATE_EXCEL_REG = regexp.MustCompile(`^\d{2}-\d{2}-\d{2}$`)
 	ISO_TIME_REG = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})$`)
 	ISO_NO_SECOND_TIME_REG = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})$`)
 	FULLISO_TIME_REG = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3,9}(Z|[+-]\d{2}:\d{2})$`)
+	ISO_TIME_REG2 = regexp.MustCompile(`^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})$`)
+	ISO_NO_SECOND_TIME_REG2 = regexp.MustCompile(`^\d{4}-\d{2}-\d{2} \d{2}:\d{2}(Z|[+-]\d{2}:\d{2})$`)
+	FULLISO_TIME_REG2 = regexp.MustCompile(`^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3,9}(Z|[+-]\d{2}:\d{2})$`)
 	COMPACT_TIME_REG = regexp.MustCompile(`^\d{14}$`)
 	ZSTACK_TIME_REG = regexp.MustCompile(`^\w+ \d{1,2}, \d{4} \d{1,2}:\d{1,2}:\d{1,2} (AM|PM)$`) //ZStack time format "Apr 1, 2019 3:23:17 PM"
 	MYSQL_TIME_REG = regexp.MustCompile(`^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$`)
@@ -186,6 +194,10 @@ func MatchDateCompact(str string) bool {
 	return DATE_COMPACT_REG.MatchString(str)
 }
 
+func MatchDateExcel(str string) bool {
+	return DATE_EXCEL_REG.MatchString(str)
+}
+
 func MatchZStackTime(str string) bool {
 	return ZSTACK_TIME_REG.MatchString(str)
 }
@@ -200,6 +212,18 @@ func MatchISONoSecondTime(str string) bool {
 
 func MatchFullISOTime(str string) bool {
 	return FULLISO_TIME_REG.MatchString(str)
+}
+
+func MatchISOTime2(str string) bool {
+	return ISO_TIME_REG2.MatchString(str)
+}
+
+func MatchISONoSecondTime2(str string) bool {
+	return ISO_NO_SECOND_TIME_REG2.MatchString(str)
+}
+
+func MatchFullISOTime2(str string) bool {
+	return FULLISO_TIME_REG2.MatchString(str)
 }
 
 func MatchCompactTime(str string) bool {

@@ -34,6 +34,13 @@ func newS3gatewayManager(man *ComponentManager) manager.Manager {
 	return &s3gatewayManager{man}
 }
 
+func (m *s3gatewayManager) getProductVersions() []v1alpha1.ProductVersion {
+	return []v1alpha1.ProductVersion{
+		v1alpha1.ProductVersionFullStack,
+		v1alpha1.ProductVersionEdge,
+	}
+}
+
 func (m *s3gatewayManager) Sync(oc *v1alpha1.OnecloudCluster) error {
 	return syncComponent(m, oc, oc.Spec.S3gateway.Disable, "")
 }
@@ -55,7 +62,7 @@ func (m *s3gatewayManager) getConfigMap(oc *v1alpha1.OnecloudCluster, cfg *v1alp
 		return nil, false, err
 	}
 	config := cfg.S3gateway
-	SetOptionsServiceTLS(&opt.BaseOptions)
+	SetOptionsServiceTLS(&opt.BaseOptions, false)
 	SetServiceCommonOptions(&opt.CommonOptions, oc, config)
 
 	return m.newServiceConfigMap(v1alpha1.S3gatewayComponentType, "", oc, opt), false, nil

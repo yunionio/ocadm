@@ -146,6 +146,12 @@ func newItsmManager(man *ComponentManager) manager.Manager {
 	return &itsmManager{man}
 }
 
+func (m *itsmManager) getProductVersions() []v1alpha1.ProductVersion {
+	return []v1alpha1.ProductVersion{
+		v1alpha1.ProductVersionFullStack,
+	}
+}
+
 func (m *itsmManager) Sync(oc *v1alpha1.OnecloudCluster) error {
 	//isEE create itsm DeploymentSpec
 	if !IsEnterpriseEdition(oc) {
@@ -177,10 +183,10 @@ func (m *itsmManager) getConfigMap(oc *v1alpha1.OnecloudCluster, cfg *v1alpha1.O
 		DB2nd:         cfg_.SecondDatabase,
 		EncryptionKey: cfg_.EncryptionKey,
 	}
-	return NewConfigMapByTemplate(v1alpha1.ItsmComponentType, oc, ItsmTemplate, itsmConfigOption)
+	return m.NewConfigMapByTemplate(v1alpha1.ItsmComponentType, oc, ItsmTemplate, itsmConfigOption)
 }
 
-func NewConfigMapByTemplate(cType v1alpha1.ComponentType, oc *v1alpha1.OnecloudCluster, template string, config interface{}) (*corev1.ConfigMap, bool, error) {
+func (m *itsmManager) NewConfigMapByTemplate(cType v1alpha1.ComponentType, oc *v1alpha1.OnecloudCluster, template string, config interface{}) (*corev1.ConfigMap, bool, error) {
 	data, err := CompileTemplateFromMap(template, config)
 	if err != nil {
 		return nil, false, err

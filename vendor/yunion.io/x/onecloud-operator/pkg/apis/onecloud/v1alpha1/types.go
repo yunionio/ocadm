@@ -128,6 +128,8 @@ const (
 	CloudIdComponentType  ComponentType = "cloudid"
 
 	SuggestionComponentType ComponentType = "suggestion"
+
+	ScheduledtaskComponentType ComponentType = "scheduledtask"
 )
 
 // ComponentPhase is the current state of component
@@ -138,6 +140,17 @@ const (
 	NormalPhase ComponentPhase = "Normal"
 	// UpgradePhase represents the upgrade state of Onecloud cluster.
 	UpgradePhase ComponentPhase = "Upgrade"
+)
+
+type ProductVersion string
+
+const (
+	// ProductVersionFullStack: All kinds of product
+	ProductVersionFullStack ProductVersion = "FullStack"
+	// ProductVersionCMP: Cloud Management Platform product
+	ProductVersionCMP ProductVersion = "CMP"
+	// ProductVersionEdge: Private Cloud Edge product
+	ProductVersionEdge ProductVersion = "Edge"
 )
 
 // +genclient
@@ -166,6 +179,10 @@ type OnecloudClusterList struct {
 
 // OnecloudClusterSpec describes the attributes that a user creates on a onecloud cluster
 type OnecloudClusterSpec struct {
+	// DisableResourceManagement disable container cgroup resource limits and requests
+	DisableResourceManagement bool `json:"disableResourceMangement"`
+	// ProductVersion defines which product version used
+	ProductVersion ProductVersion `json:"productVersion"`
 	// Etcd holds configuration for etcd
 	Etcd Etcd `json:"etcd,omitempty"`
 	// Mysql holds configuration for mysql
@@ -266,6 +283,8 @@ type OnecloudClusterSpec struct {
 
 	// MonitorStack holds configuration for grafana, loki, prometheus and thanos services
 	MonitorStack MonitorStackSpec `json:"monitorStack"`
+
+	Scheduledtask DeploymentSpec `json:"scheduledtask"`
 }
 
 // OnecloudClusterStatus describes cluster status
@@ -300,6 +319,7 @@ type OnecloudClusterStatus struct {
 	Itsm           DeploymentStatus     `json:"itsm,omitempty"`
 	CloudId        DeploymentStatus     `json:"cloudid,omitempty"`
 	MonitorStack   MonitorStackStatus   `json:"monitorStack,omitempty"`
+	Scheduledtask  DeploymentStatus     `json:"scheduledtask,omitempty"`
 }
 
 type EtcdClusterSpec struct {
@@ -523,9 +543,14 @@ type ZoneStatefulDeploymentSpec struct {
 	Zones []string `json:"zones,omitempty"`
 }
 
+type DeploymentServiceSpec struct {
+	DeploymentSpec
+	DisableTLS bool `json:"disableTLS"`
+}
+
 // KeystoneSpec contains details of keystone service
 type KeystoneSpec struct {
-	DeploymentSpec
+	DeploymentServiceSpec
 	BootstrapPassword string `json:"bootstrapPassword"`
 }
 
@@ -931,4 +956,5 @@ type OnecloudClusterConfig struct {
 	Itsm            ItsmConfig             `json:"itsm"`
 	CloudId         ServiceDBCommonOptions `json:"cloudid"`
 	Suggestion      ServiceDBCommonOptions `json:"suggestion"`
+	Scheduledtask   ServiceDBCommonOptions `json:"scheduledtask"`
 }

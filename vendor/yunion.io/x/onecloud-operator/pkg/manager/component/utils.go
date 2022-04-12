@@ -602,12 +602,12 @@ func NewServiceNodePort(name string, port int32) corev1.ServicePort {
 	}
 }
 
-func SetOptionsServiceTLS(config *options.BaseOptions) {
-	enableConfigTLS(config, constants.CertDir, constants.CACertName, constants.ServiceCertName, constants.ServiceKeyName)
+func SetOptionsServiceTLS(config *options.BaseOptions, disableTLS bool) {
+	enableConfigTLS(disableTLS, config, constants.CertDir, constants.CACertName, constants.ServiceCertName, constants.ServiceKeyName)
 }
 
-func enableConfigTLS(config *options.BaseOptions, certDir string, ca string, cert string, key string) {
-	config.EnableSsl = true
+func enableConfigTLS(disableTLS bool, config *options.BaseOptions, certDir string, ca string, cert string, key string) {
+	config.EnableSsl = !disableTLS
 	config.SslCaCerts = path.Join(certDir, ca)
 	config.SslCertfile = path.Join(certDir, cert)
 	config.SslKeyfile = path.Join(certDir, key)
@@ -720,11 +720,13 @@ func NewHostVolume(
 			ReadOnly:  false,
 			MountPath: "/usr/local",
 		},
-		{
-			Name:      "proc",
-			ReadOnly:  false,
-			MountPath: "/proc",
-		},
+		/*
+		 * {
+		 * 	Name:      "proc",
+		 * 	ReadOnly:  false,
+		 * 	MountPath: "/proc",
+		 * },
+		 */
 		{
 			Name:      "dev",
 			ReadOnly:  false,
@@ -799,15 +801,17 @@ func NewHostVolume(
 				},
 			},
 		},
-		{
-			Name: "proc",
-			VolumeSource: corev1.VolumeSource{
-				HostPath: &corev1.HostPathVolumeSource{
-					Path: "/proc",
-					Type: &hostPathDirectory,
-				},
-			},
-		},
+		/*
+		 * {
+		 * 	Name: "proc",
+		 * 	VolumeSource: corev1.VolumeSource{
+		 * 		HostPath: &corev1.HostPathVolumeSource{
+		 * 			Path: "/proc",
+		 * 			Type: &hostPathDirectory,
+		 * 		},
+		 * 	},
+		 * },
+		 */
 		{
 			Name: "dev",
 			VolumeSource: corev1.VolumeSource{

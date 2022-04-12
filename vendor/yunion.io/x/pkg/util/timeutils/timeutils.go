@@ -54,9 +54,14 @@ const (
 	CompactTimeFormat     = "20060102150405"
 	DateFormat            = "2006-01-02"
 	ShortDateFormat       = "20060102"
+	DateExcelFormat       = "01-02-06"
 	MonthFormat           = "2006-01"
 	ShortMonthFormat      = "200601"
 	ZStackTimeFormat      = "Jan 2, 2006 15:04:05 PM"
+
+	IsoTimeFormat2         = "2006-01-02 15:04:05Z07:00"
+	IsoNoSecondTimeFormat2 = "2006-01-02 15:04Z07:00"
+	FullIsoNanoTimeFormat2 = "2006-01-02 15:04:05.000000000Z07:00"
 
 	RFC2882Format = time.RFC1123
 )
@@ -97,6 +102,10 @@ func ShortDate(now time.Time) string {
 	return Utcify(now).Format(ShortDateFormat)
 }
 
+func DateExcelStr(now time.Time) string {
+	return Utcify(now).Format(DateExcelFormat)
+}
+
 func MonthStr(now time.Time) string {
 	return Utcify(now).Format(MonthFormat)
 }
@@ -113,8 +122,16 @@ func ParseIsoTime(str string) (time.Time, error) {
 	return time.Parse(IsoTimeFormat, str)
 }
 
+func ParseIsoTime2(str string) (time.Time, error) {
+	return time.Parse(IsoTimeFormat2, str)
+}
+
 func ParseIsoNoSecondTime(str string) (time.Time, error) {
 	return time.Parse(IsoNoSecondTimeFormat, str)
+}
+
+func ParseIsoNoSecondTime2(str string) (time.Time, error) {
+	return time.Parse(IsoNoSecondTimeFormat2, str)
 }
 
 func toFullIsoNanoTimeFormat(str string) string {
@@ -141,6 +158,10 @@ func toFullIsoNanoTimeFormat(str string) string {
 
 func ParseFullIsoTime(str string) (time.Time, error) {
 	return time.Parse(FullIsoNanoTimeFormat, toFullIsoNanoTimeFormat(str))
+}
+
+func ParseFullIsoTime2(str string) (time.Time, error) {
+	return time.Parse(FullIsoNanoTimeFormat2, toFullIsoNanoTimeFormat(str))
 }
 
 func ParseMysqlTime(str string) (time.Time, error) {
@@ -171,6 +192,10 @@ func ParseShortDate(str string) (time.Time, error) {
 	return time.Parse(ShortDateFormat, str)
 }
 
+func ParseDateExcel(str string) (time.Time, error) {
+	return time.Parse(DateExcelFormat, str)
+}
+
 func ParseZStackDate(str string) (time.Time, error) {
 	return time.ParseInLocation(ZStackTimeFormat, str, time.Local)
 }
@@ -183,6 +208,12 @@ func ParseTimeStr(str string) (time.Time, error) {
 		return ParseIsoTime(str)
 	} else if regutils.MatchISONoSecondTime(str) {
 		return ParseIsoNoSecondTime(str)
+	} else if regutils.MatchFullISOTime2(str) {
+		return ParseFullIsoTime2(str)
+	} else if regutils.MatchISOTime2(str) {
+		return ParseIsoTime2(str)
+	} else if regutils.MatchISONoSecondTime2(str) {
+		return ParseIsoNoSecondTime2(str)
 	} else if regutils.MatchMySQLTime(str) {
 		return ParseMysqlTime(str)
 	} else if regutils.MatchNormalTime(str) {
@@ -197,6 +228,8 @@ func ParseTimeStr(str string) (time.Time, error) {
 		return ParseDate(str)
 	} else if regutils.MatchDateCompact(str) {
 		return ParseShortDate(str)
+	} else if regutils.MatchDateExcel(str) {
+		return ParseDateExcel(str)
 	} else if regutils.MatchZStackTime(str) {
 		return ParseZStackDate(str)
 	} else {

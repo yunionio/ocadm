@@ -50,6 +50,24 @@ const (
         index index.html;
         try_files $uri $uri/ /index.html;
     }
+
+    location /overview {
+        proxy_pass http://localhost:8080;
+        proxy_redirect   off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+   }
+
+    location /docs {
+        proxy_pass http://localhost:8081;
+        proxy_redirect   off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+   }
 `
 
 	WebNginxConfigTemplate = `
@@ -128,6 +146,7 @@ server {
         proxy_buffers   32 16k;
         proxy_busy_buffers_size 16k;
         proxy_temp_file_write_size 16k;
+        proxy_read_timeout 600;
     }
 
     location /api/v1/imageutils/upload {
@@ -246,7 +265,20 @@ type webManager struct {
 }
 
 func newWebManager(man *ComponentManager) manager.Manager {
-	return &webManager{man}
+	m := &webManager{man}
+	return m
+}
+
+func (m *webManager) getComponentType() v1alpha1.ComponentType {
+	return v1alpha1.WebComponentType
+}
+
+func (m *webManager) getProductVersions() []v1alpha1.ProductVersion {
+	return []v1alpha1.ProductVersion{
+		v1alpha1.ProductVersionFullStack,
+		v1alpha1.ProductVersionCMP,
+		v1alpha1.ProductVersionEdge,
+	}
 }
 
 func (m *webManager) Sync(oc *v1alpha1.OnecloudCluster) error {
@@ -315,36 +347,44 @@ func (m *webManager) getIngress(oc *v1alpha1.OnecloudCluster, zone string) *exte
 		},
 	}
 
+	// for nginx ingress
+	if len(ing.Annotations) == 0 {
+		ing.Annotations = map[string]string{}
+	}
+	ing.Annotations["nginx.ingress.kubernetes.io/backend-protocol"] = "HTTPS"
+
 	return m.addIngressPaths(IsEnterpriseEdition(oc), svcName, ing)
 }
 
 func (m *webManager) addIngressPaths(isEE bool, svcName string, ing *extensions.Ingress) *extensions.Ingress {
-	rule := &ing.Spec.Rules[0]
 	if !isEE {
 		return ing
 	}
-	if !IsPathIngressRule("/overview", rule.HTTP.Paths) {
-		rule.HTTP.Paths = append(rule.HTTP.Paths,
-			extensions.HTTPIngressPath{
-				Path: "/overview",
-				Backend: extensions.IngressBackend{
-					ServiceName: svcName,
-					ServicePort: intstr.FromInt(8080),
-				},
-			},
-		)
-	}
-	if !IsPathIngressRule("/docs", rule.HTTP.Paths) {
-		rule.HTTP.Paths = append(rule.HTTP.Paths,
-			extensions.HTTPIngressPath{
-				Path: "/docs",
-				Backend: extensions.IngressBackend{
-					ServiceName: svcName,
-					ServicePort: intstr.FromInt(8081),
-				},
-			},
-		)
-	}
+	/*
+	 * rule := &ing.Spec.Rules[0]
+	 * if !IsPathIngressRule("/overview", rule.HTTP.Paths) {
+	 * 	rule.HTTP.Paths = append(rule.HTTP.Paths,
+	 * 		extensions.HTTPIngressPath{
+	 * 			Path: "/overview",
+	 * 			Backend: extensions.IngressBackend{
+	 * 				ServiceName: svcName,
+	 * 				ServicePort: intstr.FromInt(8080),
+	 * 			},
+	 * 		},
+	 * 	)
+	 * }
+	 * if !IsPathIngressRule("/docs", rule.HTTP.Paths) {
+	 * 	rule.HTTP.Paths = append(rule.HTTP.Paths,
+	 * 		extensions.HTTPIngressPath{
+	 * 			Path: "/docs",
+	 * 			Backend: extensions.IngressBackend{
+	 * 				ServiceName: svcName,
+	 * 				ServicePort: intstr.FromInt(8081),
+	 * 			},
+	 * 		},
+	 * 	)
+	 * }
+	 */
 	return ing
 }
 

@@ -8,7 +8,8 @@ require (
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
-	github.com/coreos/go-semver v0.3.0 // indirect
+	github.com/coreos/go-systemd v0.0.0-20190620071333-e64a0ec8b42a // indirect
+	github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v1.4.2-0.20190109173153-a79fabbfe841 // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
@@ -28,7 +29,9 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.3
-	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
+	github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5 // indirect
+	go.etcd.io/etcd v0.5.0-alpha.5.0.20200819165624-17cef6e3e9d5 // indirect
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	gopkg.in/square/go-jose.v2 v2.3.1 // indirect
 	k8s.io/api v0.19.3
 	k8s.io/apiextensions-apiserver v0.0.0
@@ -43,15 +46,16 @@ require (
 	sigs.k8s.io/cluster-api v0.1.4
 	sigs.k8s.io/controller-runtime v0.1.11 // indirect
 	sigs.k8s.io/testing_frameworks v0.1.1 // indirect
-	yunion.io/x/jsonutils v0.0.0-20211105163012-d846c05a3c9a
+	yunion.io/x/jsonutils v0.0.0-20220106020632-953b71a4c3a8
 	yunion.io/x/log v0.0.0-20201210064738-43181789dc74
-	yunion.io/x/onecloud v0.0.0-20211113105258-fa8a7d4a355f
-	yunion.io/x/onecloud-operator v0.0.0-20211113111739-e27d781a1561
-	yunion.io/x/pkg v0.0.0-20210918114143-ce839f862c5f
+	yunion.io/x/onecloud v0.0.0-20220412084528-ea79ab321c6e
+	yunion.io/x/onecloud-operator v0.0.0-20220408035329-b86dc80b0c5a
+	yunion.io/x/pkg v0.0.0-20220406030238-39fbc60d5d4e
 )
 
 replace (
 	github.com/ugorji/go => github.com/ugorji/go v0.0.0-20181204163529-d75b2dcb6bc8
+	google.golang.org/grpc => google.golang.org/grpc v1.29.0
 	k8s.io/api => k8s.io/api v0.15.8
 	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.15.8
 	k8s.io/apimachinery => k8s.io/apimachinery v0.15.9-beta.0
@@ -77,5 +81,4 @@ replace (
 	k8s.io/sample-apiserver => k8s.io/sample-apiserver v0.15.8
 	k8s.io/sample-cli-plugin => k8s.io/sample-cli-plugin v0.15.8
 	k8s.io/sample-controller => k8s.io/sample-controller v0.15.8
-
 )

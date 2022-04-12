@@ -40,6 +40,7 @@ import (
 	"yunion.io/x/onecloud/pkg/httperrors"
 	"yunion.io/x/onecloud/pkg/i18n"
 	"yunion.io/x/onecloud/pkg/proxy"
+	"yunion.io/x/onecloud/pkg/util/ctx"
 	"yunion.io/x/onecloud/pkg/util/httputils"
 )
 
@@ -82,7 +83,7 @@ var quitHandlerRegisted bool
 
 func NewApplication(name string, connMax int, db bool) *Application {
 	app := Application{name: name,
-		context:           context.Background(),
+		context:           ctx.CtxWithTime(),
 		connMax:           connMax,
 		session:           NewWorkerManager("HttpRequestWorkerManager", connMax, DEFAULT_BACKLOG, db),
 		readSession:       NewWorkerManager("HttpGetRequestWorkerManager", connMax, DEFAULT_BACKLOG, db),
@@ -236,7 +237,14 @@ func (app *Application) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		skipLog = true
 	}
 	if !skipLog {
-		log.Infof("%s %d %s %s %s (%s) %.2fms", app.hostId, lrw.status, rid, r.Method, r.URL, r.RemoteAddr, duration)
+		peerServiceName := r.Header.Get("X-Yunion-Peer-Service-Name")
+		var remote string
+		if len(peerServiceName) > 0 {
+			remote = fmt.Sprintf("%s:%s", r.RemoteAddr, peerServiceName)
+		} else {
+			remote = r.RemoteAddr
+		}
+		log.Infof("%s %d %s %s %s (%s) %.2fms", app.hostId, lrw.status, rid, r.Method, r.URL, remote, duration)
 	}
 }
 
@@ -306,6 +314,7 @@ func (app *Application) defaultHandle(w http.ResponseWriter, r *http.Request, ri
 	params := make(map[string]string)
 	w.Header().Set("Server", "Yunion AppServer/Go/2018.4")
 	w.Header().Set("X-Frame-Options", "SAMEORIGIN")
+	w.Header().Set("X-XSS-Protection", "1; mode=block")
 	isCors := app.handleCORS(w, r)
 	handler := app.getRoot(r.Method).Match(segs, params)
 	if handler != nil {

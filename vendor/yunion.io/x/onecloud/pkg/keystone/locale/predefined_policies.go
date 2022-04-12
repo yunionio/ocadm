@@ -26,6 +26,8 @@ const (
 	RoleSA            = "sa"
 	RoleProjectOwner  = "project_owner"
 	RoleDomainAdmin   = "domainadmin"
+	RoleDomainEditor  = "domain_editor"
+	RoleDomainViewer  = "domain_viewer"
 	RoleProjectEditor = "project_editor"
 	RoleProjectViewer = "project_viewer"
 
@@ -69,6 +71,9 @@ var (
 			Scope:  rbacutils.ScopeProject,
 			Extra: map[string]map[string][]string{
 				"compute": {
+					"dashboard": {
+						"get",
+					},
 					"capabilities": {
 						"list",
 					},
@@ -120,6 +125,9 @@ var (
 						"list",
 						"get",
 					},
+					"projects": {
+						"list",
+					},
 				},
 				"meter": {
 					"bill_conditions": {
@@ -136,10 +144,29 @@ var (
 					"unifiedmonitors": {
 						"perform",
 					},
+					"monitorresourcealerts": {
+						"list",
+						"get",
+					},
+					"nodealerts": {
+						"list",
+					},
 				},
 				"log": {
 					"actions": {
 						"list",
+					},
+				},
+				"devtool": {
+					"scriptapplyrecords": {
+						"list",
+						"get",
+					},
+				},
+				"yunionconf": {
+					"scopedpolicybindings": {
+						"list",
+						"get",
 					},
 				},
 			},
@@ -322,6 +349,30 @@ var (
 			},
 		},
 		{
+			Name:   "snapshotpolicy",
+			DescCN: "快照策略",
+			Desc:   "snapshot policy",
+			Scope:  rbacutils.ScopeDomain,
+			Services: map[string][]string{
+				"compute": {
+					"snapshotpolicies",
+					"snapshotpolicydisks",
+				},
+			},
+		},
+		{
+			Name:   "secgroup",
+			DescCN: "安全组",
+			Desc:   "security group",
+			Scope:  rbacutils.ScopeDomain,
+			Services: map[string][]string{
+				"compute": {
+					"secgroups",
+					"secgrouprules",
+				},
+			},
+		},
+		{
 			Name:   "meter",
 			DescCN: "计费计量分析服务相关资源",
 			Desc:   "resources of metering and billing service",
@@ -456,6 +507,31 @@ var (
 		},
 	}
 
+	adminPerformActions = map[string]map[string][]string{
+		"compute": map[string][]string{
+			"servers": []string{
+				"snapshot-and-clone",
+				"createdisk",
+				"create-eip",
+				"create-backup",
+				"save-image",
+				"delete-disk",
+				"delete-eip",
+				"delete-backup",
+			},
+			"buckets": []string{
+				"upload",
+				"delete",
+			},
+		},
+		"k8s": map[string][]string{
+			"kubeclusters": []string{
+				"add-machines",
+				"delete-machines",
+			},
+		},
+	}
+
 	RoleDefinitions = []SRoleDefiniton{
 		{
 			Name:          RoleAdmin,
@@ -516,6 +592,16 @@ var (
 			IsPublic: true,
 		},
 		{
+			Name:          RoleDomainEditor,
+			DescriptionCN: "域操作员",
+			Description:   "Domain operation administrator",
+			Policies: []string{
+				"domain-editor",
+				"domain-dashboard",
+			},
+			IsPublic: true,
+		},
+		{
 			Name:          RoleProjectEditor,
 			DescriptionCN: "项目操作员",
 			Description:   "Project operator",
@@ -526,12 +612,85 @@ var (
 			IsPublic: true,
 		},
 		{
+			Name:          RoleDomainViewer,
+			DescriptionCN: "域只读管理员",
+			Description:   "Domain read-only administrator",
+			Policies: []string{
+				"domain-viewer",
+				"domain-dashboard",
+			},
+			IsPublic: true,
+		},
+		{
 			Name:          RoleProjectViewer,
 			DescriptionCN: "项目只读成员",
 			Description:   "Project read-only member",
 			Policies: []string{
 				"project-viewer",
 				"project-dashboard",
+			},
+			IsPublic: true,
+		},
+		{
+			Name:          "sys_opsadmin",
+			DescriptionCN: "全局系统管理员",
+			Description:   "System-wide operation manager",
+			Policies: []string{
+				"sys-opsadmin",
+			},
+			IsPublic: true,
+		},
+		{
+			Name:          "sys_secadmin",
+			DescriptionCN: "全局安全管理员",
+			Description:   "System-wide security manager",
+			Policies: []string{
+				"sys-secadmin",
+			},
+			IsPublic: true,
+		},
+		{
+			Name:          "sys_adtadmin",
+			DescriptionCN: "全局审计管理员",
+			Description:   "System-wide audit manager",
+			Policies: []string{
+				"sys-adtadmin",
+			},
+			IsPublic: true,
+		},
+		{
+			Name:          "domain_opsadmin",
+			DescriptionCN: "组织系统管理员",
+			Description:   "Domain-wide operation manager",
+			Policies: []string{
+				"domain-opsadmin",
+			},
+			IsPublic: true,
+		},
+		{
+			Name:          "domain_secadmin",
+			DescriptionCN: "组织安全管理员",
+			Description:   "Domain-wide security manager",
+			Policies: []string{
+				"domain-secadmin",
+			},
+			IsPublic: true,
+		},
+		{
+			Name:          "domain_adtadmin",
+			DescriptionCN: "组织审计管理员",
+			Description:   "Domain-wide audit manager",
+			Policies: []string{
+				"domain-adtadmin",
+			},
+			IsPublic: true,
+		},
+		{
+			Name:          "normal_user",
+			DescriptionCN: "缺省普通用户角色",
+			Description:   "Default normal user role",
+			Policies: []string{
+				"normal-user",
 			},
 			IsPublic: true,
 		},

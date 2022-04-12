@@ -48,6 +48,13 @@ type SVMwareCredentialWithEnvironment struct {
 	Port string `help:"VMware VCenter/ESXi host port" default:"443"`
 }
 
+type SNutanixCredentialWithEnvironment struct {
+	SUserPasswordCredential
+
+	Host string `help:"Nutanix host" positional:"true"`
+	Port string `help:"Nutanix host port" default:"9440"`
+}
+
 type SAzureCredential struct {
 	ClientID     string `help:"Azure client_id" positional:"true"`
 	ClientSecret string `help:"Azure clinet_secret" positional:"true"`
@@ -114,6 +121,7 @@ type SCloudAccountCreateBaseOptions struct {
 	ProxySetting    string `help:"proxy setting id or name" json:"proxy_setting"`
 	DryRun          bool   `help:"test create cloudaccount params"`
 	ShowSubAccounts bool   `help:"test and show subaccount info"`
+	ReadOnly        bool   `help:"Read only account"`
 }
 
 type SVMwareCloudAccountCreateOptions struct {
@@ -348,6 +356,8 @@ func (opts *SXskyCloudAccountCreateOptions) Params() (jsonutils.JSONObject, erro
 type SCtyunCloudAccountCreateOptions struct {
 	SCloudAccountCreateBaseOptions
 	SAccessKeyCredentialWithEnvironment
+
+	cloudprovider.SCtyunExtraOptions
 }
 
 func (opts *SCtyunCloudAccountCreateOptions) Params() (jsonutils.JSONObject, error) {
@@ -550,6 +560,10 @@ type SCloudAccountUpdateBaseOptions struct {
 	AutoCreateProject   *bool  `help:"automatically create local project for new remote project" negative:"no_auto_create_project"`
 	ProxySetting        string `help:"proxy setting name or id" json:"proxy_setting"`
 	SamlAuth            string `help:"Enable or disable saml auth" choices:"true|false"`
+
+	ReadOnly *bool `help:"is account read only" negative:"no_read_only"`
+
+	CleanLakeOfPermissions bool `help:"clean lake of permissions"`
 
 	Desc string `help:"Description" json:"description" token:"desc"`
 }
@@ -848,10 +862,21 @@ func (opts *SS3CloudAccountUpdateOptions) Params() (jsonutils.JSONObject, error)
 
 type SCtyunCloudAccountUpdateOptions struct {
 	SCloudAccountUpdateBaseOptions
+
+	cloudprovider.SCtyunExtraOptions
 }
 
 func (opts *SCtyunCloudAccountUpdateOptions) Params() (jsonutils.JSONObject, error) {
-	return jsonutils.Marshal(opts), nil
+	params := jsonutils.Marshal(opts).(*jsonutils.JSONDict)
+	options := jsonutils.NewDict()
+	if len(opts.SCtyunExtraOptions.CrmBizId) > 0 {
+		options.Add(jsonutils.NewString(opts.SCtyunExtraOptions.CrmBizId), "crm_biz_id")
+	}
+	if options.Size() > 0 {
+		params.Add(options, "options")
+	}
+
+	return params, nil
 }
 
 type SJDcloudCloudAccountUpdateOptions struct {
@@ -1025,4 +1050,53 @@ type ClouaccountProjectMappingOptions struct {
 
 func (opts *ClouaccountProjectMappingOptions) Params() (jsonutils.JSONObject, error) {
 	return jsonutils.Marshal(map[string]string{"project_mapping_id": opts.ProjectMappingId}), nil
+}
+
+type SNutanixCloudAccountCreateOptions struct {
+	SCloudAccountCreateBaseOptions
+	SNutanixCredentialWithEnvironment
+}
+
+func (opts *SNutanixCloudAccountCreateOptions) Params() (jsonutils.JSONObject, error) {
+	params := jsonutils.Marshal(opts)
+	params.(*jsonutils.JSONDict).Add(jsonutils.NewString("Nutanix"), "provider")
+	return params, nil
+}
+
+type SNutanixCloudAccountUpdateCredentialOptions struct {
+	SCloudAccountIdOptions
+	SUserPasswordCredential
+}
+
+func (opts *SNutanixCloudAccountUpdateCredentialOptions) Params() (jsonutils.JSONObject, error) {
+	return jsonutils.Marshal(opts.SUserPasswordCredential), nil
+}
+
+type SNutanixCloudAccountUpdateOptions struct {
+	SCloudAccountUpdateBaseOptions
+}
+
+type SBingoCloudAccountCreateOptions struct {
+	SCloudAccountCreateBaseOptions
+	Endpoint string
+	SAccessKeyCredential
+}
+
+func (opts *SBingoCloudAccountCreateOptions) Params() (jsonutils.JSONObject, error) {
+	params := jsonutils.Marshal(opts)
+	params.(*jsonutils.JSONDict).Add(jsonutils.NewString("BingoCloud"), "provider")
+	return params, nil
+}
+
+type SBingoCloudAccountUpdateOptions struct {
+	SCloudAccountUpdateBaseOptions
+}
+
+type SBingoCloudAccountUpdateCredentialOptions struct {
+	SCloudAccountIdOptions
+	SAccessKeyCredential
+}
+
+func (opts *SBingoCloudAccountUpdateCredentialOptions) Params() (jsonutils.JSONObject, error) {
+	return jsonutils.Marshal(opts.SAccessKeyCredential), nil
 }

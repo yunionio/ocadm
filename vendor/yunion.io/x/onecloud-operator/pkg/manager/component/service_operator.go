@@ -35,6 +35,14 @@ func newServiceOperatorManager(man *ComponentManager) manager.Manager {
 	return &serviceOperatorManager{man}
 }
 
+func (m *serviceOperatorManager) getProductVersions() []v1alpha1.ProductVersion {
+	return []v1alpha1.ProductVersion{
+		v1alpha1.ProductVersionFullStack,
+		v1alpha1.ProductVersionCMP,
+		v1alpha1.ProductVersionEdge,
+	}
+}
+
 func (m *serviceOperatorManager) Sync(oc *v1alpha1.OnecloudCluster) error {
 	return syncComponent(m, oc, oc.Spec.ServiceOperator.Disable, "")
 }
@@ -185,7 +193,7 @@ func (m *serviceOperatorManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg
 }
 
 func (n *serviceOperatorManager) getService(oc *v1alpha1.OnecloudCluster, zone string) []*corev1.Service {
-	service := m.newSingleNodePortService(v1alpha1.ServiceOperatorComponentType, oc, constants.ServiceOperatorPort)
+	service := n.newSingleNodePortService(v1alpha1.ServiceOperatorComponentType, oc, constants.ServiceOperatorPort)
 	// diy
 	service.ObjectMeta.Labels["control-plane"] = "controller-manager"
 	service.Spec.Selector["control-plane"] = "controller-manager"

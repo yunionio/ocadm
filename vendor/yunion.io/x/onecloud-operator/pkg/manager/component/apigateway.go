@@ -34,6 +34,14 @@ func newAPIGatewayManager(man *ComponentManager) manager.Manager {
 	return &apiGatewayManager{man}
 }
 
+func (m *apiGatewayManager) getProductVersions() []v1alpha1.ProductVersion {
+	return []v1alpha1.ProductVersion{
+		v1alpha1.ProductVersionFullStack,
+		v1alpha1.ProductVersionCMP,
+		v1alpha1.ProductVersionEdge,
+	}
+}
+
 func (m *apiGatewayManager) Sync(oc *v1alpha1.OnecloudCluster) error {
 	if IsEnterpriseEdition(oc) {
 		oc.Spec.APIGateway.ImageName = constants.APIGatewayEEImageName
@@ -93,7 +101,7 @@ func (m *apiGatewayManager) getConfigMap(oc *v1alpha1.OnecloudCluster, cfg *v1al
 	if err := SetOptionsDefault(opt, "apigateway"); err != nil {
 		return nil, false, err
 	}
-	SetOptionsServiceTLS(&opt.BaseOptions)
+	SetOptionsServiceTLS(&opt.BaseOptions, false)
 	SetServiceCommonOptions(&opt.CommonOptions, oc, cfg.APIGateway)
 	opt.Port = constants.APIGatewayPort
 	opt.WsPort = constants.APIWebsocketPort

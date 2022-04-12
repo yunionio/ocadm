@@ -112,6 +112,9 @@ var (
 			"ignore_nonrunning_guests",
 			"platform_name",
 			"platform_names",
+			"is_forget_login_user",
+			"enable_organization",
+			"enable_tls_migration",
 		},
 	}
 
@@ -154,6 +157,11 @@ var (
 			// db blacklist options
 			// ############################
 			"sql_connection",
+			"clickhouse",
+			"ops_log_with_clickhouse",
+			"db_checksum_skip_init",
+			"db_checksum_tables",
+			"enable_db_checksum_tables",
 			"auto_sync_table",
 			"exit_after_db_init",
 			"global_virtual_resource_namespace",

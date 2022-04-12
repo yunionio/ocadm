@@ -25,6 +25,13 @@ func newBaremetalManager(m *ComponentManager) manager.Manager {
 	return &baremetalManager{m}
 }
 
+func (m *baremetalManager) getProductVersions() []v1alpha1.ProductVersion {
+	return []v1alpha1.ProductVersion{
+		v1alpha1.ProductVersionFullStack,
+		v1alpha1.ProductVersionEdge,
+	}
+}
+
 func (m *baremetalManager) Sync(oc *v1alpha1.OnecloudCluster) error {
 	return m.multiZoneSync(oc, oc.Spec.BaremetalAgent.Zones, m, oc.Spec.BaremetalAgent.Disable)
 }
@@ -45,7 +52,7 @@ func (m *baremetalManager) getConfigMap(oc *v1alpha1.OnecloudCluster, cfg *v1alp
 		return nil, false, err
 	}
 	config := cfg.BaremetalAgent
-	SetOptionsServiceTLS(&opt.BaseOptions)
+	SetOptionsServiceTLS(&opt.BaseOptions, false)
 	SetServiceCommonOptions(&opt.CommonOptions, oc, config.ServiceCommonOptions)
 	opt.Port = constants.BaremetalPort
 	opt.AutoRegisterBaremetal = false
@@ -102,7 +109,7 @@ func (m *baremetalManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg *v1al
 
 	cType := v1alpha1.BaremetalAgentComponentType
 	zoneComponentType := m.getZoneComponent(cType, zone)
-	dmSpec := oc.Spec.BaremetalAgent.DeploymentSpec
+	dmSpec := &oc.Spec.BaremetalAgent.DeploymentSpec
 	privileged := true
 	containersF := func(volMounts []corev1.VolumeMount) []corev1.Container {
 		return []corev1.Container{
@@ -124,11 +131,11 @@ func (m *baremetalManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg *v1al
 	}
 	hostNetwork := true
 	dm, err := m.newDefaultDeploymentNoInitWithoutCloudAffinity(cType, zoneComponentType, oc,
-		newBaremetalVolHelper(
+		m.newBaremetalVolHelper(
 			oc, controller.ComponentConfigMapName(oc, zoneComponentType),
 			zoneComponentType,
 		),
-		&dmSpec, hostNetwork, containersF,
+		dmSpec, hostNetwork, containersF,
 	)
 	if err != nil {
 		return nil, err
@@ -144,7 +151,7 @@ func (m *baremetalManager) getDeployment(oc *v1alpha1.OnecloudCluster, cfg *v1al
 	return setSelfAntiAffnity(dm, cType), nil
 }
 
-func newBaremetalVolHelper(oc *v1alpha1.OnecloudCluster, optCfgMap string, component v1alpha1.ComponentType) *VolumeHelper {
+func (m *baremetalManager) newBaremetalVolHelper(oc *v1alpha1.OnecloudCluster, optCfgMap string, component v1alpha1.ComponentType) *VolumeHelper {
 	volHelper := NewVolumeHelper(oc, optCfgMap, v1alpha1.BaremetalAgentComponentType)
 	volHelper.volumeMounts = append(volHelper.volumeMounts,
 		corev1.VolumeMount{
