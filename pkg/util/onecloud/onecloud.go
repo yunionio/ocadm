@@ -385,7 +385,7 @@ func GenerateDefaultHostConfig(cfg *HostCfg) error {
 	o.EnableOpenflowController = false
 	o.BlockIoScheduler = "cfq"
 	o.EnableTemplateBacking = true
-	o.DefaultQemuVersion = "2.12.1"
+	o.DefaultQemuVersion = "4.2.0"
 	o.EnableRemoteExecutor = true
 	o.OvnSouthDatabase = fmt.Sprintf("tcp:default-ovn-north:%d", constants.OvnSouthDbPort)
 	if err := os.MkdirAll("/opt/cloud", os.ModePerm); err != nil {
