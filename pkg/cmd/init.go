@@ -78,7 +78,7 @@ var (
 
 	ocEvictionHard = map[string]string{
 		"memory.available":  "100Mi",
-		"nodefs.available":  "10%",
+		"nodefs.available":  "5%",
 		"nodefs.inodesFree": "5%",
 		"imagefs.available": "5%", //default is 15%
 	}
@@ -418,6 +418,8 @@ func newInitData(cmd *cobra.Command, args []string, options *initOptions, out io
 		return nil, err
 	}
 	cfg.ComponentConfigs.Kubelet.EvictionHard = ocEvictionHard
+	cfg.ComponentConfigs.Kubelet.ImageGCHighThresholdPercent = 95
+	cfg.ComponentConfigs.Kubelet.ImageGCLowThresholdPercent = 90
 
 	// override node name and CRI socket from the command line options
 	if options.externalCfg.NodeRegistration.Name != "" {
