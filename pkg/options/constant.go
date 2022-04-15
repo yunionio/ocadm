@@ -30,6 +30,8 @@ const (
 	NodeIP                             = "node-ip"
 	AddonCalicoIpAutodetectionMethod   = "addon-calico-ip-autodetection-method"
 	AddonCalicoiFelixChaininsertmode   = "addon-calico-felix-chaininsertmode"
+	NodeCIDRMaskSize                   = "node-cidr-mask-size"
+	AddonCalicoIPV4BlockSize           = "addon-calico-ipv4-block-size"
 	HighAvailabilityVIP                = "high-availability-vip"
 	KeepalivedVersionTag               = "keepalived-version-tag"
 	LonghornDataPath                   = "longhorn-data-path"

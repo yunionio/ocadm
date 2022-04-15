@@ -616,6 +616,8 @@ spec:
             # no effect. This should fall within --cluster-cidr.
             - name: CALICO_IPV4POOL_CIDR
               value: "{{.ClusterCIDR}}"
+            - name: CALICO_IPV4POOL_BLOCK_SIZE
+              value: "{{.IPV4PoolBlockSize}}"
             # Disable file logging so 'kubectl logs' works.
             - name: CALICO_DISABLE_FILE_LOGGING
               value: "true"

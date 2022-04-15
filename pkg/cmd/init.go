@@ -106,6 +106,8 @@ type initOptions struct {
 	nodeIP                           string
 	addonCalicoIpAutodetectionMethod string
 	addonCalicoiFelixChaininsertmode string
+	addonCalicoIPV4PoolBlockSize     int
+	nodeCIDRMaskSize                 int
 	highAvailabilityVIP              string
 	keepalivedVersionTag             string
 	glanceNode                       bool
@@ -142,6 +144,8 @@ type initData struct {
 	nodeIP                           string
 	addonCalicoIpAutodetectionMethod string
 	addonCalicoiFelixChaininsertmode string
+	addonCalicoIPV4PoolBlockSize     int
+	nodeCIDRMaskSize                 int
 	highAvailabilityVIP              string
 	keepalivedVersionTag             string
 }
@@ -358,6 +362,13 @@ func AddInitOtherFlags(flagSet *flag.FlagSet, initOptions *initOptions) {
 		&initOptions.printAddonYaml, options.PrintAddonYaml, initOptions.printAddonYaml,
 		"Print addon yaml manifest",
 	)
+	flagSet.IntVar(
+		&initOptions.nodeCIDRMaskSize, options.NodeCIDRMaskSize, 24,
+		"Kubernetes controller manager node-cidrmask-size config",
+	)
+	flagSet.IntVar(
+		&initOptions.addonCalicoIPV4PoolBlockSize, options.AddonCalicoIPV4BlockSize, 26,
+		"Calico default IPV4 pool block size")
 
 	options.AddOperatorVersionFlags(flagSet, &initOptions.operatorVersion)
 	options.AddGlanceNodeLabelFlag(flagSet, &initOptions.glanceNode, &initOptions.baremetalNode, &initOptions.esxiNode)
@@ -489,6 +500,14 @@ func newInitData(cmd *cobra.Command, args []string, options *initOptions, out io
 		cfg.ControlPlaneEndpoint = fmt.Sprintf("%s:%d", cfg.LocalAPIEndpoint.AdvertiseAddress, cfg.LocalAPIEndpoint.BindPort)
 	}
 
+	if options.nodeCIDRMaskSize > options.addonCalicoIPV4PoolBlockSize {
+		return nil, errors.Errorf("--node-cidr-mask-size %d must less or equal than --addon-calico-ipv4-block-size %d", options.nodeCIDRMaskSize, options.addonCalicoIPV4PoolBlockSize)
+	}
+	if cfg.InitConfiguration.ControllerManager.ExtraArgs == nil {
+		cfg.InitConfiguration.ControllerManager.ExtraArgs = make(map[string]string, 0)
+	}
+	cfg.InitConfiguration.ControllerManager.ExtraArgs["node-cidr-mask-size"] = fmt.Sprintf("%d", options.nodeCIDRMaskSize)
+
 	data := &initData{
 		cfg:                              cfg,
 		certificatesDir:                  cfg.CertificatesDir,
@@ -507,6 +526,8 @@ func newInitData(cmd *cobra.Command, args []string, options *initOptions, out io
 		operatorVersion:                  options.operatorVersion,
 		addonCalicoIpAutodetectionMethod: options.addonCalicoIpAutodetectionMethod,
 		addonCalicoiFelixChaininsertmode: options.addonCalicoiFelixChaininsertmode,
+		addonCalicoIPV4PoolBlockSize:     options.addonCalicoIPV4PoolBlockSize,
+		nodeCIDRMaskSize:                 options.nodeCIDRMaskSize,
 		nodeIP:                           options.nodeIP,
 		highAvailabilityVIP:              options.highAvailabilityVIP,
 		keepalivedVersionTag:             options.keepalivedVersionTag,
@@ -532,6 +553,11 @@ func (d *initData) AddonCalicoIpAutodetectionMethod() string {
 // AddonCalicoiFelixChaininsertmode return addonCalicoiFelixChaininsertmode
 func (d *initData) AddonCalicoiFelixChaininsertmode() string {
 	return d.addonCalicoiFelixChaininsertmode
+}
+
+// AddonCalicoIPV4PoolBlockSize return addonCalicoIPV4PoolBlockSize
+func (d *initData) AddonCalicoIPV4PoolBlockSize() int {
+	return d.addonCalicoIPV4PoolBlockSize
 }
 
 // GetHighAvailabilityVIP return highAvailabilityVIP
