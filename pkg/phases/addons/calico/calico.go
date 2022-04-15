@@ -18,11 +18,15 @@ type CNICalicoConfig struct {
 	ClusterCIDR           string
 	IPAutodetectionMethod string
 	FelixChaininsertmode  string
+	IPV4PoolBlockSize     int
 }
 
-func NewCalicoConfig(cfg *kubeadmapi.ClusterConfiguration, IPAutodetectionMethod, FelixChaininsertmode string) addons.Configer {
+func NewCalicoConfig(cfg *kubeadmapi.ClusterConfiguration, IPAutodetectionMethod, FelixChaininsertmode string, ipv4PoolBlockSize int) addons.Configer {
 	if len(FelixChaininsertmode) == 0 {
 		FelixChaininsertmode = constants.DefaultCalicoFelixChaininsertmode
+	}
+	if ipv4PoolBlockSize < 0 {
+		ipv4PoolBlockSize = 26
 	}
 	repo := cfg.ImageRepository
 	config := &CNICalicoConfig{
@@ -32,6 +36,7 @@ func NewCalicoConfig(cfg *kubeadmapi.ClusterConfiguration, IPAutodetectionMethod
 		ClusterCIDR:           cfg.Networking.PodSubnet,
 		IPAutodetectionMethod: IPAutodetectionMethod,
 		FelixChaininsertmode:  FelixChaininsertmode,
+		IPV4PoolBlockSize:     ipv4PoolBlockSize,
 	}
 	return config
 }
