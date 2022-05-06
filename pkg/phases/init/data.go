@@ -25,6 +25,7 @@ type InitData interface {
 	PrintAddonYaml() bool
 	AddonCalicoIpAutodetectionMethod() string
 	AddonCalicoiFelixChaininsertmode() string
+	AddonCalicoIPV4PoolBlockSize() int
 	GetHighAvailabilityVIP() string
 	GetKeepalivedVersionTag() string
 	GetNodeIP() string

@@ -91,6 +91,7 @@ func NewOCAddonPhase() workflow.Phase {
 			options.PrintAddonYaml,
 			options.AddonCalicoIpAutodetectionMethod,
 			options.AddonCalicoiFelixChaininsertmode,
+			options.AddonCalicoIPV4BlockSize,
 			options.OperatorVersion,
 		},
 		Phases: []workflow.Phase{
@@ -140,7 +141,8 @@ func kubectlApplyAddon(c workflow.RunData, newF func(*kubeadmapi.ClusterConfigur
 
 func runCalicoAddon(c workflow.RunData) error {
 	return kubectlApplyAddon(c, func(cfg *kubeadmapi.ClusterConfiguration) addons.Configer {
-		return calicoaddon.NewCalicoConfig(cfg, c.(InitData).AddonCalicoIpAutodetectionMethod(), c.(InitData).AddonCalicoiFelixChaininsertmode())
+		d := c.(InitData)
+		return calicoaddon.NewCalicoConfig(cfg, d.AddonCalicoIpAutodetectionMethod(), d.AddonCalicoiFelixChaininsertmode(), d.AddonCalicoIPV4PoolBlockSize())
 	})
 }
 
@@ -189,6 +191,8 @@ func getAddonPhaseFlags(name string) []string {
 			options.NetworkingPodSubnet,
 			options.OperatorVersion,
 			options.AddonCalicoIpAutodetectionMethod,
+			options.AddonCalicoiFelixChaininsertmode,
+			options.AddonCalicoIPV4BlockSize,
 		)
 	}
 	if name == "onecloud-operator" {
