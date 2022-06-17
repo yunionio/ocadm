@@ -15,8 +15,12 @@ import (
 	flag "github.com/spf13/pflag"
 	appv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
@@ -47,10 +51,11 @@ const (
 )
 
 type clusterData struct {
-	cfg        *apiv1.InitConfiguration
-	client     versioned.Interface
-	k8sClient  kubernetes.Interface
-	kubeClient *kube.Client
+	cfg           *apiv1.InitConfiguration
+	client        versioned.Interface
+	k8sClient     kubernetes.Interface
+	kubeClient    *kube.Client
+	dynamicClient dynamic.Interface
 }
 
 func newClusterData(cmd *cobra.Command, args []string) (*clusterData, error) {
@@ -85,17 +90,35 @@ func newClusterData(cmd *cobra.Command, args []string) (*clusterData, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	clientConfig, err := clientcmd.NewDefaultClientConfig(*tlsBootstrapCfg, &clientcmd.ConfigOverrides{}).ClientConfig()
+	if err != nil {
+		return nil, err
+	}
+	dCli, err := dynamic.NewForConfig(clientConfig)
+	if err != nil {
+		return nil, err
+	}
 	return &clusterData{
-		cfg:        initCfg,
-		client:     cli,
-		k8sClient:  k8sCli,
-		kubeClient: kubeCli,
+		cfg:           initCfg,
+		client:        cli,
+		k8sClient:     k8sCli,
+		kubeClient:    kubeCli,
+		dynamicClient: dCli,
 	}, nil
 }
 
-func (data *clusterData) GetDefaultCluster() (*v1alpha1.OnecloudCluster, error) {
-	cli := data.client
-	ret, err := cli.OnecloudV1alpha1().OnecloudClusters(constants.OnecloudNamespace).Get(DefaultClusterName, metav1.GetOptions{})
+func (data *clusterData) GetOnecloudClusterCli() dynamic.NamespaceableResourceInterface {
+	return data.dynamicClient.Resource(schema.GroupVersionResource{
+		Group:    "onecloud.yunion.io",
+		Version:  "v1alpha1",
+		Resource: "onecloudclusters",
+	})
+}
+
+func (data *clusterData) GetDefaultCluster() (*unstructured.Unstructured, error) {
+	cli := data.GetOnecloudClusterCli()
+	ret, err := cli.Namespace(constants.OnecloudNamespace).Get(DefaultClusterName, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -108,10 +131,10 @@ func (data *clusterData) GetOperator() (*appv1.Deployment, error) {
 }
 
 type createOptions struct {
-	useEE       bool
-	version     string
-	wait        bool
-	useLonghorn bool
+	useEE                     bool
+	version                   string
+	wait                      bool
+	disableResourceManagement bool
 
 	// cluster upgrade from onecloud 2.x
 	region        string
@@ -155,11 +178,11 @@ func NewCmdCreate(out io.Writer) *cobra.Command {
 func AddCreateOptions(flagSet *flag.FlagSet, opt *createOptions) {
 	flagSet.BoolVar(&opt.useEE, "use-ee", opt.useEE, "Use EE edition")
 	flagSet.StringVar(&opt.version, "version", opt.version, "onecloud cluster version")
+	flagSet.BoolVar(&opt.disableResourceManagement, "disable-resource-management", opt.disableResourceManagement, "disable pods resource management")
 	flagSet.BoolVar(&opt.wait, "wait", opt.wait, "wait until workload created")
 	flagSet.StringVar(&opt.region, "cluster-region-id", "", "For upgrade from v2, onecloud cluster region id, climc region-list get region ids")
 	flagSet.StringVar(&opt.zone, "cluster-zone-id", "", "For upgrade from v2, onecloud cluster zone id, climc zone-list get zone ids")
 	flagSet.BoolVar(&opt.upgradeFromV2, "upgrade-from-v2", opt.upgradeFromV2, "cluster upgrade from onecloud 2.x")
-	flagSet.BoolVar(&opt.useLonghorn, "use-longhorn", opt.useLonghorn, "Use longhorn as glanc and influxdb storage class, but you should enable longhorn by `ocadm longhorn enable` at first.")
 }
 
 func NewCmdConfig() *cobra.Command {
@@ -180,7 +203,12 @@ func NewCmdConfig() *cobra.Command {
 	return cmd
 }
 
-func CreateCluster(data *clusterData, opt *createOptions) (*v1alpha1.OnecloudCluster, error) {
+type ICluster interface {
+	GetName() string
+	GetNamespace() string
+}
+
+func CreateCluster(data *clusterData, opt *createOptions) (ICluster, error) {
 	cli := data.client
 	cfg := data.cfg
 	ret, err := cli.OnecloudV1alpha1().OnecloudClusters(constants.OnecloudNamespace).List(metav1.ListOptions{})
@@ -196,32 +224,39 @@ func CreateCluster(data *clusterData, opt *createOptions) (*v1alpha1.OnecloudClu
 		}
 		return &oc, nil
 	}
-	var cluster *v1alpha1.OnecloudCluster
+
+	if opt.disableResourceManagement {
+		if err := removeComponentsResources(data); err != nil {
+			return nil, errors.Wrap(err, "removeComponentsResources")
+		}
+	}
+
+	var cObj ICluster
 	if opt.upgradeFromV2 {
-		cluster, err = newClusterConfig(data.k8sClient, cfg, opt)
+		cluster, err := newClusterConfig(data.k8sClient, cfg, opt)
 		if err != nil {
 			return nil, errors.Wrap(err, "take out cluster config")
 		}
+		oc, err := cli.OnecloudV1alpha1().OnecloudClusters(constants.OnecloudNamespace).Create(cluster)
+		if err != nil {
+			return nil, errors.Wrap(err, "create cluster from v2")
+		}
+		cObj = oc
 	} else {
-		cluster = newCluster(cfg, opt)
-		if opt.useLonghorn {
-			cluster.Spec.Glance.StorageClassName = constants.LonghornStorageClass
-			cluster.Spec.Influxdb.StorageClassName = constants.LonghornStorageClass
-			cluster.Spec.Meter.StorageClassName = constants.LonghornStorageClass
-			cluster.Spec.BaremetalAgent.StorageClassName = constants.LonghornStorageClass
-			cluster.Spec.EsxiAgent.StorageClassName = constants.LonghornStorageClass
+		cluster := newUnstructCluster(cfg, opt)
+		cluster, err = data.GetOnecloudClusterCli().Namespace(constants.OnecloudNamespace).Create(cluster, metav1.CreateOptions{})
+		if err != nil {
+			return nil, errors.Wrap(err, "create cluster use dynamic client")
 		}
+		cObj = cluster
 	}
-	oc, err := cli.OnecloudV1alpha1().OnecloudClusters(constants.OnecloudNamespace).Create(cluster)
-	if err != nil {
-		return nil, errors.Wrap(err, "create cluster")
-	}
+
 	if opt.wait {
-		if err := ocutil.WaitOnecloudDeploymentUpdated(data.client, oc.GetName(), oc.GetNamespace(), 30*time.Minute, nil); err != nil {
-			return oc, errors.Wrap(err, "wait onecloud cluster services running")
+		if err := ocutil.WaitOnecloudDeploymentUpdated(data.client, cObj.GetName(), cObj.GetNamespace(), 30*time.Minute, nil); err != nil {
+			return cObj, errors.Wrap(err, "wait onecloud cluster services running")
 		}
 	}
-	return oc, nil
+	return cObj, nil
 }
 
 func newCluster(cfg *apiv1.InitConfiguration, opt *createOptions) *v1alpha1.OnecloudCluster {
@@ -259,6 +294,52 @@ func newCluster(cfg *apiv1.InitConfiguration, opt *createOptions) *v1alpha1.Onec
 		ocutil.SetOCUseCE(oc)
 	}
 	return oc
+}
+
+func newUnstructCluster(cfg *apiv1.InitConfiguration, opt *createOptions) *unstructured.Unstructured {
+	lbEndpoint := cfg.ControlPlaneEndpoint
+	if lbEndpoint != "" {
+		lbEndpoint = strings.Split(lbEndpoint, ":")[0]
+	}
+	if lbEndpoint == "" {
+		lbEndpoint = cfg.ManagementNetInterface.IPAddress()
+	}
+
+	obj := new(unstructured.Unstructured)
+	obj.SetKind("OnecloudCluster")
+	obj.SetAPIVersion("onecloud.yunion.io/v1alpha1")
+	obj.SetNamespace(constants.OnecloudNamespace)
+	obj.SetName(DefaultClusterName)
+
+	specObj := map[string]interface{}{
+		"mysql": map[string]interface{}{
+			"host":     cfg.MysqlConnection.Server,
+			"port":     int32(cfg.MysqlConnection.Port),
+			"username": cfg.MysqlConnection.Username,
+			"password": cfg.MysqlConnection.Password,
+		},
+		"loadBalancerEndpoint": lbEndpoint,
+		"imageRepository":      cfg.ImageRepository,
+		"version":              cfg.OnecloudVersion,
+		"region":               cfg.Region,
+	}
+	if opt.disableResourceManagement {
+		specObj["disableResourceManagement"] = true
+	}
+	if opt.version != "" {
+		specObj["version"] = opt.version
+	}
+	unstructured.SetNestedMap(obj.Object, specObj, "spec")
+
+	anno := map[string]string{
+		operatorconstants.OnecloudEditionAnnotationKey: operatorconstants.OnecloudCommunityEdition,
+	}
+	if opt.useEE {
+		anno[operatorconstants.OnecloudEditionAnnotationKey] = operatorconstants.OnecloudEnterpriseEdition
+	}
+	obj.SetAnnotations(anno)
+
+	return obj
 }
 
 func newCluster2(env map[string]string, cfg *apiv1.InitConfiguration, opt *createOptions) (*v1alpha1.OnecloudCluster, error) {
@@ -559,12 +640,13 @@ func FetchInitConfiguration(tlsBootstrapCfg *clientcmdapi.Config) (*kubernetes.C
 }
 
 type updateOptions struct {
-	version         string
-	operatorVersion string
-	imageRepository string
-	wait            bool
-	useEE           bool
-	useCE           bool
+	version                   string
+	operatorVersion           string
+	imageRepository           string
+	wait                      bool
+	disableResourceManagement bool
+	useEE                     bool
+	useCE                     bool
 }
 
 func newUpdateOptions() *updateOptions {
@@ -592,9 +674,21 @@ func AddUpdateOptions(flagSet *flag.FlagSet, opt *updateOptions) {
 	flagSet.StringVar(&opt.version, "version", opt.version, "onecloud cluster version")
 	flagSet.StringVar(&opt.operatorVersion, options.OperatorVersion, opt.operatorVersion, "onecloud operator version")
 	flagSet.StringVar(&opt.imageRepository, "image-repository", opt.imageRepository, "image registry repo")
+	flagSet.BoolVar(&opt.disableResourceManagement, "disable-resource-management", opt.disableResourceManagement, "disable pods resource management")
 	flagSet.BoolVar(&opt.wait, "wait", opt.wait, "wait until workload updated")
 	flagSet.BoolVar(&opt.useEE, "use-ee", opt.useEE, "use enterprise edition onecloud")
 	flagSet.BoolVar(&opt.useCE, "use-ce", opt.useCE, "use community edition onecloud")
+}
+
+func GetUnstructString(obj *unstructured.Unstructured, fields ...string) (string, error) {
+	val, found, err := unstructured.NestedString(obj.Object, fields...)
+	if err != nil {
+		return "", errors.Wrapf(err, "Get %v from object %s", fields, obj)
+	}
+	if !found {
+		return "", nil
+	}
+	return val, nil
 }
 
 func updateCluster(data *clusterData, opt *updateOptions) error {
@@ -645,37 +739,62 @@ func updateCluster(data *clusterData, opt *updateOptions) error {
 		return errors.Wrap(err, "get default onecloud cluster")
 	}
 	updateOC := false
-	if oc.Annotations == nil {
-		oc.Annotations = make(map[string]string)
-	}
-	edition := oc.Annotations[operatorconstants.OnecloudEditionAnnotationKey]
+	anno := oc.GetAnnotations()
+	edition := anno[operatorconstants.OnecloudEditionAnnotationKey]
 	if opt.useEE && edition != operatorconstants.OnecloudEnterpriseEdition {
-		oc.Annotations[operatorconstants.OnecloudEditionAnnotationKey] = operatorconstants.OnecloudEnterpriseEdition
+		anno[operatorconstants.OnecloudEditionAnnotationKey] = operatorconstants.OnecloudEnterpriseEdition
 		updateOC = true
 	} else if opt.useCE && edition != operatorconstants.OnecloudCommunityEdition {
-		oc.Annotations[operatorconstants.OnecloudEditionAnnotationKey] = operatorconstants.OnecloudCommunityEdition
+		anno[operatorconstants.OnecloudEditionAnnotationKey] = operatorconstants.OnecloudCommunityEdition
 		updateOC = true
 	}
+
 	if opt.version != "" {
-		if opt.version != oc.Spec.Version {
-			oc.Spec.Version = opt.version
+		specVersion, err := GetUnstructString(oc, "spec", "version")
+		if err != nil {
+			return errors.Wrap(err, "get default onecloud cluster version")
 		}
-		updateOC = true
+		if opt.version != specVersion {
+			unstructured.SetNestedField(oc.Object, opt.version, "spec", "version")
+			updateOC = true
+		}
 	}
+
 	if opt.imageRepository != "" {
-		if opt.imageRepository != oc.Spec.ImageRepository {
-			oc.Spec.ImageRepository = opt.imageRepository
+		specImageRepo, err := GetUnstructString(oc, "spec", "imageRepository")
+		if err != nil {
+			return errors.Wrapf(err, "get default cluster imageRepository")
 		}
-		updateOC = true
+		if opt.imageRepository != specImageRepo {
+			unstructured.SetNestedField(oc.Object, opt.imageRepository, "spec", "imageRepository")
+			updateOC = true
+		}
 	}
-	// remove autoupdate related annotation
-	{
-		delete(oc.Annotations, AutoUpdateCurrentVersion)
-		oc.Spec.AutoUpdate.Tag = ""
-		oc.Spec.HostAgent.Tag = ""
+
+	if opt.disableResourceManagement {
+		isDisable, found, err := unstructured.NestedBool(oc.Object, "spec", "disableResourceManagement")
+		if err != nil {
+			return errors.Wrapf(err, "get spec.disableResourceManagement")
+		}
+		if found && !isDisable {
+			unstructured.SetNestedField(oc.Object, true, "spec", "disableResourceManagement")
+			updateOC = true
+		}
+		if err := removeComponentsResources(data); err != nil {
+			return errors.Wrap(err, "removeComponentsResources")
+		}
 	}
+
 	if updateOC {
-		if _, err := data.client.OnecloudV1alpha1().OnecloudClusters(constants.OnecloudNamespace).Update(oc); err != nil {
+		// remove autoupdate related annotation
+		{
+			delete(anno, AutoUpdateCurrentVersion)
+			unstructured.SetNestedField(oc.Object, "", "spec", "autoupdate", "tag")
+			unstructured.SetNestedField(oc.Object, "", "spec", "hostagent", "tag")
+		}
+		oc.SetAnnotations(anno)
+
+		if _, err := data.GetOnecloudClusterCli().Namespace(constants.OnecloudNamespace).Update(oc, metav1.UpdateOptions{}); err != nil {
 			return errors.Wrap(err, "update default onecloud cluster")
 		}
 		if opt.wait {
@@ -711,4 +830,47 @@ func getRepoImageName(img string) (string, string, string, error) {
 func getOperatorImage(operator *appv1.Deployment) (*image.ImageReference, error) {
 	img := operator.Spec.Template.Spec.Containers[0].Image
 	return image.ParseImageReference(img)
+}
+
+func removeComponentsResources(data *clusterData) error {
+	for _, dp := range []*deploymentPair{
+		newDeploymentPair("kube-system", "coredns"),
+	} {
+		if err := dp.removeResources(data); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+type deploymentPair struct {
+	namespace string
+	name      string
+}
+
+func newDeploymentPair(ns string, name string) *deploymentPair {
+	return &deploymentPair{
+		namespace: ns,
+		name:      name,
+	}
+}
+
+func (d *deploymentPair) removeResources(data *clusterData) error {
+	cli := data.k8sClient
+	obj, err := cli.AppsV1().Deployments(d.namespace).Get(d.name, metav1.GetOptions{})
+	if err != nil {
+		return errors.Wrapf(err, "get deployment %s/%s", d.namespace, d.name)
+	}
+	newObj := obj.DeepCopy()
+	containers := newObj.Spec.Template.Spec.Containers
+	for i := range containers {
+		c := containers[i]
+		c.Resources = v1.ResourceRequirements{}
+		containers[i] = c
+	}
+	newObj.Spec.Template.Spec.Containers = containers
+	if _, err := cli.AppsV1().Deployments(d.namespace).Update(newObj); err != nil {
+		return errors.Wrapf(err, "update deployment %s/%s", d.namespace, d.name)
+	}
+	return nil
 }
