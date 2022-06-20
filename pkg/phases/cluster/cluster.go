@@ -314,7 +314,7 @@ func newUnstructCluster(cfg *apiv1.InitConfiguration, opt *createOptions) *unstr
 	specObj := map[string]interface{}{
 		"mysql": map[string]interface{}{
 			"host":     cfg.MysqlConnection.Server,
-			"port":     int32(cfg.MysqlConnection.Port),
+			"port":     int64(cfg.MysqlConnection.Port),
 			"username": cfg.MysqlConnection.Username,
 			"password": cfg.MysqlConnection.Password,
 		},
