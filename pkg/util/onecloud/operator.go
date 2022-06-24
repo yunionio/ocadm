@@ -111,12 +111,12 @@ var SpecsStatus []SpecStatusPair = []SpecStatusPair{
 			return oc.Spec.Web, oc.Status.Web
 		},
 	},
-	{
-		Name: "cloudnet",
-		Getter: func(oc *onecloud.OnecloudCluster) (onecloud.DeploymentSpec, onecloud.DeploymentStatus) {
-			return oc.Spec.Cloudnet, oc.Status.Cloudnet
-		},
-	},
+	// {
+	// 	Name: "cloudnet",
+	// 	Getter: func(oc *onecloud.OnecloudCluster) (onecloud.DeploymentSpec, onecloud.DeploymentStatus) {
+	// 		return oc.Spec.Cloudnet, oc.Status.Cloudnet
+	// 	},
+	// },
 }
 
 func IsClusterUpdated(oc *onecloud.OnecloudCluster, checkStatus []SpecStatusPair) (bool, string) {
