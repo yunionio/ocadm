@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/exec"
+	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -351,7 +353,26 @@ type HostCfg struct {
 	LocalImagePath []string
 	Networks       []string
 	Hostname       string
+	EnableHugepage bool
 }
+
+func GetCpuArch() (string, error) {
+	cpuArch, err := exec.Command("uname", "-m").Output()
+	if err != nil {
+		return "", errors.Wrap(err, "get cpu architecture")
+	}
+	return strings.TrimSpace(string(cpuArch)), nil
+}
+
+func GetMemTotal()(int, error) {
+	memInfo, err := exec.Command("sh", "-c", "free -g | grep Mem").Output()
+	if err != nil {
+		return -1,errors.Wrap(err, "get mem total")
+	}
+	mem := strings.Fields(string(memInfo))[1]
+	return strconv.Atoi(string(mem))
+}
+
 
 func GenerateDefaultHostConfig(cfg *HostCfg) error {
 	var o = new(options.SHostOptions)
@@ -367,6 +388,20 @@ func GenerateDefaultHostConfig(cfg *HostCfg) error {
 		} else if strings.Contains(hostname, ".") {
 			hostname = strings.Split(hostname, ".")[0]
 			o.Hostname = hostname
+		}
+	}
+
+	if cfg.EnableHugepage {
+		arch, err := GetCpuArch()
+		if err != nil {
+			return err
+		}
+		memTotal, err := GetMemTotal()
+		if err != nil {
+			return err
+		}
+		if arch == "x86_64" && memTotal >= 30 {
+			o.HugepagesOption = "native"
 		}
 	}
 
