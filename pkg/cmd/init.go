@@ -285,6 +285,10 @@ func AddHostConfigFlags(flagSet *flag.FlagSet, o *onecloud.HostCfg) {
 		&o.EnableHost, "enable-host-agent", o.EnableHost,
 		"Enable host agent",
 	)
+	flagSet.BoolVar(
+		&o.EnableHugepage, "enable-hugepage", o.EnableHugepage,
+		"Host configure: hugepage options",
+	)
 }
 
 // AddKubeadmInitConfigFlags adds init flags bound to the config to the specified flagset
