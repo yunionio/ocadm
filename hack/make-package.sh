@@ -17,4 +17,8 @@ mkdir -p $YUNION_BIN
 
 cp -a "$OUTPUT_DIR/bin/ocadm" "$YUNION_BIN"
 
-docker run --rm -v "$(pwd):/src/" cdrx/fpm-centos:7 fpm  -n yunion-ocadm -v "${TAG#v}" -s dir -t rpm  -C "_output/pkg"
+if [ -x /usr/bin/fpm ] ; then
+    fpm  -n yunion-ocadm -v "${TAG#v}" -s dir -t rpm  -C "_output/pkg"
+else
+    docker run --rm -v "$(pwd):/src/" cdrx/fpm-centos:7 fpm  -n yunion-ocadm -v "${TAG#v}" -s dir -t rpm  -C "_output/pkg"
+fi
