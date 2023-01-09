@@ -53,6 +53,16 @@ spec:
       labels:
         k8s-app: onecloud-operator
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 50
+            preference:
+              matchExpressions:
+              - key: onecloud.yunion.io/controller
+                operator: In
+                values:
+                - enable
       serviceAccount: onecloud-operator
       priorityClassName: onecloud-operator-critical
       tolerations:
