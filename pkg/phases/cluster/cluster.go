@@ -134,8 +134,8 @@ type createOptions struct {
 	useEE                     bool
 	version                   string
 	wait                      bool
-	disableResourceManagement bool	// ok
-    useHyperImage             bool
+	disableResourceManagement bool
+	useHyperImage             bool
 
 	// cluster upgrade from onecloud 2.x
 	region        string
@@ -179,7 +179,7 @@ func NewCmdCreate(out io.Writer) *cobra.Command {
 func AddCreateOptions(flagSet *flag.FlagSet, opt *createOptions) {
 	flagSet.BoolVar(&opt.useEE, "use-ee", opt.useEE, "Use EE edition")
 	flagSet.StringVar(&opt.version, "version", opt.version, "onecloud cluster version")
-	flagSet.BoolVar(&opt.disableResourceManagement, "disable-resource-management", opt.disableResourceManagement, "disable pods resource management") // ok
+	flagSet.BoolVar(&opt.disableResourceManagement, "disable-resource-management", opt.disableResourceManagement, "disable pods resource management")
 	flagSet.BoolVar(&opt.useHyperImage, "use-hyper-image", opt.useHyperImage, "use hyper image")
 	flagSet.BoolVar(&opt.wait, "wait", opt.wait, "wait until workload created")
 	flagSet.StringVar(&opt.region, "cluster-region-id", "", "For upgrade from v2, onecloud cluster region id, climc region-list get region ids")
@@ -325,8 +325,8 @@ func newUnstructCluster(cfg *apiv1.InitConfiguration, opt *createOptions) *unstr
 		"version":              cfg.OnecloudVersion,
 		"region":               cfg.Region,
 	}
-	if opt.disableResourceManagement { // ok
-		specObj["disableResourceManagement"] = true	// ok
+	if opt.disableResourceManagement {
+		specObj["disableResourceManagement"] = true
 	}
 	if opt.useHyperImage{
 		specObj["useHyperImage"] = true
@@ -649,8 +649,7 @@ type updateOptions struct {
 	operatorVersion           string
 	imageRepository           string
 	wait                      bool
-	disableResourceManagement bool	// ok
-	useHyperImage 			  bool
+	disableResourceManagement bool
 	useEE                     bool
 	useCE                     bool
 }
@@ -680,8 +679,7 @@ func AddUpdateOptions(flagSet *flag.FlagSet, opt *updateOptions) {
 	flagSet.StringVar(&opt.version, "version", opt.version, "onecloud cluster version")
 	flagSet.StringVar(&opt.operatorVersion, options.OperatorVersion, opt.operatorVersion, "onecloud operator version")
 	flagSet.StringVar(&opt.imageRepository, "image-repository", opt.imageRepository, "image registry repo")
-	flagSet.BoolVar(&opt.disableResourceManagement, "disable-resource-management", opt.disableResourceManagement, "disable pods resource management") // ok
-	flagSet.BoolVar(&opt.useHyperImage, "use-hyper-image", opt.useHyperImage, "use hyper image")
+	flagSet.BoolVar(&opt.disableResourceManagement, "disable-resource-management", opt.disableResourceManagement, "disable pods resource management")
 	flagSet.BoolVar(&opt.wait, "wait", opt.wait, "wait until workload updated")
 	flagSet.BoolVar(&opt.useEE, "use-ee", opt.useEE, "use enterprise edition onecloud")
 	flagSet.BoolVar(&opt.useCE, "use-ce", opt.useCE, "use community edition onecloud")
@@ -778,7 +776,7 @@ func updateCluster(data *clusterData, opt *updateOptions) error {
 		}
 	}
 
-	if opt.disableResourceManagement { // question
+	if opt.disableResourceManagement {
 		isDisable, found, err := unstructured.NestedBool(oc.Object, "spec", "disableResourceManagement")
 		if err != nil {
 			return errors.Wrapf(err, "get spec.disableResourceManagement")
