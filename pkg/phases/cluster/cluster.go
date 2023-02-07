@@ -328,7 +328,7 @@ func newUnstructCluster(cfg *apiv1.InitConfiguration, opt *createOptions) *unstr
 	if opt.disableResourceManagement {
 		specObj["disableResourceManagement"] = true
 	}
-	if opt.useHyperImage{
+	if opt.useHyperImage {
 		specObj["useHyperImage"] = true
 	}
 	if opt.version != "" {
@@ -650,6 +650,7 @@ type updateOptions struct {
 	imageRepository           string
 	wait                      bool
 	disableResourceManagement bool
+	operatorOnly              bool
 	useEE                     bool
 	useCE                     bool
 }
@@ -680,6 +681,7 @@ func AddUpdateOptions(flagSet *flag.FlagSet, opt *updateOptions) {
 	flagSet.StringVar(&opt.operatorVersion, options.OperatorVersion, opt.operatorVersion, "onecloud operator version")
 	flagSet.StringVar(&opt.imageRepository, "image-repository", opt.imageRepository, "image registry repo")
 	flagSet.BoolVar(&opt.disableResourceManagement, "disable-resource-management", opt.disableResourceManagement, "disable pods resource management")
+	flagSet.BoolVar(&opt.operatorOnly, "operator-only", opt.operatorOnly, "only update operator")
 	flagSet.BoolVar(&opt.wait, "wait", opt.wait, "wait until workload updated")
 	flagSet.BoolVar(&opt.useEE, "use-ee", opt.useEE, "use enterprise edition onecloud")
 	flagSet.BoolVar(&opt.useCE, "use-ce", opt.useCE, "use community edition onecloud")
@@ -727,6 +729,11 @@ func updateCluster(data *clusterData, opt *updateOptions) error {
 	if _, err := data.k8sClient.AppsV1().Deployments(constants.OnecloudNamespace).Update(operator); err != nil {
 		return errors.Wrap(err, "update operator")
 	}
+
+	if opt.operatorOnly {
+		return nil
+	}
+
 	if opt.wait {
 		rollout, err := data.kubeClient.Rollout()
 		if err != nil {
