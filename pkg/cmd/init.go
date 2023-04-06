@@ -172,7 +172,7 @@ func NewCmdInit(out io.Writer, initOptions *initOptions) *cobra.Command {
 			err = initRunner.Run(args)
 			kubeadmutil.CheckErr(err)
 			if !initOptions.upgradeFromV2 {
-				err = onecloud.GenerateDefaultHostConfig(initOptions.hostCfg)
+				err = onecloud.GenerateDefaultHostConfig(initOptions.hostCfg, true)
 				kubeadmutil.CheckErr(err)
 			}
 
