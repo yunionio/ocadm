@@ -143,7 +143,7 @@ func NewCmdJoin(out io.Writer, joinOptions *joinOptions) *cobra.Command {
 			kubeadmutil.CheckErr(err)
 
 			if !joinOptions.upgradeFromV2 {
-				err = onecloud.GenerateDefaultHostConfig(joinOptions.hostCfg)
+				err = onecloud.GenerateDefaultHostConfig(joinOptions.hostCfg, joinOptions.controlPlane)
 				kubeadmutil.CheckErr(err)
 			}
 

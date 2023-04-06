@@ -364,17 +364,16 @@ func GetCpuArch() (string, error) {
 	return strings.TrimSpace(string(cpuArch)), nil
 }
 
-func GetMemTotal()(int, error) {
+func GetMemTotal() (int, error) {
 	memInfo, err := exec.Command("sh", "-c", "free -g | grep Mem").Output()
 	if err != nil {
-		return -1,errors.Wrap(err, "get mem total")
+		return -1, errors.Wrap(err, "get mem total")
 	}
 	mem := strings.Fields(string(memInfo))[1]
 	return strconv.Atoi(string(mem))
 }
 
-
-func GenerateDefaultHostConfig(cfg *HostCfg) error {
+func GenerateDefaultHostConfig(cfg *HostCfg, isControlPlane bool) error {
 	var o = new(options.SHostOptions)
 	component.SetOptionsDefault(o, "")
 	o.LocalImagePath = cfg.LocalImagePath
@@ -391,7 +390,7 @@ func GenerateDefaultHostConfig(cfg *HostCfg) error {
 		}
 	}
 
-	if cfg.EnableHugepage {
+	if cfg.EnableHugepage && !isControlPlane {
 		arch, err := GetCpuArch()
 		if err != nil {
 			return err
