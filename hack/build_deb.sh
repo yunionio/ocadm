@@ -4,7 +4,8 @@ if [ "$DEBUG" = "true" ]; then
     set -ex
     export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 fi
-
+export TOPDIR="$(dirname $(dirname $(readlink -f "$BASH_SOURCE")))"
+git config --global --add safe.directory $TOPDIR
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin
 export PKG_CONFIG_PATH=/usr/lib/pkgconfig/:/usr/local/lib/pkgconfig/:/usr/local/share/pkgconfig
 path=$(mktemp -d)
