@@ -373,6 +373,11 @@ func GetMemTotal() (int, error) {
 	return strconv.Atoi(string(mem))
 }
 
+// 1G pdpe1gb
+func HasHugepageCpuFlag() bool {
+	return exec.Command("grep", "pdpe1gb", "/proc/cpuinfo").Run == nil
+}
+
 func GenerateDefaultHostConfig(cfg *HostCfg, isControlPlane bool) error {
 	var o = new(options.SHostOptions)
 	component.SetOptionsDefault(o, "")
@@ -399,7 +404,7 @@ func GenerateDefaultHostConfig(cfg *HostCfg, isControlPlane bool) error {
 		if err != nil {
 			return err
 		}
-		if arch == "x86_64" && memTotal >= 30 {
+		if arch == "x86_64" && memTotal >= 30 && HasHugepageCpuFlag() {
 			o.HugepagesOption = "native"
 		}
 	}
