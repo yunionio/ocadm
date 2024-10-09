@@ -422,7 +422,7 @@ func GenerateDefaultHostConfig(cfg *HostCfg, isControlPlane bool) error {
 	o.Slots = "slot0"
 	o.LinuxDefaultRootUser = true
 	o.EnableOpenflowController = false
-	o.BlockIoScheduler = "cfq"
+	o.BlockIoScheduler = "deadline"
 	o.EnableTemplateBacking = true
 	o.DefaultQemuVersion = "4.2.0"
 	o.EnableRemoteExecutor = true
