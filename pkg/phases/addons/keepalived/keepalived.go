@@ -77,6 +77,7 @@ func runKeepalivedPhaseLocal() func(c workflow.RunData) error {
 		keepalivedVersionTag := ""
 		nodeIP := ""
 		hostInterface := ""
+		imgRepo := ""
 		if !ok {
 			jdata, ok := c.(ocadm_join.JoinData)
 			if !ok {
@@ -90,11 +91,19 @@ func runKeepalivedPhaseLocal() func(c workflow.RunData) error {
 			keepalivedVersionTag = jdata.GetKeepalivedVersionTag()
 			nodeIP = jdata.GetNodeIP()
 			hostInterface = jdata.GetHostInterface()
+			initCfg, _ := jdata.InitCfg()
+			if initCfg != nil {
+				imgRepo = initCfg.ImageRepository
+			}
 		} else {
 			vip = idata.GetHighAvailabilityVIP()
 			keepalivedVersionTag = idata.GetKeepalivedVersionTag()
 			nodeIP = idata.GetNodeIP()
 			hostInterface = idata.OnecloudCfg().HostLocalInfo.ManagementNetInterface.Interface
+			initCfg := idata.Cfg()
+			if initCfg != nil {
+				imgRepo = initCfg.ImageRepository
+			}
 		}
 		if len(vip) == 0 {
 			fmt.Println("vip is empty. no need to install keepalived.")
@@ -118,15 +127,15 @@ func runKeepalivedPhaseLocal() func(c workflow.RunData) error {
 		} else {
 			fmt.Println("[PASS] keepalived path created.")
 		}
-		if err := CreateLocalKeepalivedStaticPodManifestFile(vip, keepalivedVersionTag, role, nodeIP, hostInterface); err != nil {
+		if err := CreateLocalKeepalivedStaticPodManifestFile(vip, keepalivedVersionTag, role, nodeIP, hostInterface, imgRepo); err != nil {
 			return errors.Wrap(err, "error creating local keepalived static pod manifest file")
 		}
 		return nil
 	}
 }
 
-func CreateLocalKeepalivedStaticPodManifestFile(vip, keepalivedVersionTag, role, nodeIP, hostInterface string) error {
-	spec := GetKeepalivedPodSpec(vip, keepalivedVersionTag, role, nodeIP, hostInterface)
+func CreateLocalKeepalivedStaticPodManifestFile(vip, keepalivedVersionTag, role, nodeIP, hostInterface, imgRepo string) error {
+	spec := GetKeepalivedPodSpec(vip, keepalivedVersionTag, role, nodeIP, hostInterface, imgRepo)
 	if err := staticpodutil.WriteStaticPodToDisk("keepalived", "/etc/kubernetes/manifests", spec); err != nil {
 		return err
 	}
@@ -140,7 +149,7 @@ func md5ize(str string) string {
 	return md5str
 }
 
-func GetKeepalivedPodSpec(vip, keepalivedVersionTag, role, nodeIP, hostInterface string) v1.Pod {
+func GetKeepalivedPodSpec(vip, keepalivedVersionTag, role, nodeIP, hostInterface, imgRepo string) v1.Pod {
 	privileged := true
 	priority := "100"
 	vipPswd := md5ize(b64.StdEncoding.EncodeToString([]byte(vip)))
@@ -149,7 +158,10 @@ func GetKeepalivedPodSpec(vip, keepalivedVersionTag, role, nodeIP, hostInterface
 	}
 	// registry.cn-beijing.aliyuncs.com/yunionio/keepalived:v2.0.22
 	containerName := "keepalived"
-	imageUrl := fmt.Sprintf("%s/%s:%s", ocadm_defaults.DefaultImageRepository, containerName, keepalivedVersionTag)
+	if imgRepo == "" {
+		imgRepo = ocadm_defaults.DefaultImageRepository
+	}
+	imageUrl := fmt.Sprintf("%s/%s:%s", imgRepo, containerName, keepalivedVersionTag)
 	if role != "MASTER" {
 		priority = "90"
 	}
