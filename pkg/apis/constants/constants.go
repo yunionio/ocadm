@@ -24,7 +24,7 @@ const (
 	CalicoKubeControllers             = "calico-kube-controllers"
 	CalicoNode                        = "calico-node"
 	CalicoCNI                         = "calico-cni"
-	DefaultCalicoVersion              = "v3.12.1"
+	DefaultCalicoVersion              = "v3.27.0"
 	DefaultCalicoFelixChaininsertmode = "Append"
 	Loki                              = "loki"
 	DefaultLokiVersion                = "v1.2.0"
