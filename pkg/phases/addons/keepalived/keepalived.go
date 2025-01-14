@@ -160,6 +160,10 @@ func GetKeepalivedPodSpec(vip, keepalivedVersionTag, role, nodeIP, hostInterface
 	}
 
 	vid = vid % 255
+	if vid == 0 {
+		// 防止 vid 为0，比如当 vip 为：172.16.210.250
+		vid = 100
+	}
 	svid := fmt.Sprintf("%d", vid)
 
 	return staticpodutil.ComponentPod(v1.Container{
